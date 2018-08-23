@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{% trans "Login" %}{% endblock %}
+{% block description %}{% trans "Login or register to get access" %}{% endblock description %}
+
+{% block content %}
+  <div class="container my-6">
+    <h1 class="center text-uppercase h4">Login</h1>
+
+    <div class="row">
+      <form action="{% url 'core:login' %}" method="post" class="col s10 m8 l6 offset-s1 offset-m2  offset-l3">
+        <div class="row">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="input-field col s12">
+              <label class="" for="{{ field.auto_id }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                {{ field.errors }}
+              {% endif %}
+            </div>
+          {% endfor %}
+          {% if form.non_field_errors %}
+            <div>
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+          <div class="input-field col s12">
+            <button class="btn waves-effect waves-light right" type="submit" name="action">
+              Login
+              <i class="material-icons right">send</i>
+            </button>
+          </div>
+          </div>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
