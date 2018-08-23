@@ -9,6 +9,7 @@ setup(
         'psycopg2==2.7.5',
         'psycopg2-binary==2.7.5',
         'django==2.1',
+        'gunicorn==19.9.0',
     ],
     extras_require={
         "test": [

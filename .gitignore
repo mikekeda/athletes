@@ -3,6 +3,8 @@
 staticfiles/
 media/
 reports/
+athletes.egg-info/
+build/
 
 *.pyc
 *.sqlite3
