@@ -1,10 +1,28 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Athletes_page" %}{% endblock title %}
+{% block title %}{% trans "Athletes" %}{% endblock title %}
 
 {% block content %}
     <div class="container my-6">
-        <h1>works!</h1>
+        <h1>Athletes</h1>
+        <table id="athletes-table" class="display">
+            <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Row 1 Data 1</td>
+                    <td>Row 1 Data 2</td>
+                </tr>
+                <tr>
+                    <td>Row 2 Data 1</td>
+                    <td>Row 2 Data 2</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 {% endblock content %}
