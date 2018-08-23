@@ -1,7 +1,7 @@
 .idea/
 /node_modules/
 staticfiles/
-media/
+/media/
 reports/
 athletes.egg-info/
 build/
