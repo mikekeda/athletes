@@ -13,12 +13,12 @@ class AthletesViewTest(TestCase):
                                              password='12345')
         test_user.save()
 
-    def test_views_home(self):
+    def test_views_home_page(self):
         resp = self.client.get(reverse('core:home'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'about.html')
 
-    def test_views_crm(self):
+    def test_views_crm_page(self):
         resp = self.client.get(reverse('core:crm'))
         self.assertRedirects(resp, '/login?next=/crm')
 
@@ -26,12 +26,20 @@ class AthletesViewTest(TestCase):
         resp = self.client.get(reverse('core:crm'))
         self.assertEqual(resp.status_code, 200)
 
-    def test_views_login(self):
+    def testt_views_athletes_api(self):
+        resp = self.client.get(reverse('core:athletes-api'))
+        self.assertRedirects(resp, '/login?next=/api/athletes')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('core:athletes-api'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_views_login_page(self):
         resp = self.client.get(reverse('core:login'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'login.html')
 
-    def test_views_logout(self):
+    def test_views_logout_page(self):
         resp = self.client.get(reverse('core:logout'))
         self.assertRedirects(resp, '/login?next=/logout')
         self.client.login(username='testuser', password='12345')
