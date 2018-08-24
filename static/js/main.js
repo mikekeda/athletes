@@ -10,6 +10,7 @@ $(document).ready( function () {
             { "data": "name" },
             { "data": "nationality_and_domestic_market" },
             { "data": "age" },
+            { "data": "gender" },
             { "data": "location_market" },
             { "data": "team" },
             { "data": "category" },

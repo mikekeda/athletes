@@ -6,6 +6,9 @@ class Athlete(models.Model):
     name = models.CharField(max_length=255)
     nationality_and_domestic_market = models.CharField(max_length=255)
     age = models.PositiveSmallIntegerField()
+    gender = models.CharField(max_length=15, default="male",choices=(
+        ("male", "Male"), ("female", "Female"),
+    ))
     location_market = models.CharField(max_length=255)
     team = models.CharField(max_length=255)
     category = models.CharField(max_length=255, choices=(
