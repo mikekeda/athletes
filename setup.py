@@ -11,7 +11,6 @@ setup(
         'django==2.1',
         'gunicorn==19.9.0',
         'django-widget-tweaks==1.4.2',
-        'django-import-export==1.0.1',
     ],
     extras_require={
         "test": [
