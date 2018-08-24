@@ -11,25 +11,52 @@
     <link type="text/css" rel="stylesheet" href="{% static 'node_modules/materialize-css/dist/css/materialize.min.css' %}"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="{% static 'node_modules/datatables/media/css/jquery.dataTables.min.css' %}"  media="screen,projection"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'img/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'img/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'img/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'img/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'img/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'img/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'img/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'img/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'img/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'img/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'img/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
   </head>
 
   <body>
-      <nav class="blue-grey darken-4" role="navigation">
-      <div class="nav-wrapper container"><a id="logo-container" href="/" class="brand-logo">Athletes</a>
+      <nav class="white" role="navigation">
+        <div class="nav-wrapper container"><a id="logo-container" href="{% url 'core:crm' %}" class="brand-logo blue-grey-text">CRM</a>
         <ul class="right">
-          <li class="{% if request.path == '/about' %}active{% endif %}">
-            <a href="/about" class="{% if request.path == '/about' %}active{% else %}grey-text{% endif %}">About</a>
+          <li class="{% if request.path == '/' %}active{% endif %}">
+            <a href="{% url 'core:home' %}" class="grey-text">Features</a>
+          </li>
+          <li>
+            <a href="#" class="grey-text">Pricing</a>
+          </li>
+          <li>
+            <a href="#" class="grey-text">Webinars</a>
+          </li>
+          <li>
+            <a href="#" class="grey-text">Blog</a>
           </li>
           {% if user.is_authenticated %}
-          <li class="{% if request.path == '/user' %}active{% endif %}">
-            <a href="#" class="{% if request.path == '/user' %}active{% else %}grey-text{% endif %}">{{ user.username }}</a>
+          <li>
+            <a href="#" class="grey-text">{{ user.username }}</a>
           </li>
           <li class="{% if request.path == '/logout' %}active{% endif %}">
-            <a href="/logout" class="{% if request.path == '/logout' %}active{% else %}grey-text{% endif %}">Logout</a>
+            <a href="{% url 'core:logout' %}" class="grey-text">Logout</a>
           </li>
           {% else %}
           <li class="{% if request.path == '/login' %}active{% endif %}">
-            <a href="/login" class="{% if request.path == '/login' %}active{% else %}grey-text{% endif %}">Login</a>
+            <a href="{% url 'core:login' %}" class="grey-text">Login</a>
           </li>
           {% endif %}
         </ul>

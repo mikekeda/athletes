@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, reverse
 
 
+@login_required
 def home_page(request):
     """ Home page. """
     return render(request, 'home.html')
@@ -24,7 +25,7 @@ def login_page(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect(reverse('core:home'))
+            return redirect(reverse('core:crm'))
 
     return render(request, 'login.html', {'form': form})
 
