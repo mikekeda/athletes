@@ -1,28 +1,24 @@
+import json
+
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
+
+from core.models import Athlete
 
 
 @login_required
 def athletes_api(request):
     """ Home page. """
-    return JsonResponse([
-        {
-            "Column 1": "Row 1 Data 1",
-            "Column 2": "Row 1 Data 2",
-        },
-        {
-            "Column 1": "Row 2 Data 1",
-            "Column 2": "Row 2 Data 2",
-        },
-        {
-            "Column 1": "Row 3 Data 1",
-            "Column 2": "Row 3 Data 2",
-        },
-    ], safe=False)
+    data = json.loads(serializers.serialize('json', Athlete.objects.all()))
+
+    return JsonResponse(
+        [obj['fields'] for obj in data],
+        safe=False)
 
 
 @login_required

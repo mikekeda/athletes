@@ -7,8 +7,17 @@ $(document).ready( function () {
             dataSrc: ''
         },
         columns: [
-            { "data": "Column 1" },
-            { "data": "Column 2" },
+            { "data": "name" },
+            { "data": "nationality_and_domestic_market" },
+            { "data": "age" },
+            { "data": "location_market" },
+            { "data": "team" },
+            { "data": "category" },
+            { "data": "marketability" },
+            { "data": "optimal_campaign_time" },
+            { "data": "market_transfer" },
+            { "data": "instagram" },
+            { "data": "twiter" },
         ]
     });
 });
