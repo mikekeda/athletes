@@ -29,39 +29,26 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{% static 'img/ms-icon-144x144.png' %}">
     <meta name="theme-color" content="#ffffff">
+
+    <meta name="robots" content="noindex,nofollow" /><!-- TODO[Mike]: Remove for production -->
   </head>
 
   <body>
+    <div class="navbar-fixed" style="z-index: 998;">
       <nav class="white" role="navigation">
-        <div class="nav-wrapper container"><a id="logo-container" href="{% url 'core:crm' %}" class="brand-logo blue-grey-text">CRM</a>
-        <ul class="right">
-          <li class="{% if request.path == '/' %}active{% endif %}">
-            <a href="{% url 'core:home' %}" class="grey-text">Features</a>
-          </li>
-          <li>
-            <a href="#" class="grey-text">Pricing</a>
-          </li>
-          <li>
-            <a href="#" class="grey-text">Webinars</a>
-          </li>
-          <li>
-            <a href="#" class="grey-text">Blog</a>
-          </li>
-          {% if user.is_authenticated %}
-          <li>
-            <a href="#" class="grey-text">{{ user.username }}</a>
-          </li>
-          <li class="{% if request.path == '/logout' %}active{% endif %}">
-            <a href="{% url 'core:logout' %}" class="grey-text">Logout</a>
-          </li>
-          {% else %}
-          <li class="{% if request.path == '/login' %}active{% endif %}">
-            <a href="{% url 'core:login' %}" class="grey-text">Login</a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
+        <div class="nav-wrapper container">
+          <a id="logo-container" href="{% url 'core:crm' %}" class="brand-logo blue-grey-text">CRM</a>
+          <ul class="right hide-on-med-and-down">
+            {% include "menu.html" %}
+          </ul>
+
+          <ul id="nav-mobile" class="side-nav">
+            {% include "menu.html" %}
+          </ul>
+          <a href="#" data-activates="nav-mobile" class="button-collapse blue-grey-text"><i class="material-icons">menu</i></a>
+        </div>
+      </nav>
+    </div>
 
     {% block content %}{% endblock content %}
 

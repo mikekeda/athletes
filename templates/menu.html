@@ -1,0 +1,24 @@
+<li class="{% if request.path == '/' %}active{% endif %}">
+  <a href="{% url 'core:home' %}" class="grey-text">Features</a>
+</li>
+<li>
+  <a href="#" class="grey-text">Pricing</a>
+</li>
+<li>
+  <a href="#" class="grey-text">Webinars</a>
+</li>
+<li>
+  <a href="#" class="grey-text">Blog</a>
+</li>
+{% if user.is_authenticated %}
+<li>
+  <a href="#" class="grey-text">{{ user.username }}</a>
+</li>
+<li class="{% if request.path == '/logout' %}active{% endif %}">
+  <a href="{% url 'core:logout' %}" class="grey-text">Logout</a>
+</li>
+{% else %}
+<li class="{% if request.path == '/login' %}active{% endif %}">
+  <a href="{% url 'core:login' %}" class="grey-text">Login</a>
+</li>
+{% endif %}
