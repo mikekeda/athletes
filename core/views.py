@@ -80,9 +80,15 @@ def athletes_api(request):
     qs = Athlete.objects
 
     if filters:
-        qs = qs.filter(
-            **{f'{field}__icontains': val for field, val in filters.items()}
-        )
+        for field, val in filters.items():
+            model_field = Athlete._meta.get_field(field)
+
+            if model_field.choices:
+                qs = qs.filter(**{f'{field}__in': val.split(',')})
+            elif model_field.get_internal_type() == 'BooleanField':
+                qs = qs.filter(**{f'{field}': val == 'true'})
+            else:
+                qs = qs.filter(**{f'{field}__icontains': val})
 
     if search:
         # Smart search by name, nationality_and_domestic_market, gender,

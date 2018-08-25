@@ -38,6 +38,10 @@ $(document).ready( function () {
         ],
         columnDefs: [
             {
+                "width": "210px",
+                "targets": 6
+            },
+            {
                 "render": function ( data, type, row ) {
                     return '<i class="material-icons dp48 tiny orange-text">star</i>'.repeat(parseInt(data));
                 },
@@ -47,6 +51,7 @@ $(document).ready( function () {
                 "render": function ( data, type, row ) {
                     return months[data - 1];
                 },
+                "width": "150px",
                 "targets": 8
             },
             {
@@ -75,8 +80,10 @@ $(document).ready( function () {
         });
 
         $('select', this.footer()).on('change', function () {
-            if (that.search() !== this.value) {
-                that.search(this.value).draw();
+            var val = $(this).val();
+
+            if (that.search() !== val) {
+                that.search(val).draw();
             }
         });
     });
