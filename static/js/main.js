@@ -45,6 +45,7 @@ $(document).ready( function () {
                 "render": function ( data, type, row ) {
                     return '<i class="material-icons dp48 tiny orange-text">star</i>'.repeat(parseInt(data));
                 },
+                "width": "140px",
                 "targets": 7
             },
             {
