@@ -32,19 +32,26 @@ def _process_datatables_params(querydict: dict) -> tuple:
         draw = 1
 
     col_data = []
+    filters = {}
     cnt = 0
     while f'columns[{cnt}][name]' in querydict:
         searchable = querydict.get(f'columns[{cnt}][searchable]') == 'true'
         orderable = querydict.get(f'columns[{cnt}][orderable]') == 'true'
+        key = querydict.get(f'columns[{cnt}][data]')
+        search_value = querydict.get(f'columns[{cnt}][search][value]')
 
         col_data.append({
             'name': querydict.get(f'columns[{cnt}][name]'),
-            'data': querydict.get(f'columns[{cnt}][data]'),
+            'data': key,
             'searchable': searchable,
             'orderable': orderable,
-            'search.value': querydict.get(f'columns[{cnt}][search][value]'),
+            'search.value': search_value,
             'search.regex': querydict.get(f'columns[{cnt}][search][regex]'),
         })
+
+        if search_value:
+            filters[key] = search_value
+
         cnt += 1
 
     order = []
@@ -57,13 +64,13 @@ def _process_datatables_params(querydict: dict) -> tuple:
 
         cnt += 1
 
-    return draw, start, length, order, search
+    return draw, start, length, order, search, filters
 
 
 @login_required
 def athletes_api(request):
     """ Return filtered/sorted/paginated list of athletes for datatables. """
-    draw, start, length, order, search = _process_datatables_params(
+    draw, start, length, order, search, filters = _process_datatables_params(
         request.GET)
 
     # Count all rows.
@@ -71,6 +78,11 @@ def athletes_api(request):
 
     # Form queryset.
     qs = Athlete.objects
+
+    if filters:
+        qs = qs.filter(
+            **{f'{field}__icontains': val for field, val in filters.items()}
+        )
 
     if search:
         # Smart search by name, nationality_and_domestic_market, gender,

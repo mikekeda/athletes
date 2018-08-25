@@ -64,5 +64,16 @@ $(document).ready( function () {
         }
     });
 
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+
+        $('input', this.footer()).on('keyup change', function (e) {
+            if (e.keyCode == 13 && that.search() !== this.value) {
+                that.search(this.value).draw();
+            }
+        });
+    });
+
     $('#athletes-table_wrapper select').material_select();
 });
