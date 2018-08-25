@@ -1,10 +1,11 @@
 $(document).ready( function () {
     $(".button-collapse").sideNav();
 
-    $('#athletes-table').DataTable({
+    var table = $('#athletes-table').DataTable({
+        serverSide: true,
         ajax: {
             url: '/api/athletes',
-            dataSrc: ''
+            dataSrc: 'data'
         },
         columns: [
             { "data": "name" },
@@ -21,4 +22,12 @@ $(document).ready( function () {
             { "data": "twiter" },
         ]
     });
+
+    $('#athletes-table_filter input').unbind().bind('keyup', function(e) {
+        if (e.keyCode == 13) {
+            table.search( this.value ).draw();
+        }
+    });
+
+    $('#athletes-table_wrapper select').material_select();
 });
