@@ -73,6 +73,12 @@ $(document).ready( function () {
                 that.search(this.value).draw();
             }
         });
+
+        $('select', this.footer()).on('change', function () {
+            if (that.search() !== this.value) {
+                that.search(this.value).draw();
+            }
+        });
     });
 
     $('#athletes-table_wrapper select').material_select();
