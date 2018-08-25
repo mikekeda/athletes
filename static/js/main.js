@@ -39,7 +39,7 @@ $(document).ready( function () {
         columnDefs: [
             {
                 "render": function ( data, type, row ) {
-                    return '<i class="material-icons dp48 tiny orange-text lighten-3-text">star</i>'.repeat(parseInt(data));
+                    return '<i class="material-icons dp48 tiny orange-text">star</i>'.repeat(parseInt(data));
                 },
                 "targets": 7
             },
@@ -48,6 +48,12 @@ $(document).ready( function () {
                     return months[data - 1];
                 },
                 "targets": 8
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return data ? '<i class="material-icons dp48 green-text">check</i>' : '';
+                },
+                "targets": 9
             },
         ]
     });
