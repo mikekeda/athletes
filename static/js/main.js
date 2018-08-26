@@ -61,6 +61,12 @@ $(document).ready( function () {
                 },
                 "targets": 9
             },
+            {
+                "render": function ( data, type, row ) {
+                    return data ? '<a href="https://twitter.com/intent/user?user_id=' + data + '">' + data + '</a>' : '';
+                },
+                "targets": 11
+            },
         ]
     });
 

@@ -124,9 +124,16 @@ def athletes_api(request):
 
 
 @login_required
-def home_page(request):
-    """ Home page. """
-    return render(request, 'home.html')
+def crm_page(request):
+    """ CRM page. """
+    model = Athlete._meta
+
+    return render(request, 'crm.html', {
+        'gender_choices': model.get_field('gender').choices,
+        'category_choices': model.get_field('category').choices,
+        'optimal_campaign_time_choices': model.get_field(
+            'optimal_campaign_time').choices
+    })
 
 
 def about_page(request):
