@@ -257,12 +257,15 @@ COUNTRIES = {
 class Athlete(models.Model):
     """ Athlete model. """
     name = models.CharField(max_length=255)
-    nationality_and_domestic_market = models.CharField(max_length=255)
+    nationality_and_domestic_market = models.CharField(
+        max_length=2, choices=COUNTRIES.items()
+    )
     age = models.PositiveSmallIntegerField()
     gender = models.CharField(max_length=15, default="male",choices=(
         ("male", "Male"), ("female", "Female"),
     ))
-    location_market = models.CharField(max_length=255)
+    location_market = models.CharField(max_length=2,
+                                       choices=COUNTRIES.items())
     team = models.CharField(max_length=255)
     category = models.CharField(max_length=255, choices=(
         ("Football", "Football"),

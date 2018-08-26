@@ -16,7 +16,8 @@ def _serialize_qs(qs):
     for obj in qs:
         for field in Athlete._meta.get_fields():
             try:
-                setattr(obj, field, getattr(obj, f'get_{field}_display')())
+                setattr(obj, field.name,
+                        getattr(obj,f'get_{field.name}_display')())
             except AttributeError:
                 pass
 
