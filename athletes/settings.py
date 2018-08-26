@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 
     'widget_tweaks',
     'easy_select2',
+    'import_export',
 
     'core',
 ]
