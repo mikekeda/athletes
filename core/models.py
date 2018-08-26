@@ -257,7 +257,7 @@ COUNTRIES = {
 class Athlete(models.Model):
     """ Athlete model. """
     name = models.CharField(max_length=255)
-    nationality_and_domestic_market = models.CharField(
+    domestic_market = models.CharField(
         max_length=2, choices=COUNTRIES.items()
     )
     age = models.PositiveSmallIntegerField()
@@ -285,7 +285,7 @@ class Athlete(models.Model):
     marketability = models.PositiveSmallIntegerField(choices=(
         (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
     ))
-    optimal_campaign_time = models.PositiveSmallIntegerField(choices=(
+    optimal_campaign = models.PositiveSmallIntegerField(choices=(
         (1, "January"),
         (2, "February"),
         (3, "March"),

@@ -9,14 +9,14 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Nationality and domestic market</th>
+                    <th>Domestic market</th>
                     <th>Age</th>
                     <th>Gender</th>
                     <th>Location market</th>
                     <th>Team</th>
                     <th>Category</th>
                     <th>Marketability</th>
-                    <th>Optimal campaign time</th>
+                    <th>Optimal campaign</th>
                     <th>Market transfer</th>
                     <th>Instagram</th>
                     <th>Twiter</th>
@@ -25,13 +25,14 @@
             <tfoot>
                 <tr>
                     <th>Name<input type="text" placeholder="Search Name"/></th>
-                    <th>Nationality and domestic market<input type="text" placeholder="Search Nationality and domestic market"/></th>
+                    <th>Domestic market<input type="text" placeholder="Search Domestic market"/></th>
                     <th>Age
                         <select>
                             <option selected value></option>
-                            <option value="0-20">0 - 20</option>
-                            <option value="20-30">20 - 30</option>
-                            <option value="40-100">40 - 100</option>
+                            <option value="16-21">16 - 21</option>
+                            <option value="22-26">22 - 26</option>
+                            <option value="27-40">27 - 40</option>
+                            <option value="40-100">40+</option>
                         </select>
                     </th>
                     <th>Gender
@@ -62,10 +63,10 @@
                             <option value="1">★</option>
                         </select>
                     </th>
-                    <th>Optimal campaign time
+                    <th>Optimal campaign
                         <select multiple>
                             <option disabled selected value></option>
-                            {% for value, title in optimal_campaign_time_choices %}
+                            {% for value, title in optimal_campaign_choices %}
                                 <option value="{{ value }}">{{ title }}</option>
                             {% endfor %}
                         </select>

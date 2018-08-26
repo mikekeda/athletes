@@ -9,14 +9,14 @@ $(document).ready( function () {
         },
         columns: [
             { "data": "name" },
-            { "data": "nationality_and_domestic_market" },
+            { "data": "domestic_market" },
             { "data": "age" },
             { "data": "gender" },
             { "data": "location_market" },
             { "data": "team" },
             { "data": "category" },
             { "data": "marketability" },
-            { "data": "optimal_campaign_time" },
+            { "data": "optimal_campaign" },
             { "data": "market_transfer" },
             { "data": "instagram" },
             { "data": "twiter" },
@@ -42,12 +42,6 @@ $(document).ready( function () {
                     return data ? '<i class="material-icons dp48 green-text">check</i>' : '';
                 },
                 "targets": 9
-            },
-            {
-                "render": function ( data, type, row ) {
-                    return data ? '<a href="https://twitter.com/intent/user?user_id=' + data + '">' + data + '</a>' : '';
-                },
-                "targets": 11
             },
         ]
     });

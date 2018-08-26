@@ -101,7 +101,7 @@ def athletes_api(request):
             if field == 'age':
                 val = val.split('-')
                 qs = qs.filter(**{f'{field}__gte': val[0], f'{field}__lte': val[1]})
-            elif field in ('nationality_and_domestic_market', 'location_market'):
+            elif field in ('domestic_market', 'location_market'):
                 country_val = [
                     code
                     for code, name in COUNTRIES.items()
@@ -116,7 +116,7 @@ def athletes_api(request):
                 qs = qs.filter(**{f'{field}__icontains': val})
 
     if search:
-        # Smart search by name, nationality_and_domestic_market, gender,
+        # Smart search by name, domestic_market, gender,
         # location_market, team, category fields.
         country_val = [
             code
@@ -126,7 +126,7 @@ def athletes_api(request):
 
         qs = qs.filter(
             Q(name__icontains=search) |
-            Q(nationality_and_domestic_market__in=country_val) |
+            Q(domestic_market__in=country_val) |
             Q(gender__icontains=search) |
             Q(location_market__in=country_val) |
             Q(team__icontains=search) |
@@ -159,8 +159,7 @@ def crm_page(request):
     return render(request, 'crm.html', {
         'gender_choices': model.get_field('gender').choices,
         'category_choices': model.get_field('category').choices,
-        'optimal_campaign_time_choices': model.get_field(
-            'optimal_campaign_time').choices
+        'optimal_campaign_choices': model.get_field('optimal_campaign').choices
     })
 
 
