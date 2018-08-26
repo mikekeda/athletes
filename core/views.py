@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 
-from core.models import Athlete
+from core.models import COUNTRIES, Athlete
 
 
 def _serialize_qs(qs):
@@ -98,7 +98,14 @@ def athletes_api(request):
         for field, val in filters.items():
             model_field = Athlete._meta.get_field(field)
 
-            if model_field.choices:
+            if field in ('nationality_and_domestic_market', 'location_market'):
+                country_val = [
+                    code
+                    for code, name in COUNTRIES.items()
+                    if val.lower() in name.lower()
+                ]
+                qs = qs.filter(**{f'{field}__in': country_val})
+            elif model_field.choices:
                 qs = qs.filter(**{f'{field}__in': val.split(',')})
             elif model_field.get_internal_type() == 'BooleanField':
                 qs = qs.filter(**{f'{field}': val == 'true'})
@@ -108,11 +115,17 @@ def athletes_api(request):
     if search:
         # Smart search by name, nationality_and_domestic_market, gender,
         # location_market, team, category fields.
+        country_val = [
+            code
+            for code, name in COUNTRIES.items()
+            if search.lower() in name.lower()
+        ]
+
         qs = qs.filter(
             Q(name__icontains=search) |
-            Q(nationality_and_domestic_market__icontains=search) |
+            Q(nationality_and_domestic_market__in=country_val) |
             Q(gender__icontains=search) |
-            Q(location_market__icontains=search) |
+            Q(location_market__in=country_val) |
             Q(team__icontains=search) |
             Q(category__icontains=search)
         )

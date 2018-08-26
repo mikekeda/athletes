@@ -11,6 +11,7 @@ setup(
         'django==2.1',
         'gunicorn==19.9.0',
         'django-widget-tweaks==1.4.2',
+        'django-easy-select2==1.5.3'
     ],
     extras_require={
         "test": [
