@@ -1,19 +1,4 @@
 $(document).ready( function () {
-    var months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
-
     $(".button-collapse").sideNav();
 
     var table = $('#athletes-table').DataTable({
@@ -49,9 +34,6 @@ $(document).ready( function () {
                 "targets": 7
             },
             {
-                "render": function ( data, type, row ) {
-                    return months[data - 1];
-                },
                 "width": "150px",
                 "targets": 8
             },

@@ -12,6 +12,20 @@ from django.shortcuts import render, redirect, reverse
 from core.models import Athlete
 
 
+def _serialize_qs(qs):
+    for obj in qs:
+        for field in Athlete._meta.get_fields():
+            try:
+                setattr(obj, field, getattr(obj, f'get_{field}_display')())
+            except AttributeError:
+                pass
+
+    data = json.loads(serializers.serialize('json', qs))
+    data = [obj['fields'] for obj in data]
+
+    return data
+
+
 def _process_datatables_params(querydict: dict) -> tuple:
     """ Process datatables params. """
     search = querydict.get('search[value]', '')
@@ -110,15 +124,12 @@ def athletes_api(request):
     # Pagination.
     qs = qs[start:start + length]
 
-    data = json.loads(serializers.serialize('json', qs))
-    data = [obj['fields'] for obj in data]
-
     return JsonResponse(
         {
             "draw": draw,
             "recordsTotal": total,
             "recordsFiltered": filtered,
-            "data": data
+            "data": _serialize_qs(qs)
         }
     )
 
