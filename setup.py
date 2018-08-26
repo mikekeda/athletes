@@ -12,7 +12,7 @@ setup(
         'gunicorn==19.9.0',
         'django-widget-tweaks==1.4.2',
         'django-easy-select2==1.5.3',
-        # 'django-import-export',  # Installed from git due the the bug
+        'django-import-export',  # Installed from git due the the bug
     ],
     extras_require={
         "test": [
