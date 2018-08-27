@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='athletes',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(),
     install_requires=[
         'requests==2.19.1',
@@ -13,6 +13,8 @@ setup(
         'django-widget-tweaks==1.4.2',
         'django-easy-select2==1.5.3',
         'django-import-export',  # Installed from git due the the bug
+        'django-debug-toolbar==1.9.1',
+        'django-redis==4.9.0',
     ],
     extras_require={
         "test": [

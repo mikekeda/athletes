@@ -135,10 +135,13 @@ def athletes_api(request):
             Q(category__icontains=search)
         )
 
-    qs = qs.order_by(*order)
-
     # Count filtered rows.
-    filtered = qs.count()
+    if filters or search:
+        filtered = qs.count()
+    else:
+        filtered = total  # no need to count filtered rows
+
+    qs = qs.order_by(*order)
 
     # Pagination.
     qs = qs[start:start + length]

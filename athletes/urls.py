@@ -18,8 +18,10 @@ admin.site.site_header = _('Athletes administration')
 
 if settings.DEBUG:
     from django.conf.urls.static import static
+    import debug_toolbar
 
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
     )
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
