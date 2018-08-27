@@ -1,5 +1,5 @@
 """
-Django settings for athletes project.
+Django settings for Athletes project.
 """
 
 import requests
@@ -169,7 +169,7 @@ STATICFILES_DIRS = (
 STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
 # Security
-if  DEBUG:
+if DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
