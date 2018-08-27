@@ -1,24 +1,25 @@
+{% load i18n %}
 <li class="{% if request.path == '/' %}active{% endif %}">
-  <a href="{% url 'core:home' %}" class="grey-text">Features</a>
+  <a href="{% url 'core:home' %}" class="grey-text">{% trans "Features" %}</a>
 </li>
 <li>
-  <a href="#" class="grey-text">Pricing</a>
+  <a href="#" class="grey-text">{% trans "Pricing" %}</a>
 </li>
 <li>
-  <a href="#" class="grey-text">Webinars</a>
+  <a href="#" class="grey-text">{% trans "Webinars" %}</a>
 </li>
 <li>
-  <a href="#" class="grey-text">Blog</a>
+  <a href="#" class="grey-text">{% trans "Blog" %}</a>
 </li>
 {% if user.is_authenticated %}
 <li>
   <a href="#" class="grey-text">{{ user.username }}</a>
 </li>
 <li class="{% if request.path == '/logout' %}active{% endif %}">
-  <a href="{% url 'core:logout' %}" class="grey-text">Logout</a>
+  <a href="{% url 'core:logout' %}" class="grey-text">{% trans "Logout" %}</a>
 </li>
 {% else %}
 <li class="{% if request.path == '/login' %}active{% endif %}">
-  <a href="{% url 'core:login' %}" class="grey-text">Login</a>
+  <a href="{% url 'core:login' %}" class="grey-text">{% trans "Login" %}</a>
 </li>
 {% endif %}

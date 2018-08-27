@@ -260,7 +260,7 @@ class Athlete(models.Model):
     domestic_market = models.CharField(max_length=2,
                                        choices=COUNTRIES.items())
     age = models.PositiveSmallIntegerField()
-    gender = models.CharField(max_length=15, default="male",choices=(
+    gender = models.CharField(max_length=15, default="male", choices=(
         ("male", _("Male")), ("female", _("Female")),
     ))
     location_market = models.CharField(max_length=2,

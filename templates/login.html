@@ -3,11 +3,11 @@
 {% load widget_tweaks %}
 
 {% block title %}{% trans "Login" %}{% endblock %}
-{% block description %}{% trans "Login or register to get access" %}{% endblock description %}
+{% block description %}{% trans "Login to get access" %}{% endblock description %}
 
 {% block content %}
   <div class="container my-6">
-    <h1 class="center blue-grey-text">Login</h1>
+    <h1 class="center blue-grey-text">{% trans "Login" %}</h1>
 
     <div class="row">
       <form action="{% url 'core:login' %}" method="post" class="col s10 m8 l6 offset-s1 offset-m2  offset-l3">
@@ -29,7 +29,7 @@
           {% endif %}
           <div class="input-field col s12">
             <button class="btn waves-effect waves-light right light-blue" type="submit" name="action">
-              Login
+              {% trans "Login" %}
               <i class="material-icons right">send</i>
             </button>
           </div>
