@@ -52,7 +52,7 @@ $(document).ready( function () {
         }
     });
 
-    // Apply the search
+    // Apply the search.
     table.columns().every( function () {
         var that = this;
 

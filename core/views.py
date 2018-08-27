@@ -98,9 +98,11 @@ def athletes_api(request):
         for field, val in filters.items():
             model_field = Athlete._meta.get_field(field)
 
-            if field == 'age':
+            if field in ('age', 'instagram', 'twiter'):
                 val = val.split('-')
-                qs = qs.filter(**{f'{field}__gte': val[0], f'{field}__lte': val[1]})
+                qs = qs.filter(
+                    **{f'{field}__gte': val[0], f'{field}__lte': val[1]}
+                )
             elif field in ('domestic_market', 'location_market'):
                 country_val = [
                     code

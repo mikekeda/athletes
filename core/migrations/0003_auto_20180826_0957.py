@@ -1,4 +1,5 @@
 from django.db import migrations
+from django.db.utils import ProgrammingError
 from core.models import COUNTRIES, Athlete
 
 
@@ -13,16 +14,19 @@ class Migration(migrations.Migration):
             'Northern Ireland': 'GB',
         })
 
-        for athlete in Athlete.objects.all():
-            athlete.nationality_and_domestic_market = mapping.get(
-                athlete.nationality_and_domestic_market,
-                'zz'
-            )
-            athlete.location_market = mapping.get(
-                athlete.location_market,
-                'zz'
-            )
-            athlete.save()
+        try:
+            for athlete in Athlete.objects.all():
+                athlete.nationality_and_domestic_market = mapping.get(
+                    athlete.nationality_and_domestic_market,
+                    'zz'
+                )
+                athlete.location_market = mapping.get(
+                    athlete.location_market,
+                    'zz'
+                )
+                athlete.save()
+        except ProgrammingError:
+            pass
 
     dependencies = [
         ('core', '0002_athlete_gender'),
