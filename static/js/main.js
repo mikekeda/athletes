@@ -1,7 +1,7 @@
 $(document).ready( function () {
     $(".button-collapse").sideNav();
 
-    var table = $('#athletes-table').DataTable({
+    let table = $('#athletes-table').DataTable({
         serverSide: true,
         ajax: {
             url: '/api/athletes',
@@ -47,23 +47,23 @@ $(document).ready( function () {
     });
 
     $('#athletes-table_filter input').unbind().bind('keyup', function(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             table.search( this.value ).draw();
         }
     });
 
     // Apply the search.
     table.columns().every( function () {
-        var that = this;
+        let that = this;
 
         $('input', this.footer()).on('keyup change', function (e) {
-            if (e.keyCode == 13 && that.search() !== this.value) {
+            if (e.keyCode === 13 && that.search() !== this.value) {
                 that.search(this.value).draw();
             }
         });
 
         $('select', this.footer()).on('change', function () {
-            var val = $(this).val();
+            let val = $(this).val();
 
             if (that.search() !== val) {
                 that.search(val).draw();
