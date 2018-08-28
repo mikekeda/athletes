@@ -1,0 +1,15 @@
+.mt-3 {
+    margin-top: 2.1rem !important;
+}
+.mt-6 {
+    margin-top: 4.2rem !important;
+}
+
+#athletes-table-wrapper {
+    margin-top: 60px;
+}
+
+#athletes-table tfoot input,
+#athletes-table tfoot select {
+    width: 100%;
+}
