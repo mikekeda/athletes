@@ -1,25 +1,25 @@
 {% load i18n %}
-<li class="{% if request.path == '/' %}active{% endif %}">
-  <a href="{% url 'core:home' %}" class="grey-text">{% trans "Features" %}</a>
+<li class="nav-item {% if request.path == '/' %}active{% endif %}">
+  <a href="{% url 'core:home' %}" class="nav-link">{% trans "Features" %}</a>
 </li>
-<li>
-  <a href="#" class="grey-text">{% trans "Pricing" %}</a>
+<li class="nav-item">
+  <a href="#" class="nav-link">{% trans "Pricing" %}</a>
 </li>
-<li>
-  <a href="#" class="grey-text">{% trans "Webinars" %}</a>
+<li class="nav-item">
+  <a href="#" class="nav-link">{% trans "Webinars" %}</a>
 </li>
-<li>
-  <a href="#" class="grey-text">{% trans "Blog" %}</a>
+<li class="nav-item">
+  <a href="#" class="nav-link">{% trans "Blog" %}</a>
 </li>
 {% if user.is_authenticated %}
-<li>
-  <a href="#" class="grey-text">{{ user.username }}</a>
+<li class="nav-item">
+  <a href="#" class="nav-link">{{ user.username }}</a>
 </li>
-<li class="{% if request.path == '/logout' %}active{% endif %}">
-  <a href="{% url 'core:logout' %}" class="grey-text">{% trans "Logout" %}</a>
+<li class="nav-item {% if request.path == '/logout' %}active{% endif %}">
+  <a href="{% url 'core:logout' %}" class="nav-link">{% trans "Logout" %}</a>
 </li>
 {% else %}
-<li class="{% if request.path == '/login' %}active{% endif %}">
-  <a href="{% url 'core:login' %}" class="grey-text">{% trans "Login" %}</a>
+<li class="nav-item {% if request.path == '/login' %}active{% endif %}">
+  <a href="{% url 'core:login' %}" class="nav-link">{% trans "Login" %}</a>
 </li>
 {% endif %}

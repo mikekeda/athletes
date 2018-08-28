@@ -4,14 +4,8 @@
 {% block title %}{% trans "Athletes" %}{% endblock title %}
 
 {% block content %}
-    <style>
-        #athletes-table_filter input {
-            margin-left: 0;
-        }
-    </style>
-
     <div>
-        <table id="athletes-table" class="display">
+        <table id="athletes-table" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -53,7 +47,7 @@
                     <th>Team<input type="text" placeholder="Search Team"/></th>
                     <th>Category
                         <select multiple>
-                            <option disabled selected value></option>
+                            <option selected value></option>
                             {% for value, title in category_choices %}
                                 <option value="{{ value }}">{{ title }}</option>
                             {% endfor %}
@@ -61,7 +55,7 @@
                     </th>
                     <th>Marketability
                         <select multiple>
-                            <option disabled selected value></option>
+                            <option selected value></option>
                             <option value="5">★★★★★</option>
                             <option value="4">★★★★</option>
                             <option value="3">★★★</option>
@@ -71,7 +65,7 @@
                     </th>
                     <th>Optimal campaign
                         <select multiple>
-                            <option disabled selected value></option>
+                            <option selected value></option>
                             {% for value, title in optimal_campaign_choices %}
                                 <option value="{{ value }}">{{ title }}</option>
                             {% endfor %}

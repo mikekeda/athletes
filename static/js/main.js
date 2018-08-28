@@ -1,6 +1,4 @@
 $(document).ready( function () {
-    $(".button-collapse").sideNav();
-
     let table = $('#athletes-table').DataTable({
         serverSide: true,
         ajax: {
@@ -28,7 +26,7 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
-                    return '<i class="material-icons dp48 tiny orange-text">star</i>'.repeat(parseInt(data));
+                    return '<i class="material-icons dp48 tiny text-warning">star</i>'.repeat(parseInt(data));
                 },
                 "width": "140px",
                 "targets": 7
@@ -39,7 +37,7 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
-                    return data ? '<i class="material-icons dp48 green-text">check</i>' : '';
+                    return data ? '<i class="material-icons dp48 text-success">check</i>' : '';
                 },
                 "targets": 9
             },
@@ -71,5 +69,4 @@ $(document).ready( function () {
         });
     });
 
-    $('#athletes-table_wrapper select').material_select();
 });
