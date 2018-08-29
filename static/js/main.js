@@ -21,19 +21,10 @@ $(document).ready( function () {
         ],
         columnDefs: [
             {
-                "width": "210px",
-                "targets": 6
-            },
-            {
                 "render": function ( data, type, row ) {
                     return '<i class="material-icons dp48 tiny text-warning">star</i>'.repeat(parseInt(data));
                 },
-                "width": "140px",
                 "targets": 7
-            },
-            {
-                "width": "150px",
-                "targets": 8
             },
             {
                 "render": function ( data, type, row ) {
