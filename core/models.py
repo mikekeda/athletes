@@ -1,3 +1,8 @@
+from bs4 import BeautifulSoup
+import datetime
+import re
+import requests
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -256,17 +261,25 @@ COUNTRIES = {
 
 class Athlete(models.Model):
     """ Athlete model. """
-    name = models.CharField(max_length=255)
-    domestic_market = models.CharField(max_length=2,
-                                       choices=COUNTRIES.items())
-    age = models.PositiveSmallIntegerField()
-    gender = models.CharField(max_length=15, default="male", choices=(
-        ("male", _("Male")), ("female", _("Female")),
-    ))
-    location_market = models.CharField(max_length=2,
-                                       choices=COUNTRIES.items())
-    team = models.CharField(max_length=255)
-    category = models.CharField(max_length=255, choices=(
+    wiki = models.URLField(unique=True)
+    name = models.CharField(max_length=255, blank=True)
+    domestic_market = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=COUNTRIES.items(),
+    )
+    gender = models.CharField(
+        max_length=15,
+        blank=True,
+        choices=(("male", _("Male")), ("female", _("Female"))),
+    )
+    location_market = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=COUNTRIES.items(),
+    )
+    team = models.CharField(max_length=255, null=True, blank=True)
+    category = models.CharField(max_length=255, blank=True, choices=(
         ("Football", _("Football")),
         ("Rugby", _("Rugby")),
         ("Athletics", _("Athletics")),
@@ -281,26 +294,92 @@ class Athlete(models.Model):
         ("College Basketball", _("College Basketball")),
         ("Ice Hockey", _("Ice Hockey"))
     ))
-    marketability = models.PositiveSmallIntegerField(choices=(
-        (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
-    ))
-    optimal_campaign = models.PositiveSmallIntegerField(choices=(
-        (1, _("January")),
-        (2, _("February")),
-        (3, _("March")),
-        (4, _("April")),
-        (5, _("May")),
-        (6, _("June")),
-        (7, _("July")),
-        (8, _("August")),
-        (9, _("September")),
-        (10, _("October")),
-        (11, _("November")),
-        (12, _("December"))
-    ))
-    market_transfer = models.BooleanField()
-    instagram = models.PositiveIntegerField()
-    twiter = models.PositiveIntegerField()
+    marketability = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5)),
+    )
+    optimal_campaign = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        choices=(
+            (1, _("January")),
+            (2, _("February")),
+            (3, _("March")),
+            (4, _("April")),
+            (5, _("May")),
+            (6, _("June")),
+            (7, _("July")),
+            (8, _("August")),
+            (9, _("September")),
+            (10, _("October")),
+            (11, _("November")),
+            (12, _("December"))
+        )
+    )
+    market_transfer = models.BooleanField(null=True, blank=True)
+    instagram = models.PositiveIntegerField(null=True, blank=True)
+    twiter = models.PositiveIntegerField(null=True, blank=True)
+    height = models.DecimalField(max_digits=3, decimal_places=2,
+                                 verbose_name="Height (m)", blank=True)
+    weight = models.PositiveSmallIntegerField(null=True,
+                                              verbose_name="Weight (kg)",
+                                              blank=True)
+    website = models.URLField(blank=True)
+    birthday = models.DateField(blank=True)
+
+    @property
+    def age(self):
+        today = datetime.date.today()
+        return today.year - self.birthday.year - ((today.month, today.day) < (
+            self.birthday.month, self.birthday.day))
+
+    def get_data_from_wiki(self):
+        """ Get information about athlete from Wiki. """
+        html = requests.get(self.wiki)
+        soup = BeautifulSoup(html.content, 'html.parser')
+        card = soup.find("table", {"class": "vcard"})
+
+        # Get name.
+        name = card.select(".fn") or soup.findAll("caption")
+        self.name = name[0].string
+
+        # Get birthday.
+        bday = card.find("span", {"class": "bday"}).string
+        self.birthday = datetime.datetime.strptime(bday, "%Y-%m-%d")
+
+        for row in card.findAll('tr'):
+            tr = row.findChildren(recursive=False)
+            if len(tr) > 1:
+                key = str(tr[0].string).replace('\xa0', ' ')
+                val = str(tr[1].text).strip()
+
+                if key == "Height":
+                    # Get height.
+                    processed_val = re.findall("[0-9]{3}\scm", val)
+                    if processed_val:
+                        self.height = float(int(processed_val[0][:-3]) / 100)
+
+                    processed_val = re.findall("[0-9].[0-9]{2}\sm", val)
+                    if processed_val:
+                        self.height = float(processed_val[0][:-2])
+                elif key == "Weight":
+                    # Get weight.
+                    processed_val = re.findall("[0-9]{2,3}\skg", val)
+                    if processed_val:
+                        self.weight = int(processed_val[0][:-3])
+                elif key == "Website":
+                    # Get website.
+                    self.website = val
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.name:
+            # If name isn't set - send request to Wiki to get athlete info.
+            self.get_data_from_wiki()
+
+        super().save(force_insert=force_insert, force_update=force_update,
+                     using=using, update_fields=update_fields)
 
     def __str__(self):
         return self.name

@@ -8,8 +8,10 @@ setup(
         'requests==2.19.1',
         'psycopg2==2.7.5',
         'psycopg2-binary==2.7.5',
-        'django==2.1',
         'gunicorn==19.9.0',
+        'beautifulsoup4==4.6.3',
+
+        'django==2.1',
         'django-widget-tweaks==1.4.2',
         'django-easy-select2==1.5.3',
         'django-import-export',  # Installed from git due the the bug

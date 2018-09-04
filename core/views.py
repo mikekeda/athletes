@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.conf import settings
@@ -13,7 +14,11 @@ from core.models import COUNTRIES, Athlete
 
 
 def _serialize_qs(qs):
+    ages = {}  # serialize removes age property, so we need to add it again
+
     for obj in qs:
+        ages[obj.id] = obj.age
+
         for field in Athlete._meta.get_fields():
             try:
                 setattr(obj, field.name,
@@ -22,7 +27,7 @@ def _serialize_qs(qs):
                 pass
 
     data = json.loads(serializers.serialize('json', qs))
-    data = [obj['fields'] for obj in data]
+    data = [{**obj['fields'], 'age': ages.get(obj['pk'], '')} for obj in data]
 
     return data
 
@@ -96,9 +101,23 @@ def athletes_api(request):
 
     if filters:
         for field, val in filters.items():
+            if field == 'age':  # we don't have age field (it's property)
+                field = 'birthday'  # we will use birthday in query
+
             model_field = Athlete._meta.get_field(field)
 
-            if field in ('age', 'instagram', 'twiter'):
+            if field == 'birthday':
+                val = val.split('-')
+
+                for i, _ in enumerate(val):
+                    today = datetime.date.today()
+                    val[i] = datetime.date(today.year - int(val[i]),
+                                           today.month, today.day)
+
+                qs = qs.filter(
+                    **{f'{field}__gte': val[1], f'{field}__lte': val[0]}
+                )
+            elif field in ('instagram', 'twiter'):
                 val = val.split('-')
                 qs = qs.filter(
                     **{f'{field}__gte': val[0], f'{field}__lte': val[1]}
