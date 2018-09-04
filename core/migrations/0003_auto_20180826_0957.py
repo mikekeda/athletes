@@ -1,11 +1,12 @@
 from django.db import migrations
 from django.db.utils import ProgrammingError
-from core.models import COUNTRIES, Athlete
+from core.models import Athlete
+from core.constans import REVERSED_COUNTRIES
 
 
 class Migration(migrations.Migration):
     def add_event_rules(apps, schema_editor):
-        mapping = {val: key for key, val in COUNTRIES.items()}
+        mapping = REVERSED_COUNTRIES.copy()
         mapping.update({
             'England': 'GB',
             'United Kingdom': 'GB',
