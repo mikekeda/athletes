@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import datetime
-import re
 import requests
 
 from django.db import models
@@ -18,6 +17,7 @@ class Athlete(models.Model):
         blank=True,
         choices=COUNTRIES.items(),
     )
+    birthday = models.DateField(blank=True)
     gender = models.CharField(
         max_length=15,
         blank=True,
@@ -57,13 +57,6 @@ class Athlete(models.Model):
     market_transfer = models.BooleanField(null=True, blank=True)
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twiter = models.PositiveIntegerField(null=True, blank=True)
-    height = models.DecimalField(max_digits=3, decimal_places=2,
-                                 verbose_name="Height (m)", blank=True)
-    weight = models.PositiveSmallIntegerField(null=True,
-                                              verbose_name="Weight (kg)",
-                                              blank=True)
-    website = models.URLField(blank=True)
-    birthday = models.DateField(blank=True)
 
     @property
     def age(self):
@@ -92,24 +85,7 @@ class Athlete(models.Model):
                 key = str(tr[0].string).replace('\xa0', ' ')
                 val = str(tr[1].text).strip()
 
-                if key == "Height":
-                    # Get height.
-                    processed_val = re.findall("[0-9]{3}\scm", val)
-                    if processed_val:
-                        self.height = float(int(processed_val[0][:-3]) / 100)
-
-                    processed_val = re.findall("[0-9].[0-9]{2}\sm", val)
-                    if processed_val:
-                        self.height = float(processed_val[0][:-2])
-                elif key == "Weight":
-                    # Get weight.
-                    processed_val = re.findall("[0-9]{2,3}\skg", val)
-                    if processed_val:
-                        self.weight = int(processed_val[0][:-3])
-                elif key == "Website":
-                    # Get website.
-                    self.website = val
-                elif key in ("Current team", "Club"):
+                if key in ("Current team", "Club"):
                     # Get team.
                     self.team = val
                 elif key in ("Sport", "Discipline") and \
