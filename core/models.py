@@ -1,11 +1,16 @@
 from bs4 import BeautifulSoup
 import datetime
+import logging
 import requests
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.constans import CATEGORIES, WIKI_CATEGORIES, COUNTRIES, WIKI_COUNTRIES
+from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
+                           WIKI_COUNTRIES)
+
+
+logger = logging.getLogger(__name__)
 
 
 class Athlete(models.Model):
@@ -88,7 +93,7 @@ class Athlete(models.Model):
                 if key in ("Current team", "Club"):
                     # Get team.
                     self.team = val
-                elif key in ("Sport", "Discipline") and \
+                elif key in ("Sport", "Discipline", "League") and \
                         val.capitalize() in WIKI_CATEGORIES:
                     # Get category.
                     self.category = WIKI_CATEGORIES[val.capitalize()]
@@ -97,8 +102,14 @@ class Athlete(models.Model):
                     location_market = tr[1].find("a").string
                     if location_market in WIKI_COUNTRIES:
                         self.location_market = WIKI_COUNTRIES[location_market]
+                elif key == "Nationality":
+                    # Get domestic_market.
+                    if val in WIKI_COUNTRIES:
+                        self.domestic_market = WIKI_COUNTRIES[val]
 
                 info[key] = val
+
+        logger.info(info)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

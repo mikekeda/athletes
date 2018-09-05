@@ -17,6 +17,7 @@ REVERSED_CATEGORIES = {val: key for key, val in CATEGORIES.items()}
 WIKI_CATEGORIES = REVERSED_CATEGORIES.copy()
 WIKI_CATEGORIES.update({
     "Women's artistic gymnastics": "Gymnastics",
+    "Nba": "Basketball",
 })
 
 COUNTRIES = {
@@ -273,5 +274,7 @@ COUNTRIES = {
 REVERSED_COUNTRIES = {val: key for key, val in COUNTRIES.items()}
 WIKI_COUNTRIES = REVERSED_COUNTRIES.copy()
 WIKI_COUNTRIES.update({
+    "American": "US",
+    "British": "GB",
     "Great Britain": "GB",
 })
