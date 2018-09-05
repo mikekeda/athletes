@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
-                           WIKI_COUNTRIES)
+                           WIKI_COUNTRIES, WIKI_NATIONALITIES)
 
 
 logger = logging.getLogger(__name__)
@@ -97,6 +97,9 @@ class Athlete(models.Model):
                         val.capitalize() in WIKI_CATEGORIES:
                     # Get category.
                     self.category = WIKI_CATEGORIES[val.capitalize()]
+                    if val == "NBA":
+                        # NBA it's always US.
+                        self.location_market = "US"
                 elif key == "Country":
                     # Get location_market.
                     location_market = tr[1].find("a").string
@@ -104,8 +107,8 @@ class Athlete(models.Model):
                         self.location_market = WIKI_COUNTRIES[location_market]
                 elif key == "Nationality":
                     # Get domestic_market.
-                    if val in WIKI_COUNTRIES:
-                        self.domestic_market = WIKI_COUNTRIES[val]
+                    if val in WIKI_NATIONALITIES:
+                        self.domestic_market = WIKI_NATIONALITIES[val]
 
                 info[key] = val
 

@@ -274,7 +274,22 @@ COUNTRIES = {
 REVERSED_COUNTRIES = {val: key for key, val in COUNTRIES.items()}
 WIKI_COUNTRIES = REVERSED_COUNTRIES.copy()
 WIKI_COUNTRIES.update({
-    "American": "US",
-    "British": "GB",
     "Great Britain": "GB",
+})
+WIKI_NATIONALITIES = REVERSED_COUNTRIES.copy()
+WIKI_NATIONALITIES.update({
+    "American": "US",
+    "Austrian": "AT",
+    "Bahamian": "BS",
+    "Brazilian": "BR",
+    "British": "GB",
+    "Cameroonian": "CM",
+    "German": "DE",
+    "Croatian": "HR",
+    "Congolese": "CD",
+    "French": "FR",
+    "Latvian": "LV",
+    "Slovenian": "SI",
+    "Swiss": "CH",
+    "Turkish": "TR",
 })
