@@ -18,8 +18,9 @@ update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
 class AthleteAdmin(ImportExportModelAdmin):
-    list_filter = ('category',)
-    search_fields = ['name']
+    list_filter = ('gender', 'category', 'team',)
+    list_display = ('name',)
+    search_fields = ('name',)
     form = AthleteForm
     actions = [update_data_from_wiki]
 
