@@ -6,18 +6,31 @@
 {% block description %}{% trans "Extract athletes from Team wiki page" %}{% endblock description %}
 
 {% block content %}
-  <div class="container mt-6">
+  <div class="container mt-9">
     <h1 class="text-center">{% trans "Extract athletes from Team wiki page" %}</h1>
 
-    <div class="row mt-3">
-      <form action="{% url 'core:team' %}" method="post" class="col-sm-10 col-md-8 col-lg-6 offset-sm-1 offset-md-2 offset-lg-3">
+    <div class="row mt-6">
+      <form action="{% url 'core:team' %}" method="post" class="col-sm-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2">
         <div class="">
           {% csrf_token %}
-          <div class="form-group">
-            <label for="wiki">Team wiki url</label>
-            <input type="url" class="form-control" id="wiki" name="wiki" placeholder="Enter team wiki url">
-            <small id="emailHelp" class="form-text text-muted">{% trans "We will extract athletes from this team wiki page." %}</small>
-          </div>
+          {% for field in form %}
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+              <div class="col-sm-9">
+                {{ field|add_class:"form-control" }}
+                {% if field.errors %}
+                  <div class="alert alert-warning" role="alert">
+                    {{ field.errors }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+          {% if form.non_field_errors %}
+            <div class="alert alert-warning col-sm-11 col-md-10 col-lg-9 offset-sm-1 offset-md-2 offset-lg-3" role="alert">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
           <div class="form-group row">
             <div class="col-sm-12">
               <button type="submit" class="btn btn-primary float-right">{% trans "Start" %}</button>

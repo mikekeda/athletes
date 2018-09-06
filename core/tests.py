@@ -34,6 +34,14 @@ class AthletesViewTest(TestCase):
         resp = self.client.get(reverse('core:athletes-api'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_views_team_page(self):
+        resp = self.client.get(reverse('core:team'))
+        self.assertRedirects(resp, '/admin/login/?next=/team')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('core:team'))
+        self.assertEqual(resp.status_code, 302)
+
     def test_views_login_page(self):
         resp = self.client.get(reverse('core:login'))
         self.assertEqual(resp.status_code, 200)

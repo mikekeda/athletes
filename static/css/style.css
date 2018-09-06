@@ -4,6 +4,9 @@
 .mt-6 {
     margin-top: 4.2rem !important;
 }
+.mt-9 {
+    margin-top: 6.3rem !important;
+}
 
 #athletes-table-wrapper {
     margin-top: 60px;
@@ -12,4 +15,12 @@
 #athletes-table tfoot input,
 #athletes-table tfoot select {
     width: 100%;
+}
+
+.select2-selection__rendered {
+  line-height: 32px !important;
+}
+
+.select2-selection {
+  height: 34px !important;
 }

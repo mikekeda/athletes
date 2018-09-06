@@ -16,6 +16,7 @@ from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.utils.decorators import method_decorator
 
+from core.forms import TeamForm
 from core.models import COUNTRIES, Athlete
 from core.tasks import create_athlete_task
 
@@ -201,41 +202,50 @@ def about_page(request):
 
 @method_decorator(staff_member_required, name='dispatch')
 class ParseTeamView(View):
+    """ Crawling athletes from team wiki page. """
+
     # noinspection PyMethodMayBeStatic
     def get(self, request):
         """ Get form. """
-        return render(request, 'wiki-team-form.html')
+        form = TeamForm()
+        return render(request, 'wiki-team-form.html', {'form': form})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
         """ Form submit. """
-        wiki_url = request.POST.get('wiki', '')
-        site = urlparse(wiki_url)
-        site = f'{site.scheme}://{site.hostname}'
-        html = requests.get(wiki_url)
-        soup = BeautifulSoup(html.content, 'html.parser')
-        title = soup.select("#Current_squad") or soup.select("#Current_roster")
-        team = soup.title.string.split(' - Wikipedia')[0]
-        table = title[0].parent.find_next_sibling("table")
+        form = TeamForm(data=request.POST)
+        if form.is_valid():
+            wiki_url = form.cleaned_data.pop('team_wiki_url', '')
+            site = urlparse(wiki_url)
+            site = f'{site.scheme}://{site.hostname}'
+            html = requests.get(wiki_url)
+            soup = BeautifulSoup(html.content, 'html.parser')
+            title = soup.select("#Current_squad") or soup.select(
+                "#Current_roster")
+            form.cleaned_data['team'] = soup.title.string.split(
+                ' - Wikipedia')[0]
+            table = title[0].parent.find_next_sibling("table")
 
-        for row in table.findAll("tr"):
-            td = row.find_all(recursive=False)
-            if len(td) > 3:
-                for i in (2, 3):  # try to find players in 2th or 3th cell
-                    link = td[i].find("a", recursive=False)
-                    if not link:
-                        # Sometimes a is wrapped with span.
-                        link = td[i].find("span", recursive=False)
-                        if link:
-                            link = link.find("a", recursive=False)
+            # Go through all table rows.
+            for row in table.findAll("tr"):
+                td = row.find_all(recursive=False)
+                if len(td) > 3:
+                    for i in (2, 3):  # try to find players in 2th or 3th cell
+                        link = td[i].find("a", recursive=False)
+                        if not link:
+                            # Sometimes a is wrapped with span.
+                            link = td[i].find("span", recursive=False)
+                            if link:
+                                link = link.find("a", recursive=False)
 
-                    # If link has a space - it looks like a player name.
-                    if link and link.string and len(link.string.split()) > 1:
-                        full_link = site + link['href']
-                        create_athlete_task(full_link, team)
+                        # If link has a space - it looks like a player name.
+                        if link and link.string and len(
+                                link.string.split()) > 1:
+                            full_link = site + link['href']
+                            # Asynchronously add an athlete.
+                            create_athlete_task(full_link, form.cleaned_data)
 
-        return redirect(reverse('core:team'))
-
+        return render(request, 'wiki-team-form.html', {'form': form})
 
 def login_page(request):
     """ User login page. """
