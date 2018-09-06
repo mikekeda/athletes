@@ -194,6 +194,57 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'json': {
+            'format': '{ "loggerName":"%(name)s",'
+                      '"timestamp":"%(asctime)s", '
+                      '"fileName":"%(filename)s", '
+                      '"logRecordCreationTime":"%(created)f", '
+                      '"functionName":"%(funcName)s", '
+                      '"levelNo":"%(levelno)s", '
+                      '"lineNo":"%(lineno)d", '
+                      '"time":"%(msecs)d", '
+                      '"levelName":"%(levelname)s", '
+                      '"message":"%(message)s"}',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+        },
+        'loggly': {
+            'class': 'loggly.handlers.HTTPSHandler',
+            'level': 'INFO',
+            'formatter': 'json',
+            'url': 'https://logs-01.loggly.com/inputs/TOKEN/tag/Athletes',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'core': {
+            'handlers': ['console', 'loggly'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
 # Security
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
