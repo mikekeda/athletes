@@ -82,7 +82,10 @@ class Athlete(models.Model):
 
         # Get name.
         name = card.select(".fn") or soup.findAll("caption")
-        self.name = name[0].string or name[0].contents[0]
+        if name:
+            self.name = name[0].string or name[0].contents[0]
+        else:
+            self.name = soup.title.string.split(' - Wikipedia')[0]
 
         # Get birthday.
         bday = card.find("span", {"class": "bday"}).string
