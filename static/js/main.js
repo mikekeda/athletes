@@ -32,7 +32,14 @@ $(document).ready( function () {
                 },
                 "targets": 9
             },
-        ]
+        ],
+        language: {
+            "lengthMenu": "Show _MENU_ athletes per page",
+            "zeroRecords": "No matching athletes found",
+            "info": "Showing _START_ to _END_ of _TOTAL_ athletes",
+            "infoEmpty": "No athletes available",
+            "infoFiltered": "(filtered from _MAX_ total athletes)"
+        }
     });
 
     $('#athletes-table_filter input').unbind().bind('keyup', function(e) {

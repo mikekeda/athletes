@@ -85,10 +85,10 @@ class Athlete(models.Model):
         self.birthday = datetime.datetime.strptime(bday, "%Y-%m-%d")
 
         for row in card.findAll('tr'):
-            tr = row.findChildren(recursive=False)
-            if len(tr) > 1:
-                key = str(tr[0].string).replace('\xa0', ' ')
-                val = str(tr[1].text).strip()
+            td = row.find_all(recursive=False)
+            if len(td) > 1:
+                key = str(td[0].string).replace('\xa0', ' ')
+                val = str(td[1].text).strip()
 
                 if key in ("Current team", "Club"):
                     # Get team.
@@ -102,7 +102,7 @@ class Athlete(models.Model):
                         self.location_market = "US"
                 elif key == "Country":
                     # Get location_market.
-                    location_market = tr[1].find("a").string
+                    location_market = td[1].find("a").string
                     if location_market in WIKI_COUNTRIES:
                         self.location_market = WIKI_COUNTRIES[location_market]
                 elif key == "Nationality":

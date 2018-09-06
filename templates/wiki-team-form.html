@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{% trans "Team wiki form" %}{% endblock %}
+{% block description %}{% trans "Extract athletes from Team wiki page" %}{% endblock description %}
+
+{% block content %}
+  <div class="container mt-6">
+    <h1 class="text-center">{% trans "Extract athletes from Team wiki page" %}</h1>
+
+    <div class="row mt-3">
+      <form action="{% url 'core:team' %}" method="post" class="col-sm-10 col-md-8 col-lg-6 offset-sm-1 offset-md-2 offset-lg-3">
+        <div class="">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="wiki">Team wiki url</label>
+            <input type="url" class="form-control" id="wiki" name="wiki" placeholder="Enter team wiki url">
+            <small id="emailHelp" class="form-text text-muted">{% trans "We will extract athletes from this team wiki page." %}</small>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <button type="submit" class="btn btn-primary float-right">{% trans "Start" %}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

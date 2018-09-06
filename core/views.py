@@ -1,7 +1,10 @@
+from bs4 import BeautifulSoup
 import datetime
 import json
+import requests
 
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -9,8 +12,11 @@ from django.core import serializers
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
+from django.views import View
+from django.utils.decorators import method_decorator
 
 from core.models import COUNTRIES, Athlete
+from core.tasks import create_athlete_task
 
 
 def _serialize_qs(qs):
@@ -190,6 +196,40 @@ def crm_page(request):
 def about_page(request):
     """ About page. """
     return render(request, 'about.html')
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ParseTeamView(View):
+    def get(self, request):
+        """ Get form. """
+        return render(request, 'wiki-team-form.html')
+
+    def post(self, request):
+        """ Form submit. """
+        wiki_url = request.POST.get('wiki', '')
+        html = requests.get(wiki_url)
+        soup = BeautifulSoup(html.content, 'html.parser')
+        title = soup.select("#Current_squad") or soup.select("#Current_roster")
+        team = soup.title.string.split(' - Wikipedia')[0]
+        table = title[0].parent.find_next_sibling("table")
+
+        for row in table.findAll("tr"):
+            td = row.find_all(recursive=False)
+            if len(td) > 3:
+                for i in (2, 3):  # try to find players in 2th or 3th cell
+                    link = td[i].find("a", recursive=False)
+                    if not link:
+                        # Sometimes a is wrapped with span.
+                        link = td[i].find("span", recursive=False)
+                        if link:
+                            link = link.find("a", recursive=False)
+
+                    # If link has a space - it looks like a player name.
+                    if link and link.string and len(link.string.split()) > 1:
+                        full_link = 'https://en.wikipedia.org' + link['href']
+                        create_athlete_task(full_link, team)
+
+        return redirect(reverse('core:team'))
 
 
 def login_page(request):
