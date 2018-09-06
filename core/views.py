@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 import requests
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -200,13 +201,17 @@ def about_page(request):
 
 @method_decorator(staff_member_required, name='dispatch')
 class ParseTeamView(View):
+    # noinspection PyMethodMayBeStatic
     def get(self, request):
         """ Get form. """
         return render(request, 'wiki-team-form.html')
 
+    # noinspection PyMethodMayBeStatic
     def post(self, request):
         """ Form submit. """
         wiki_url = request.POST.get('wiki', '')
+        site = urlparse(wiki_url)
+        site = f'{site.scheme}://{site.hostname}'
         html = requests.get(wiki_url)
         soup = BeautifulSoup(html.content, 'html.parser')
         title = soup.select("#Current_squad") or soup.select("#Current_roster")
@@ -226,7 +231,7 @@ class ParseTeamView(View):
 
                     # If link has a space - it looks like a player name.
                     if link and link.string and len(link.string.split()) > 1:
-                        full_link = 'https://en.wikipedia.org' + link['href']
+                        full_link = site + link['href']
                         create_athlete_task(full_link, team)
 
         return redirect(reverse('core:team'))

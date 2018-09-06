@@ -10,7 +10,7 @@ from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
 
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Athlete(models.Model):
@@ -112,7 +112,7 @@ class Athlete(models.Model):
 
                 info[key] = val
 
-        logger.info(info)
+        log.info(info)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

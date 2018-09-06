@@ -9,5 +9,10 @@ app = Celery('athletes')
 @shared_task
 def create_athlete_task(wiki, team):
     """ Task to crawl athletes from wiki team page. """
-    if not Athlete.objects.filter(wiki=wiki).exists():
+    athlete = Athlete.objects.filter(wiki=wiki).first()
+
+    if not athlete:
         Athlete.objects.create(wiki=wiki, team=team)
+    elif not athlete.team:
+        athlete.team = team
+        athlete.save()

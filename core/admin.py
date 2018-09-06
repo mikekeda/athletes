@@ -12,6 +12,8 @@ def update_data_from_wiki(_, __, queryset):
     for obj in queryset:
         obj.get_data_from_wiki()
         obj.save()
+
+
 update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
