@@ -114,6 +114,11 @@ class Athlete(models.Model):
                     # Get domestic_market.
                     if val in WIKI_NATIONALITIES:
                         self.domestic_market = WIKI_NATIONALITIES[val]
+                elif not self.domestic_market and key == "Place of birth":
+                    # Get domestic_market.
+                    country = val.split(',')[-1].strip()
+                    if country in WIKI_COUNTRIES:
+                        self.domestic_market = WIKI_COUNTRIES[country]
 
                 info[key] = val
 
