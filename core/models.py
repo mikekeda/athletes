@@ -94,22 +94,23 @@ class Athlete(models.Model):
                 key = str(td[0].string).replace('\xa0', ' ')
                 val = str(td[1].text).strip()
 
-                if key in ("Current team", "Club"):
+                if not self.team and key in ("Current team", "Club"):
                     # Get team.
                     self.team = val
-                elif key in ("Sport", "Discipline", "League") and \
+                elif not self.category and \
+                        key in ("Sport", "Discipline", "League") and \
                         val.capitalize() in WIKI_CATEGORIES:
                     # Get category.
                     self.category = WIKI_CATEGORIES[val.capitalize()]
                     if val == "NBA":
                         # NBA it's always US.
                         self.location_market = "US"
-                elif key == "Country":
+                elif not self.location_market and key == "Country":
                     # Get location_market.
                     location_market = td[1].find("a").string
                     if location_market in WIKI_COUNTRIES:
                         self.location_market = WIKI_COUNTRIES[location_market]
-                elif key == "Nationality":
+                elif not self.domestic_market and key == "Nationality":
                     # Get domestic_market.
                     if val in WIKI_NATIONALITIES:
                         self.domestic_market = WIKI_NATIONALITIES[val]

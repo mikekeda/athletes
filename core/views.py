@@ -221,7 +221,8 @@ class ParseTeamView(View):
             html = requests.get(wiki_url)
             soup = BeautifulSoup(html.content, 'html.parser')
             title = soup.select("#Current_squad") or soup.select(
-                "#Current_roster") or soup.select("#Roster")
+                "#Current_roster") or soup.select("#Roster") or soup.select(
+                "#First-team_squad")
             form.cleaned_data['team'] = soup.title.string.split(
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
