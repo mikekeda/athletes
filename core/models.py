@@ -71,6 +71,7 @@ class Athlete(models.Model):
 
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
+        log.info(f"parsing {self.wiki}")
         html = requests.get(self.wiki)
         if html.status_code != 200:
             # Athlete page doesn't exist.
@@ -125,7 +126,7 @@ class Athlete(models.Model):
 
                 info[key] = val
 
-        log.info(info)
+        log.debug(info)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
