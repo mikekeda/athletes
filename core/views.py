@@ -221,7 +221,7 @@ class ParseTeamView(View):
             html = requests.get(wiki_url)
             soup = BeautifulSoup(html.content, 'html.parser')
             title = soup.select("#Current_squad") or soup.select(
-                "#Current_roster")
+                "#Current_roster") or soup.select("#Roster")
             form.cleaned_data['team'] = soup.title.string.split(
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
@@ -244,6 +244,8 @@ class ParseTeamView(View):
                             full_link = site + link['href']
                             # Asynchronously add an athlete.
                             create_athlete_task(full_link, form.cleaned_data)
+
+            form = TeamForm(initial=form.cleaned_data)
 
         return render(request, 'wiki-team-form.html', {'form': form})
 

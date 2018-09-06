@@ -10,7 +10,7 @@ from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('athletes')
 
 
 class Athlete(models.Model):
@@ -72,6 +72,10 @@ class Athlete(models.Model):
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
         html = requests.get(self.wiki)
+        if html.status_code != 200:
+            # Athlete page doesn't exist.
+            return
+
         soup = BeautifulSoup(html.content, 'html.parser')
         card = soup.find("table", {"class": "vcard"})
         info = {}

@@ -5,6 +5,9 @@ Django settings for Athletes project.
 import requests
 import os
 
+from django.utils.log import DEFAULT_LOGGING as LOGGING
+
+
 SITE_ENV_PREFIX = 'ATHLETES'
 
 
@@ -193,6 +196,13 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = '/home/voron/sites/cdn/athletes'
+
+
+LOGGING['loggers']['athletes'] = {
+    'handlers': ['console', 'django.server'],
+    'level': 'WARNING',
+}
+
 
 # Security
 if not DEBUG:
