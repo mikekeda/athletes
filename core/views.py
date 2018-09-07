@@ -251,7 +251,10 @@ class ParseTeamView(View):
                         # If link has a space - it looks like a player name.
                         if link and link.string and len(
                                 link.string.split()) > 1:
-                            full_link = site + link['href']
+                            if link['href'][:4] != 'http':
+                                full_link = site + link['href']
+                            else:
+                                full_link = link['href']
                             # Asynchronously add an athlete.
                             create_athlete_task(full_link, form.cleaned_data)
 
