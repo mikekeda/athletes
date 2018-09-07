@@ -14,6 +14,40 @@ from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
 log = logging.getLogger('athletes')
 
 
+class Team(models.Model):
+    wiki = models.URLField(unique=True)
+    team = models.CharField(max_length=255, blank=True)
+    location_market = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=COUNTRIES.items(),
+    )
+    gender = models.CharField(
+        max_length=15,
+        blank=True,
+        choices=(("male", _("Male")), ("female", _("Female"))),
+    )
+    category = models.CharField(max_length=255, blank=True,
+                                choices=CATEGORIES.items())
+    additional_info = JSONField(default=dict)
+
+    def get_data_from_wiki(self):
+        """ Get information about team from Wiki. """
+        log.info(f"Parsing Team {self.wiki}")
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.team:
+            # If team isn't set - send request to Wiki to get athlete info.
+            self.get_data_from_wiki()
+
+        super().save(force_insert=force_insert, force_update=force_update,
+                     using=using, update_fields=update_fields)
+
+    def __str__(self):
+        return self.team
+
+
 class Athlete(models.Model):
     """ Athlete model. """
     wiki = models.URLField(unique=True)
@@ -35,6 +69,13 @@ class Athlete(models.Model):
         choices=COUNTRIES.items(),
     )
     team = models.CharField(max_length=255, null=True, blank=True)
+    team_model = models.ForeignKey(
+        Team,
+        null=True,
+        blank=True,
+        related_name='members',
+        on_delete=models.SET_NULL
+    )
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())
     marketability = models.PositiveSmallIntegerField(

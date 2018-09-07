@@ -231,7 +231,7 @@ class ParseTeamView(View):
         """ Form submit. """
         form = TeamForm(data=request.POST)
         if form.is_valid():
-            wiki_url = form.cleaned_data.pop('team_wiki_url', '')
+            wiki_url = form.cleaned_data.pop('wiki', '')
             log.info(f"parsing team {wiki_url}")
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
