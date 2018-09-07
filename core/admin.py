@@ -18,6 +18,10 @@ def update_data_from_wiki(_, __, queryset):
 update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
+class AthleteInline(admin.TabularInline):
+    model = Athlete
+
+
 class AthleteAdmin(ImportExportModelAdmin):
     list_filter = ('gender', 'category',)
     list_display = ('name',)
@@ -32,6 +36,7 @@ class TeamAdmin(ImportExportModelAdmin):
     search_fields = ('team',)
     form = TeamForm
     actions = [update_data_from_wiki]
+    inlines = [AthleteInline]
 
 
 admin.site.register(Athlete, AthleteAdmin)
