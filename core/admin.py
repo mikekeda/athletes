@@ -20,10 +20,12 @@ update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 class AthleteInline(admin.TabularInline):
     model = Athlete
+    form = AthleteForm
+    extra = 1
 
 
 class AthleteAdmin(ImportExportModelAdmin):
-    list_filter = ('gender', 'category',)
+    list_filter = ('gender', 'category', 'team_model')
     list_display = ('name',)
     search_fields = ('name',)
     form = AthleteForm

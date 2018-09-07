@@ -31,9 +31,37 @@ class Team(models.Model):
                                 choices=CATEGORIES.items())
     additional_info = JSONField(default=dict)
 
-    def get_data_from_wiki(self):
+    def get_data_from_wiki(self, soup=None):
         """ Get information about team from Wiki. """
         log.info(f"Parsing Team {self.wiki}")
+
+        if not soup:
+            html = requests.get(self.wiki)
+            if html.status_code != 200:
+                # Team page doesn't exist.
+                log.warning(f"Skipping Team {self.wiki} ({html.status_code})")
+                return
+
+            soup = BeautifulSoup(html.content, 'html.parser')
+
+        card = soup.find("table", {"class": "vcard"})
+        info = {}
+
+        if not card or card.parent.attrs.get('role') == "navigation":
+            # Team page doesn't have person card - skip.
+            log.warning(f"Skipping Team {self.wiki} (no person card)")
+            return
+
+        for row in card.findAll('tr'):
+            td = row.find_all(recursive=False)
+            if len(td) > 1:
+                key = str(td[0].string).replace('\xa0', ' ')
+                val = str(td[1].text).strip()
+
+                info[key] = val
+
+        self.additional_info = info
+
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -118,7 +146,7 @@ class Athlete(models.Model):
         html = requests.get(self.wiki)
         if html.status_code != 200:
             # Athlete page doesn't exist.
-            log.warning(f"Skipping Athlete {self.wiki} (404)")
+            log.warning(f"Skipping Athlete {self.wiki} ({html.status_code})")
             return
 
         soup = BeautifulSoup(html.content, 'html.parser')

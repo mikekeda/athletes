@@ -250,6 +250,9 @@ class ParseTeamView(View):
             table = title[0].parent.find_next_sibling("table")
 
             team, _ = Team.objects.get_or_create(**form.cleaned_data)
+            team.get_data_from_wiki(soup)
+            team.save()
+
             form.cleaned_data['team_model'] = team
             form.cleaned_data.pop('wiki', '')
 
