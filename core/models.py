@@ -75,11 +75,17 @@ class Athlete(models.Model):
         html = requests.get(self.wiki)
         if html.status_code != 200:
             # Athlete page doesn't exist.
+            log.warning(f"Skipping {self.wiki} (404)")
             return
 
         soup = BeautifulSoup(html.content, 'html.parser')
         card = soup.find("table", {"class": "vcard"})
         info = {}
+
+        if not card:
+            # Athlete page doesn't have person card - skip.
+            log.warning(f"Skipping {self.wiki} (no person card)")
+            return
 
         # Get name.
         name = card.select(".fn") or soup.findAll("caption")
