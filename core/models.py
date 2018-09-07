@@ -82,7 +82,7 @@ class Athlete(models.Model):
         card = soup.find("table", {"class": "vcard"})
         info = {}
 
-        if not card:
+        if not card or card.parent.attrs.get('role') == "navigation":
             # Athlete page doesn't have person card - skip.
             log.warning(f"Skipping {self.wiki} (no person card)")
             return

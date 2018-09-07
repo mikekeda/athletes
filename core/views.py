@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import datetime
 import json
+import logging
 import requests
 from urllib.parse import urlparse
 
@@ -19,6 +20,9 @@ from django.utils.decorators import method_decorator
 from core.forms import TeamForm
 from core.models import COUNTRIES, Athlete
 from core.tasks import create_athlete_task
+
+
+log = logging.getLogger('athletes')
 
 
 def _serialize_qs(qs):
@@ -216,6 +220,7 @@ class ParseTeamView(View):
         form = TeamForm(data=request.POST)
         if form.is_valid():
             wiki_url = form.cleaned_data.pop('team_wiki_url', '')
+            log.info(f"parsing team {wiki_url}")
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
             html = requests.get(wiki_url)

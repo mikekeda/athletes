@@ -27,4 +27,4 @@ def create_athlete_task(wiki, data):
                     setattr(athlete, field, data[field])
             athlete.save()
     except IntegrityError as e:
-        log.error(f"{repr(e)}: Skip athlete for {wiki}")
+        log.warning(f"{repr(e)}: Skip athlete for {wiki}")
