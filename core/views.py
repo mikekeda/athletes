@@ -18,7 +18,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 
 from core.forms import TeamForm
-from core.models import COUNTRIES, Athlete
+from core.models import COUNTRIES, Athlete, Team
 from core.tasks import create_athlete_task
 
 
@@ -231,7 +231,7 @@ class ParseTeamView(View):
         """ Form submit. """
         form = TeamForm(data=request.POST)
         if form.is_valid():
-            wiki_url = form.cleaned_data.pop('wiki', '')
+            wiki_url = form.cleaned_data.get('wiki', '')
             log.info(f"parsing team {wiki_url}")
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
@@ -248,6 +248,10 @@ class ParseTeamView(View):
             form.cleaned_data['team'] = soup.title.string.split(
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
+
+            team, _ = Team.objects.get_or_create(**form.cleaned_data)
+            form.cleaned_data['team_model'] = team
+            form.cleaned_data.pop('wiki', '')
 
             if form.cleaned_data.get('category') == "American Football":
                 links = table.select("td > ul > li > a")
