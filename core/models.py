@@ -71,11 +71,11 @@ class Athlete(models.Model):
 
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
-        log.info(f"parsing {self.wiki}")
+        log.info(f"Parsing Athlete {self.wiki}")
         html = requests.get(self.wiki)
         if html.status_code != 200:
             # Athlete page doesn't exist.
-            log.warning(f"Skipping {self.wiki} (404)")
+            log.warning(f"Skipping Athlete {self.wiki} (404)")
             return
 
         soup = BeautifulSoup(html.content, 'html.parser')
@@ -84,7 +84,7 @@ class Athlete(models.Model):
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # Athlete page doesn't have person card - skip.
-            log.warning(f"Skipping {self.wiki} (no person card)")
+            log.warning(f"Skipping Athlete {self.wiki} (no person card)")
             return
 
         # Get name.
@@ -95,8 +95,13 @@ class Athlete(models.Model):
             self.name = soup.title.string.split(' - Wikipedia')[0]
 
         # Get birthday.
-        bday = card.find("span", {"class": "bday"}).string
-        self.birthday = datetime.datetime.strptime(bday, "%Y-%m-%d")
+        bday = card.find("span", {"class": "bday"})
+        if not bday:
+            # Athlete page doesn't have person card - skip.
+            log.warning(f"Skipping Athlete {self.wiki} (no birthday)")
+            return
+
+        self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
 
         for row in card.findAll('tr'):
             td = row.find_all(recursive=False)
