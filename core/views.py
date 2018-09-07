@@ -255,6 +255,13 @@ class ParseTeamView(View):
                 for link in links:
                     validate_link_and_create_athlete(link, site,
                                                      form.cleaned_data)
+
+            if form.cleaned_data.get('category') == "Ice Hockey":
+                links = table.select("tr > td span.vcard a")
+
+                for link in links:
+                    validate_link_and_create_athlete(link, site,
+                                                     form.cleaned_data)
             else:
                 # Default parsing.
                 # Go through all table rows.
