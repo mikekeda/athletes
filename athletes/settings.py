@@ -52,7 +52,8 @@ INTERNAL_IPS = (
 ALLOWED_HOSTS = get_env_var('ALLOWED_HOSTS', '*').split(',')
 
 ADMINS = [
-    ('Mike', 'mriynuk@gmail.com')
+    ('Mike', 'mriynuk@gmail.com'),
+    ('Jamie', 'jaimedanderson@gmail.com'),
 ]
 
 
