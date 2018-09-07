@@ -209,7 +209,7 @@ STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
 
 LOGGING['loggers']['athletes'] = {
-    'handlers': ['console', 'django.server', 'mail_admins'],
+    'handlers': ['django.server', 'mail_admins'],
     'level': 'INFO',
 }
 

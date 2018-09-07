@@ -25,6 +25,18 @@ from core.tasks import create_athlete_task
 log = logging.getLogger('athletes')
 
 
+def validate_link_and_create_athlete(link, site, data):
+    """ Validate the link and create an athlete. """
+    # If link has a space - it's player name.
+    if link and link.string and len(link.string.split()) > 1:
+        if link['href'][:4] != 'http':
+            full_link = site + link['href']
+        else:
+            full_link = link['href']
+        # Asynchronously add an athlete.
+        create_athlete_task(full_link, data)
+
+
 def _serialize_qs(qs):
     ages = {}  # serialize removes age property, so we need to add it again
 
@@ -237,31 +249,33 @@ class ParseTeamView(View):
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
 
-            # Go through all table rows.
-            for row in table.findAll("tr"):
-                td = row.find_all(recursive=False)
-                if len(td) > 3:
-                    for i in (2, 3):  # try to find players in 2th or 3th cell
-                        link = td[i].find("a", recursive=False)
-                        if not link:
-                            # Sometimes a is wrapped with span.
-                            link = td[i].find("span", recursive=False)
-                            if link:
-                                link = link.find("a", recursive=False)
+            if form.cleaned_data.get('category') == "American Football":
+                links = table.select("td > ul > li > a")
 
-                        # If link has a space - it looks like a player name.
-                        if link and link.string and len(
-                                link.string.split()) > 1:
-                            if link['href'][:4] != 'http':
-                                full_link = site + link['href']
-                            else:
-                                full_link = link['href']
-                            # Asynchronously add an athlete.
-                            create_athlete_task(full_link, form.cleaned_data)
+                for link in links:
+                    validate_link_and_create_athlete(link, site,
+                                                     form.cleaned_data)
+            else:
+                # Default parsing.
+                # Go through all table rows.
+                for row in table.findAll("tr"):
+                    td = row.find_all(recursive=False)
+                    if len(td) > 3:
+                        for i in (2, 3):  # try to find players in 2th or 3th
+                            link = td[i].find("a", recursive=False)
+                            if not link:
+                                # Sometimes a is wrapped with span.
+                                link = td[i].find("span", recursive=False)
+                                if link:
+                                    link = link.find("a", recursive=False)
+
+                            validate_link_and_create_athlete(
+                                link, site, form.cleaned_data)
 
             form = TeamForm(initial=form.cleaned_data)
 
         return render(request, 'wiki-team-form.html', {'form': form})
+
 
 def login_page(request):
     """ User login page. """

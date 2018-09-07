@@ -3,6 +3,7 @@ import datetime
 import logging
 import requests
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -62,6 +63,7 @@ class Athlete(models.Model):
     market_transfer = models.BooleanField(null=True, blank=True)
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twiter = models.PositiveIntegerField(null=True, blank=True)
+    additional_info = JSONField(default=dict)
 
     @property
     def age(self):
@@ -137,6 +139,7 @@ class Athlete(models.Model):
 
                 info[key] = val
 
+        self.additional_info = info
         log.debug(info)
 
     def save(self, force_insert=False, force_update=False, using=None,
