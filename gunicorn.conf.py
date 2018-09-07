@@ -3,7 +3,7 @@
 Gunicorn config.
 """
 bind = 'unix:/uwsgi/athletes.sock'
-workers = 1
+workers = 2
 timeout = 30
 max_requests = 100
 daemon = False
