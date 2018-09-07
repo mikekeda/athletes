@@ -129,7 +129,6 @@ class Athlete(models.Model):
             (12, _("December"))
         )
     )
-    market_transfer = models.BooleanField(null=True, blank=True)
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twiter = models.PositiveIntegerField(null=True, blank=True)
     additional_info = JSONField(default=dict)
@@ -139,6 +138,10 @@ class Athlete(models.Model):
         today = datetime.date.today()
         return today.year - self.birthday.year - ((today.month, today.day) < (
             self.birthday.month, self.birthday.day))
+
+    @property
+    def market_export(self):
+        return self.domestic_market != self.location_market
 
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """

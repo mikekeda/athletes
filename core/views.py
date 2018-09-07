@@ -11,7 +11,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.views import View
@@ -38,10 +38,10 @@ def validate_link_and_create_athlete(link, site, data):
 
 
 def _serialize_qs(qs):
-    ages = {}  # serialize removes age property, so we need to add it again
+    props = {}  # serialize removes properties, so we need to add them again
 
     for obj in qs:
-        ages[obj.id] = obj.age
+        props[obj.id] = {'age': obj.age, 'market_export': obj.market_export}
 
         for field in Athlete._meta.get_fields():
             try:
@@ -51,7 +51,7 @@ def _serialize_qs(qs):
                 pass
 
     data = json.loads(serializers.serialize('json', qs))
-    data = [{**obj['fields'], 'age': ages.get(obj['pk'], '')} for obj in data]
+    data = [{**obj['fields'], **props.get(obj['pk'], {})} for obj in data]
 
     return data
 
@@ -121,16 +121,19 @@ def athletes_api(request):
     total = Athlete.objects.count()
 
     # Form queryset.
-    qs = Athlete.objects
+    qs = Athlete.objects.defer('additional_info')
 
     if filters:
         for field, val in filters.items():
-            if field == 'age':  # we don't have age field (it's property)
-                field = 'birthday'  # we will use birthday in query
+            # Process filtering by properties.
+            if field == 'market_export':
+                if val == 'true':
+                    qs = qs.exclude(domestic_market=F('location_market'))
+                else:
+                    qs = qs.filter(domestic_market=F('location_market'))
+                continue
 
-            model_field = Athlete._meta.get_field(field)
-
-            if field == 'birthday':
+            elif field == 'age':
                 val = val.split('-')
 
                 for i, _ in enumerate(val):
@@ -138,10 +141,12 @@ def athletes_api(request):
                     val[i] = datetime.date(today.year - int(val[i]),
                                            today.month, today.day)
 
-                qs = qs.filter(
-                    **{f'{field}__gte': val[1], f'{field}__lte': val[0]}
-                )
-            elif field in ('instagram', 'twiter'):
+                qs = qs.filter(birthday__gte=val[1], birthday__lte=val[0])
+                continue
+
+            model_field = Athlete._meta.get_field(field)
+
+            if field in ('instagram', 'twiter'):
                 val = val.split('-')
                 qs = qs.filter(
                     **{f'{field}__gte': val[0], f'{field}__lte': val[1]}

@@ -15,7 +15,7 @@ $(document).ready( function () {
             { "data": "category" },
             { "data": "marketability" },
             { "data": "optimal_campaign" },
-            { "data": "market_transfer" },
+            { "data": "market_export" },
             { "data": "instagram" },
             { "data": "twiter" },
         ],
