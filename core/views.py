@@ -294,6 +294,9 @@ class ParseTeamView(View):
                                 if link:
                                     link = link.find("a", recursive=False)
 
+                                if link and link.string == "North Korea":
+                                    continue  # it's not a athlete
+
                             validate_link_and_create_athlete(
                                 link, site, form.cleaned_data)
 
