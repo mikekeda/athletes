@@ -34,7 +34,12 @@ def validate_link_and_create_athlete(link, site, data):
         else:
             full_link = link['href']
         # Asynchronously add an athlete.
-        create_athlete_task(full_link, data)
+        if create_athlete_task(full_link, data):
+            return full_link, True
+        else:
+            return full_link, False
+
+    return None, False
 
 
 def _serialize_qs(qs):
@@ -266,20 +271,25 @@ class ParseTeamView(View):
 
             form.cleaned_data['team_model'] = team
             form.cleaned_data.pop('wiki', '')
+            result = {'skipped': [], 'parsed': []}
 
             if form.cleaned_data.get('category') == "American Football":
                 links = table.select("td > ul > li > a")
 
                 for link in links:
-                    validate_link_and_create_athlete(link, site,
-                                                     form.cleaned_data)
+                    full_link, status = validate_link_and_create_athlete(
+                        link, site, form.cleaned_data
+                    )
+                    result[['skipped', 'parsed'][status]].append(full_link)
 
             if form.cleaned_data.get('category') == "Ice Hockey":
                 links = table.select("tr > td span.vcard a")
 
                 for link in links:
-                    validate_link_and_create_athlete(link, site,
-                                                     form.cleaned_data)
+                    full_link, status = validate_link_and_create_athlete(
+                        link, site, form.cleaned_data
+                    )
+                    result[['skipped', 'parsed'][status]].append(full_link)
             else:
                 # Default parsing.
                 # Go through all table rows.
@@ -294,13 +304,21 @@ class ParseTeamView(View):
                                 if link:
                                     link = link.find("a", recursive=False)
 
-                                if link and link.string == "North Korea":
-                                    continue  # it's not a athlete
+                            if link and link.string == "North Korea":
+                                continue  # it's not a athlete
 
-                            validate_link_and_create_athlete(
-                                link, site, form.cleaned_data)
+                            full_link, status = validate_link_and_create_athlete(
+                                link, site, form.cleaned_data
+                            )
+                            result[['skipped', 'parsed'][status]].append(
+                                full_link)
 
             form = TeamForm(initial=form.cleaned_data)
+            result['skipped'] = [link for link in result['skipped'] if link]
+
+            return render(request, 'wiki-team-form.html',
+                          {'form': form, 'parsed': result['parsed'],
+                           'skipped': result['skipped']})
 
         return render(request, 'wiki-team-form.html', {'form': form})
 
