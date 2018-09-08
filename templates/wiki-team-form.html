@@ -40,24 +40,26 @@
       </form>
     </div>
 
-    <div class="col-sm-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2">
-      <h4>{% trans "Logs from last run" %}:</h4>
-      {% if skipped %}
-        <h5>{% trans "Skipped" %}:</h5>
-        <ul>
-          {% for link in skipped %}
-            <li><a href="{{ link }}" class="small list-group-item-action">{{ link }}</a></li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      {% if parsed %}
-        <h5>{% trans "Parsed" %}:</h5>
-        <ul>
-          {% for link in parsed %}
-            <li><a href="{{ link }}" class="small list-group-item-action">{{ link }}</a></li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    </div>
+    {% if skipped or parsed %}
+      <div class="col-sm-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2">
+        <h4>{% trans "Logs from last run" %}:</h4>
+        {% if skipped %}
+          <h5>{% trans "Skipped" %} ({{ skipped|length }}):</h5>
+          <ul>
+            {% for link in skipped %}
+              <li><a href="{{ link }}" class="small list-group-item-action">{{ link }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if parsed %}
+          <h5>{% trans "Parsed" %} ({{ parsed|length }}):</h5>
+          <ul>
+            {% for link in parsed %}
+              <li><a href="{{ link }}" class="small list-group-item-action">{{ link }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 {% endblock content %}
