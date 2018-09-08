@@ -260,7 +260,8 @@ class ParseTeamView(View):
                 "#Current_roster_and_coaching_staff") or soup.select(
                 "#First_Team_Squad") or soup.select(
                 "#Current_squad[11]") or soup.select(
-                "#Current_players")
+                "#Current_players") or soup.select(
+                "#Current_first_team_squad")
             form.cleaned_data['team'] = soup.title.string.split(
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
