@@ -29,7 +29,9 @@ class Team(models.Model):
     )
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())
-    additional_info = JSONField(default=dict)
+    additional_info = JSONField(default=dict, blank=True)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def get_data_from_wiki(self, soup=None):
         """ Get information about team from Wiki. """
@@ -131,7 +133,9 @@ class Athlete(models.Model):
     )
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twiter = models.PositiveIntegerField(null=True, blank=True)
-    additional_info = JSONField(default=dict)
+    additional_info = JSONField(default=dict, blank=True)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @property
     def age(self):
