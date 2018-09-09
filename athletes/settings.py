@@ -215,6 +215,9 @@ LOGGING['loggers']['athletes'] = {
 }
 
 
+GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY'),
+
+
 # Security
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True

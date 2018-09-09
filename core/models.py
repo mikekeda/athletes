@@ -3,6 +3,7 @@ import datetime
 import logging
 import requests
 
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -30,6 +31,8 @@ class Team(models.Model):
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())
     additional_info = JSONField(default=dict, blank=True)
+    longitude = models.FloatField(blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -64,12 +67,37 @@ class Team(models.Model):
 
         self.additional_info = info
 
+    def get_location(self):
+        """ Get team location (latitude and longitude). """
+        if self.additional_info:
+            address = self.additional_info.get(
+                'Ground') or self.additional_info.get(
+                'Location') or self.additional_info.get(
+                'Stadium')
+            if address:
+                res = requests.get(
+                    f"https://maps.googleapis.com/maps/api/geocode/json"
+                    f"?address={address}"
+                    f"&key={settings.GEOCODING_API_KEY}"
+                    f"&components=country:{self.location_market}"
+                )
+                if res.status_code == 200:
+                    geo_data = res.json()
+                    if geo_data['results']:
+                        self.longitude = geo_data['results'][0]['geometry'][
+                            'location']['lng']
+                        self.latitude = geo_data['results'][0]['geometry'][
+                            'location']['lat']
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.team:
             # If team isn't set - send request to Wiki to get athlete info.
             self.get_data_from_wiki()
+
+        # Get team location (latitude and longitude).
+        if not self.latitude or not self.longitude:
+            self.get_location()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
