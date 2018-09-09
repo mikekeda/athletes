@@ -15,6 +15,13 @@ def update_data_from_wiki(_, __, queryset):
         obj.save()
 
 
+def update_location(_, __, queryset):
+    """ Update location for selected teams. """
+    for obj in queryset:
+        obj.get_location()
+        obj.save()
+
+
 update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
@@ -39,7 +46,7 @@ class TeamAdmin(ImportExportModelAdmin):
     list_display = ('team',)
     search_fields = ('team',)
     form = TeamForm
-    actions = [update_data_from_wiki]
+    actions = [update_data_from_wiki, update_location]
     inlines = [AthleteInline]
 
 
