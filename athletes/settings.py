@@ -215,7 +215,7 @@ LOGGING['loggers']['athletes'] = {
 }
 
 
-GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY'),
+GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY')
 
 
 # Security

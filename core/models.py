@@ -75,12 +75,13 @@ class Team(models.Model):
                 'Location') or self.additional_info.get(
                 'Stadium')
             if address:
-                res = requests.get(
+                url = (
                     f"https://maps.googleapis.com/maps/api/geocode/json"
                     f"?address={address}"
                     f"&key={settings.GEOCODING_API_KEY}"
                     f"&components=country:{self.location_market}"
                 )
+                res = requests.get(url)
                 if res.status_code == 200:
                     geo_data = res.json()
                     if geo_data['results']:
