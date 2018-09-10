@@ -294,7 +294,7 @@ class ParseTeamView(View):
             else:
                 # Default parsing.
                 # Go through all table rows.
-                for row in table.findAll("tr"):
+                for row in table.find_all("tr"):
                     td = row.find_all(recursive=False)
                     if len(td) > 3:
                         for i in (2, 3):  # try to find players in 2th or 3th

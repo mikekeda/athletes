@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 import datetime
 import logging
 import requests
@@ -57,7 +58,7 @@ class Team(models.Model):
             log.warning(f"Skipping Team {self.wiki} (no person card)")
             return
 
-        for row in card.findAll('tr'):
+        for row in card.find_all('tr'):
             td = row.find_all(recursive=False)
             if len(td) > 1:
                 key = str(td[0].string).replace('\xa0', ' ')
@@ -195,9 +196,11 @@ class Athlete(models.Model):
             return
 
         # Get name.
-        name = card.select(".fn") or soup.findAll("caption")
+        name = card.select(".fn") or soup.find_all("caption")
         if name:
             self.name = name[0].string or name[0].contents[0]
+            if isinstance(self.name, Tag):
+                self.name = self.name.string or self.name.text
         else:
             self.name = soup.title.string.split(' - Wikipedia')[0]
 
@@ -210,7 +213,7 @@ class Athlete(models.Model):
 
         self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
 
-        for row in card.findAll('tr'):
+        for row in card.find_all('tr'):
             td = row.find_all(recursive=False)
             if len(td) > 1:
                 key = str(td[0].string).replace('\xa0', ' ')
