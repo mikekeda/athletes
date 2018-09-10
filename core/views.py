@@ -274,7 +274,8 @@ class ParseTeamView(View):
             form.cleaned_data.pop('wiki', '')
             result = {'skipped': [], 'parsed': []}
 
-            if form.cleaned_data.get('category') == "American Football":
+            if form.cleaned_data.get('category') in ("American Football",
+                                                     "Baseball"):
                 links = table.select("td > ul > li > a")
 
                 for link in links:
@@ -282,8 +283,7 @@ class ParseTeamView(View):
                         link, site, form.cleaned_data
                     )
                     result[['skipped', 'parsed'][status]].append(full_link)
-
-            if form.cleaned_data.get('category') == "Ice Hockey":
+            elif form.cleaned_data.get('category') == "Ice Hockey":
                 links = table.select("tr > td span.vcard a")
 
                 for link in links:
