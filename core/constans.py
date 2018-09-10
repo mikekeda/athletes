@@ -1,17 +1,18 @@
 CATEGORIES = {
-    "Football": "Football",
-    "Rugby": "Rugby",
-    "Athletics": "Athletics",
-    "Cycling": "Cycling",
-    "Swimming": "Swimming",
-    "Gymnastics": "Gymnastics",
-    "Golf": "Golf",
     "American Football": "American Football",
-    "Basketball": "Basketball",
+    "Australian Football": "Australian Football",
+    "Athletics": "Athletics",
     "Baseball": "Baseball",
-    "College Football": "College Football",
+    "Basketball": "Basketball",
     "College Basketball": "College Basketball",
-    "Ice Hockey": "Ice Hockey"
+    "College Football": "College Football",
+    "Cycling": "Cycling",
+    "Football": "Football",
+    "Golf": "Golf",
+    "Gymnastics": "Gymnastics",
+    "Ice Hockey": "Ice Hockey",
+    "Rugby": "Rugby",
+    "Swimming": "Swimming",
 }
 REVERSED_CATEGORIES = {val: key for key, val in CATEGORIES.items()}
 WIKI_CATEGORIES = REVERSED_CATEGORIES.copy()
