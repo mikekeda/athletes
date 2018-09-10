@@ -303,7 +303,9 @@ class ParseTeamView(View):
                     )
                     result[['skipped', 'parsed'][status]].append(full_link)
             elif form.cleaned_data.get('category') == "Rugby":
-                links = table.select("tr > td span.fn a")
+                links = table.select(
+                    "tr > td span.fn a") or table.select(
+                    "tr > td ul > li a")
 
                 for link in links:
                     full_link, status = validate_link_and_create_athlete(
