@@ -262,7 +262,8 @@ class ParseTeamView(View):
                 "#Current_squad[11]") or soup.select(
                 "#Current_players") or soup.select(
                 "#Current_first_team_squad") or soup.select(
-                "#Current_roster_and_Baseball_Hall_of_Fame")
+                "#Current_roster_and_Baseball_Hall_of_Fame") or soup.select(
+                "#Team_roster")
             form.cleaned_data['team'] = soup.title.string.split(
                 ' - Wikipedia')[0]
             table = title[0].parent.find_next_sibling("table")
@@ -286,6 +287,14 @@ class ParseTeamView(View):
                     result[['skipped', 'parsed'][status]].append(full_link)
             elif form.cleaned_data.get('category') == "Ice Hockey":
                 links = table.select("tr > td span.vcard a")
+
+                for link in links:
+                    full_link, status = validate_link_and_create_athlete(
+                        link, site, form.cleaned_data
+                    )
+                    result[['skipped', 'parsed'][status]].append(full_link)
+            elif form.cleaned_data.get('category') == "Cycling":
+                links = table.select("tr > td span a")
 
                 for link in links:
                     full_link, status = validate_link_and_create_athlete(
