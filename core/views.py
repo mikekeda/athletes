@@ -308,8 +308,9 @@ class ParseTeamView(View):
                             if not link:
                                 link = td[i].select_one("span.vcard a")
 
-                            if link and link.string in ("United States",
-                                                        "North Korea"):
+                            if link and link.string in [
+                                "United States", "South Korea", "North Korea"
+                            ] + list(COUNTRIES.values()):
                                 continue  # it's not a athlete
 
                             full_link, status = validate_link_and_create_athlete(
