@@ -309,7 +309,8 @@ class ParseTeamView(View):
                                 link = td[i].select_one("span.vcard a")
 
                             if link and link.string in [
-                                "United States", "South Korea", "North Korea"
+                                "United States", "South Korea", "North Korea",
+                                "Ivory Coast"
                             ] + list(COUNTRIES.values()):
                                 continue  # it's not a athlete
 
