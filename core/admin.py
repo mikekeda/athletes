@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportModelAdmin
 
@@ -6,6 +7,26 @@ from core.models import Athlete, Team
 
 AthleteForm = select2_modelform(Athlete)
 TeamForm = select2_modelform(Team)
+
+
+class DomesticMarketListFilter(admin.SimpleListFilter):
+    """ Filter by emptiness. """
+    title = 'domestic market'
+    parameter_name = 'has_domestic_market'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('not_empty', 'Not empty'),
+            ('empty',  'Empty'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'not_empty':
+            return queryset.filter(domestic_market__isnull=False).exclude(
+                domestic_market='')
+        elif self.value() == 'empty':
+            return queryset.filter(Q(domestic_market__isnull=True) | Q(
+                domestic_market__exact=''))
 
 
 def update_data_from_wiki(_, __, queryset):
@@ -32,17 +53,17 @@ class AthleteInline(admin.TabularInline):
 
 
 class AthleteAdmin(ImportExportModelAdmin):
-    readonly_fields = ('added', 'updated',)
-    list_filter = ('gender', 'category',)
+    readonly_fields = ('added', 'updated')
+    list_filter = ('gender', 'category', DomesticMarketListFilter)
     list_display = ('name',)
     search_fields = ('name',)
     form = AthleteForm
-    actions = [update_data_from_wiki]
+    actions = [update_data_from_wiki, update_location]
 
 
 class TeamAdmin(ImportExportModelAdmin):
-    readonly_fields = ('added', 'updated',)
-    list_filter = ('gender', 'category',)
+    readonly_fields = ('added', 'updated')
+    list_filter = ('gender', 'category')
     list_display = ('team',)
     search_fields = ('team',)
     form = TeamForm

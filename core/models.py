@@ -250,11 +250,47 @@ class Athlete(models.Model):
         self.additional_info = info
         log.debug(info)
 
+    def get_location(self):
+        """ Get athlete domestic_market with geocoding. """
+        log.info(f"Geocoding Athlete {self.name}")
+
+        if not self.additional_info:
+            self.get_data_from_wiki()
+
+        if self.additional_info:
+            address = self.additional_info.get(
+                'Place of birth') or self.additional_info.get(
+                'Born') or self.additional_info.get(
+                'High school') or self.additional_info.get(
+                'College') or self.additional_info.get(
+                'Nationality')
+            if address:
+                url = (
+                    f"https://maps.googleapis.com/maps/api/geocode/json"
+                    f"?address={address}"
+                    f"&key={settings.GEOCODING_API_KEY}"
+                )
+                res = requests.get(url)
+                if res.status_code == 200:
+                    geo_data = res.json()
+                    if geo_data['results']:
+                        for component in geo_data['results'][0][
+                            'address_components']:
+                            if 'country' in component['types'] and \
+                                    component['short_name'] in COUNTRIES:
+                                self.domestic_market = component['short_name']
+                                log.info(f"Found {self.domestic_market}")
+                                return component['short_name']
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.name:
             # If name isn't set - send request to Wiki to get athlete info.
             self.get_data_from_wiki()
+
+        if not self.domestic_market:
+            # Try to geolocate domestic_market.
+            self.get_location()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
