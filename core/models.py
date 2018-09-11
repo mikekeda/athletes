@@ -257,7 +257,7 @@ class Athlete(models.Model):
         if not self.additional_info:
             self.get_data_from_wiki()
 
-        if self.additional_info:
+        if self.additional_info and isinstance(self.additional_info, dict):
             address = self.additional_info.get(
                 'Place of birth') or self.additional_info.get(
                 'Born') or self.additional_info.get(
