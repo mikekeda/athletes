@@ -226,6 +226,11 @@ def about_page(request):
     return render(request, 'about.html')
 
 
+def terms(request):
+    """ Terms of service page. """
+    return render(request, 'terms.html')
+
+
 @method_decorator(staff_member_required, name='dispatch')
 class ParseTeamView(View):
     """ Crawling athletes from team wiki page. """

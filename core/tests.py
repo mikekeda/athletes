@@ -18,6 +18,11 @@ class AthletesViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'about.html')
 
+    def test_views_terms_page(self):
+        resp = self.client.get(reverse('core:terms'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'terms.html')
+
     def test_views_crm_page(self):
         resp = self.client.get(reverse('core:crm'))
         self.assertRedirects(resp, '/login?next=/crm')
