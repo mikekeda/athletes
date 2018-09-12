@@ -4,6 +4,7 @@ import datetime
 import logging
 import requests
 from requests_oauthlib import OAuth1
+import urllib
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -295,10 +296,12 @@ class Athlete(models.Model):
         """ Get info from Twitter. """
         log.info(f"Get info from Twitter for Athlete {self.name}")
 
+        urlencoded_name = urllib.parse.quote_plus(self.name)
+
         url = (
             "https://api.twitter.com/1.1/users/search.json"
             "?count=10"  # max 10
-            f"&q={self.name}"
+            f"&q={urlencoded_name}"
         )
         res = requests.get(url, auth=auth)
         if res.status_code == 200:
