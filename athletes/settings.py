@@ -217,6 +217,11 @@ LOGGING['loggers']['athletes'] = {
 
 GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY')
 
+TWITTER_APP_KEY = get_env_var('TWITTER_APP_KEY')
+TWITTER_APP_SECRET = get_env_var('TWITTER_APP_SECRET')
+TWITTER_OAUTH_TOKEN = get_env_var('TWITTER_OAUTH_TOKEN')
+TWITTER_OAUTH_TOKEN_SECRET = get_env_var('TWITTER_OAUTH_TOKEN_SECRET')
+
 
 # Security
 if not DEBUG:

@@ -43,6 +43,13 @@ def update_location(_, __, queryset):
         obj.save()
 
 
+def update_twitter(_, __, queryset):
+    """ Update twitter followers for selected athletes. """
+    for obj in queryset:
+        obj.get_twitter_info()
+        obj.save()
+
+
 update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
@@ -58,7 +65,7 @@ class AthleteAdmin(ImportExportModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     form = AthleteForm
-    actions = [update_data_from_wiki, update_location]
+    actions = [update_data_from_wiki, update_location, update_twitter]
 
 
 class TeamAdmin(ImportExportModelAdmin):

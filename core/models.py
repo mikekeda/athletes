@@ -3,6 +3,7 @@ from bs4.element import Tag
 import datetime
 import logging
 import requests
+from requests_oauthlib import OAuth1
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -14,6 +15,13 @@ from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
 
 
 log = logging.getLogger('athletes')
+
+auth = OAuth1(
+    settings.TWITTER_APP_KEY,
+    settings.TWITTER_APP_SECRET,
+    settings.TWITTER_OAUTH_TOKEN,
+    settings.TWITTER_OAUTH_TOKEN_SECRET
+)
 
 
 class Team(models.Model):
@@ -162,8 +170,9 @@ class Athlete(models.Model):
         )
     )
     instagram = models.PositiveIntegerField(null=True, blank=True)
-    twiter = models.PositiveIntegerField(null=True, blank=True)
+    twitter = models.PositiveIntegerField(null=True, blank=True)
     additional_info = JSONField(default=dict, blank=True)
+    twitter_info = JSONField(default=list, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -266,7 +275,7 @@ class Athlete(models.Model):
                 'Nationality')
             if address:
                 url = (
-                    f"https://maps.googleapis.com/maps/api/geocode/json"
+                    "https://maps.googleapis.com/maps/api/geocode/json"
                     f"?address={address}"
                     f"&key={settings.GEOCODING_API_KEY}"
                 )
@@ -282,6 +291,21 @@ class Athlete(models.Model):
                                 log.info(f"Found {self.domestic_market}")
                                 return component['short_name']
 
+    def get_twitter_info(self):
+        """ Get info from Twitter. """
+        log.info(f"Get info from Twitter for Athlete {self.name}")
+
+        url = (
+            "https://api.twitter.com/1.1/users/search.json"
+            f"?q={self.name}"
+        )
+        res = requests.get(url, auth=auth)
+        if res.status_code == 200:
+            twitter_info = res.json()
+            if twitter_info:
+                self.twitter = twitter_info[0]['followers_count']
+                self.twitter_info = twitter_info[:10]  # max 10
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.name:
@@ -291,6 +315,10 @@ class Athlete(models.Model):
         if not self.domestic_market:
             # Try to geolocate domestic_market.
             self.get_location()
+
+        if not self.twitter_info:
+            # Try to get amount od followers from twitter.
+            self.get_twitter_info()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)

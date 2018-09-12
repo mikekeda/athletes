@@ -17,7 +17,7 @@ $(document).ready( function () {
             { "data": "optimal_campaign" },
             { "data": "market_export" },
             { "data": "instagram" },
-            { "data": "twiter" },
+            { "data": "twitter" },
         ],
         columnDefs: [
             {

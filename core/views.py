@@ -126,7 +126,7 @@ def athletes_api(request):
     total = Athlete.objects.count()
 
     # Form queryset.
-    qs = Athlete.objects.defer('additional_info')
+    qs = Athlete.objects.defer('additional_info', 'twitter_info')
 
     if filters:
         for field, val in filters.items():
@@ -151,7 +151,7 @@ def athletes_api(request):
 
             model_field = Athlete._meta.get_field(field)
 
-            if field in ('instagram', 'twiter'):
+            if field in ('instagram', 'twitter'):
                 val = val.split('-')
                 qs = qs.filter(
                     **{f'{field}__gte': val[0], f'{field}__lte': val[1]}
