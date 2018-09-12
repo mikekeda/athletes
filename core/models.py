@@ -306,6 +306,10 @@ class Athlete(models.Model):
             if twitter_info:
                 self.twitter = twitter_info[0]['followers_count']
                 self.twitter_info = twitter_info
+            else:
+                log.info(f"No twitter info for Athlete {self.name}")
+        else:
+            log.warning(f"Failed getting twitter info for Athlete {self.name}")
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
