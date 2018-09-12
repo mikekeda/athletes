@@ -297,14 +297,15 @@ class Athlete(models.Model):
 
         url = (
             "https://api.twitter.com/1.1/users/search.json"
-            f"?q={self.name}"
+            "?count=10"  # max 10
+            f"&q={self.name}"
         )
         res = requests.get(url, auth=auth)
         if res.status_code == 200:
             twitter_info = res.json()
             if twitter_info:
                 self.twitter = twitter_info[0]['followers_count']
-                self.twitter_info = twitter_info[:10]  # max 10
+                self.twitter_info = twitter_info
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
