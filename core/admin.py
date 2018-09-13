@@ -12,8 +12,9 @@ TeamForm = select2_modelform(Team)
 
 class DomesticMarketListFilter(admin.SimpleListFilter):
     """ Filter by emptiness. """
-    title = 'domestic market'
-    parameter_name = 'has_domestic_market'
+    _field = 'domestic_market'
+    title = _field.replace('_', ' ')
+    parameter_name = f'has_{_field}'
 
     def lookups(self, request, model_admin):
         return (
@@ -23,11 +24,11 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'not_empty':
-            return queryset.filter(domestic_market__isnull=False).exclude(
-                domestic_market='')
+            return queryset.filter(**{f'{self._field}__isnull': False})\
+                .exclude(**{f'{self._field}': ''})
         elif self.value() == 'empty':
-            return queryset.filter(Q(domestic_market__isnull=True) | Q(
-                domestic_market__exact=''))
+            return queryset.filter(Q(**{f'{self._field}__isnull': True})
+                                   | Q(**{f'{self._field}__exact': ''}))
 
 
 def update_data_from_wiki(_, __, queryset):

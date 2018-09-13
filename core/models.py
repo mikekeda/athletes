@@ -4,7 +4,7 @@ import datetime
 import logging
 import requests
 from requests_oauthlib import OAuth1
-import urllib
+import urllib.parse
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -79,6 +79,8 @@ class Team(models.Model):
 
     def get_location(self):
         """ Get team location (latitude and longitude). """
+        log.info(f"Geocoding Team {self.team}")
+
         if self.additional_info:
             address = self.additional_info.get(
                 'Ground') or self.additional_info.get(
@@ -284,8 +286,8 @@ class Athlete(models.Model):
                 if res.status_code == 200:
                     geo_data = res.json()
                     if geo_data['results']:
-                        for component in geo_data['results'][0][
-                            'address_components']:
+                        for component in \
+                                geo_data['results'][0]['address_components']:
                             if 'country' in component['types'] and \
                                     component['short_name'] in COUNTRIES:
                                 self.domestic_market = component['short_name']

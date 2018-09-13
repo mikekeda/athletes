@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='athletes',
-    version='0.0.2',
+    version='0.0.3',
     packages=find_packages(),
     install_requires=[
         'requests==2.19.1',
@@ -14,10 +14,10 @@ setup(
         'requests_oauthlib==1.0.0',
 
         'django==2.1',
-        'django-widget-tweaks==1.4.2',
-        'django-easy-select2==1.5.3',
+        'django-widget-tweaks==1.4.3',
+        'django-easy-select2==1.5.5',
         'django-import-export',  # Installed from git due the the bug
-        'django-debug-toolbar==1.9.1',
+        'django-debug-toolbar==1.10.1',
         'django-redis==4.9.0',
     ],
     extras_require={
