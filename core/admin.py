@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import Q
+from django.db.utils import DataError
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportModelAdmin
 
@@ -47,7 +48,12 @@ def update_twitter(_, __, queryset):
     """ Update twitter followers for selected athletes. """
     for obj in queryset:
         obj.get_twitter_info()
-        obj.save()
+        try:
+            obj.save()
+        except DataError:
+            # Remove twitter_info and try to save one more time.
+            obj.twitter_info = []
+            super(Athlete, obj).save()
 
 
 update_data_from_wiki.short_description = "Update data from Wikipedia"
