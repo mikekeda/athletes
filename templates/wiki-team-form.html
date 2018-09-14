@@ -10,7 +10,7 @@
     <h1 class="text-center">{% trans "Extract athletes from Team wiki page" %}</h1>
 
     <div class="row mt-6">
-      <form action="{% url 'core:team' %}" method="post" class="col-sm-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2">
+      <form action="{{ action }}" method="post" class="col-sm-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2">
         <div class="">
           {% csrf_token %}
           {% for field in form %}

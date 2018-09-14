@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (crm_page, about_page, login_page, logout_page,
-                    athletes_api, ParseTeamView, terms)
+                    athletes_api, ParseTeamView, ParseTeamsView, terms)
 
 
 app_name = "Athletes"
@@ -11,6 +11,7 @@ urlpatterns = [
     path('crm', crm_page, name='crm'),
     path('terms', terms, name='terms'),
     path('team', ParseTeamView.as_view(), name='team'),
+    path('teams', ParseTeamsView.as_view(), name='teams'),
     path('api/athletes', athletes_api, name='athletes-api'),
     path('login', login_page, name='login'),
     path('logout', logout_page, name='logout'),

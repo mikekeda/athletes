@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import datetime
 import json
 import logging
+from collections import namedtuple
 import requests
 from urllib.parse import urlparse
 
@@ -17,7 +18,7 @@ from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.utils.decorators import method_decorator
 
-from core.forms import TeamForm
+from core.forms import TeamForm, TeamsForm
 from core.models import COUNTRIES, Athlete, Team
 from core.tasks import create_athlete_task
 
@@ -40,6 +41,124 @@ def validate_link_and_create_athlete(link, site, data):
             return full_link, False
 
     return None, False
+
+
+def _parse_team(cleaned_data):
+    wiki_url = cleaned_data.get('wiki', '')
+    log.info(f"parsing team {wiki_url}")
+    site = urlparse(wiki_url)
+    site = f'{site.scheme}://{site.hostname}'
+    html = requests.get(wiki_url)
+    soup = BeautifulSoup(html.content, 'html.parser')
+    title = soup.select(
+        "#Current_squad") or soup.select(
+        "#Current_roster") or soup.select(
+        "#Roster") or soup.select(
+        "#First-team_squad") or soup.select(
+        "#First_team_squad") or soup.select(
+        "#Team_squad") or soup.select(
+        "#Squad") or soup.select(
+        "#Players") or soup.select(
+        "#Current_Squad") or soup.select(
+        "#Current_roster_and_coaching_staff") or soup.select(
+        "#First_Team_Squad") or soup.select(
+        "#Current_squad[11]") or soup.select(
+        "#Current_players") or soup.select(
+        "#Current_first_team_squad") or soup.select(
+        "#Current_roster_and_Baseball_Hall_of_Fame") or soup.select(
+        "#Team_roster") or soup.select(
+        "#Team_roster_2018") or soup.select(
+        "#2018_squad") or soup.select(
+        "#Current_playing_squad") or soup.select(
+        "#Playing_squad") or soup.select(
+        "#Current_playing_list_and_coaches") or soup.select(
+        "#Current_playing_lists")
+    cleaned_data['team'] = soup.title.string.split(
+        ' - Wikipedia')[0]
+    table = title[0].parent.find_next_sibling("table")
+
+    team, _ = Team.objects.get_or_create(**cleaned_data)
+    team.get_data_from_wiki(soup)
+    team.save()
+
+    cleaned_data['team_model'] = team
+    cleaned_data.pop('wiki', '')
+    result = {'skipped': [], 'parsed': []}
+
+    if cleaned_data.get('category') in ("American Football", "Baseball"):
+        links = table.select("td > ul > li > a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Ice Hockey":
+        links = table.select("tr > td span.vcard a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Cycling":
+        links = table.select("tr > td span a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Rugby":
+        links = table.select(
+            "tr > td span.fn > a") or table.select(
+            "tr > td ul > li a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Australian Football":
+        links = table.select("td > ul > li  a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    else:
+        # Default parsing.
+        # Go through all table rows.
+        for row in table.find_all("tr"):
+            td = row.find_all(recursive=False)
+            if len(td) > 3:
+                for i in (2, 3):  # try to find players in 2th or 3th
+                    link = td[i].find("a", recursive=False)
+                    if not link:
+                        # Sometimes a is wrapped with span.
+                        link = td[i].find("span", recursive=False)
+                        if link:
+                            link = link.find("a", recursive=False)
+
+                    if not link:
+                        link = td[i].select_one("span.vcard a")
+
+                    if link and link.string in [
+                        "United States", "South Korea", "North Korea",
+                        "Ivory Coast"
+                    ] + list(COUNTRIES.values()):
+                        continue  # it's not a athlete
+
+                    full_link, status = validate_link_and_create_athlete(
+                        link, site, cleaned_data
+                    )
+                    result[['skipped', 'parsed'][status]].append(
+                        full_link)
+
+    result['skipped'] = [link for link in result['skipped'] if link]
+
+    return result
 
 
 def _serialize_qs(qs):
@@ -239,134 +358,51 @@ class ParseTeamView(View):
     def get(self, request):
         """ Get form. """
         form = TeamForm()
-        return render(request, 'wiki-team-form.html', {'form': form})
+        return render(request, 'wiki-team-form.html',
+                      {'form': form, 'action': reverse('core:team')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
         """ Form submit. """
         form = TeamForm(data=request.POST)
         if form.is_valid():
-            wiki_url = form.cleaned_data.get('wiki', '')
-            log.info(f"parsing team {wiki_url}")
-            site = urlparse(wiki_url)
-            site = f'{site.scheme}://{site.hostname}'
-            html = requests.get(wiki_url)
-            soup = BeautifulSoup(html.content, 'html.parser')
-            title = soup.select(
-                "#Current_squad") or soup.select(
-                "#Current_roster") or soup.select(
-                "#Roster") or soup.select(
-                "#First-team_squad") or soup.select(
-                "#First_team_squad") or soup.select(
-                "#Team_squad") or soup.select(
-                "#Squad") or soup.select(
-                "#Players") or soup.select(
-                "#Current_Squad") or soup.select(
-                "#Current_roster_and_coaching_staff") or soup.select(
-                "#First_Team_Squad") or soup.select(
-                "#Current_squad[11]") or soup.select(
-                "#Current_players") or soup.select(
-                "#Current_first_team_squad") or soup.select(
-                "#Current_roster_and_Baseball_Hall_of_Fame") or soup.select(
-                "#Team_roster") or soup.select(
-                "#Team_roster_2018") or soup.select(
-                "#2018_squad") or soup.select(
-                "#Current_playing_squad") or soup.select(
-                "#Playing_squad") or soup.select(
-                "#Current_playing_list_and_coaches") or soup.select(
-                "#Current_playing_lists")
-            form.cleaned_data['team'] = soup.title.string.split(
-                ' - Wikipedia')[0]
-            table = title[0].parent.find_next_sibling("table")
-
-            team, _ = Team.objects.get_or_create(**form.cleaned_data)
-            team.get_data_from_wiki(soup)
-            team.save()
-
-            form.cleaned_data['team_model'] = team
-            form.cleaned_data.pop('wiki', '')
-            result = {'skipped': [], 'parsed': []}
-
-            if form.cleaned_data.get('category') in ("American Football",
-                                                     "Baseball"):
-                links = table.select("td > ul > li > a")
-
-                for link in links:
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, form.cleaned_data
-                    )
-                    result[['skipped', 'parsed'][status]].append(full_link)
-            elif form.cleaned_data.get('category') == "Ice Hockey":
-                links = table.select("tr > td span.vcard a")
-
-                for link in links:
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, form.cleaned_data
-                    )
-                    result[['skipped', 'parsed'][status]].append(full_link)
-            elif form.cleaned_data.get('category') == "Cycling":
-                links = table.select("tr > td span a")
-
-                for link in links:
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, form.cleaned_data
-                    )
-                    result[['skipped', 'parsed'][status]].append(full_link)
-            elif form.cleaned_data.get('category') == "Rugby":
-                links = table.select(
-                    "tr > td span.fn > a") or table.select(
-                    "tr > td ul > li a")
-
-                for link in links:
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, form.cleaned_data
-                    )
-                    result[['skipped', 'parsed'][status]].append(full_link)
-            elif form.cleaned_data.get('category') == "Australian Football":
-                links = table.select("td > ul > li  a")
-
-                for link in links:
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, form.cleaned_data
-                    )
-                    result[['skipped', 'parsed'][status]].append(full_link)
-            else:
-                # Default parsing.
-                # Go through all table rows.
-                for row in table.find_all("tr"):
-                    td = row.find_all(recursive=False)
-                    if len(td) > 3:
-                        for i in (2, 3):  # try to find players in 2th or 3th
-                            link = td[i].find("a", recursive=False)
-                            if not link:
-                                # Sometimes a is wrapped with span.
-                                link = td[i].find("span", recursive=False)
-                                if link:
-                                    link = link.find("a", recursive=False)
-
-                            if not link:
-                                link = td[i].select_one("span.vcard a")
-
-                            if link and link.string in [
-                                "United States", "South Korea", "North Korea",
-                                "Ivory Coast"
-                            ] + list(COUNTRIES.values()):
-                                continue  # it's not a athlete
-
-                            full_link, status = validate_link_and_create_athlete(
-                                link, site, form.cleaned_data
-                            )
-                            result[['skipped', 'parsed'][status]].append(
-                                full_link)
+            result = _parse_team(form.cleaned_data)
 
             form = TeamForm(initial=form.cleaned_data)
-            result['skipped'] = [link for link in result['skipped'] if link]
 
             return render(request, 'wiki-team-form.html',
                           {'form': form, 'parsed': result['parsed'],
-                           'skipped': result['skipped']})
+                           'skipped': result['skipped'],
+                           'action': reverse('core:team')})
 
-        return render(request, 'wiki-team-form.html', {'form': form})
+        return render(request, 'wiki-team-form.html',
+                      {'form': form, 'action': reverse('core:team')})
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ParseTeamsView(View):
+    """ Crawling athletes from team list wiki page. """
+
+    # noinspection PyMethodMayBeStatic
+    def get(self, request):
+        """ Get form. """
+        form = TeamsForm()
+        return render(request, 'wiki-team-form.html',
+                      {'form': form, 'action': reverse('core:teams')})
+
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        """ Form submit. """
+        form = TeamsForm(data=request.POST)
+        if form.is_valid():
+            for wiki in form.cleaned_data.pop('wiki', '').split():
+                cleaned_data = form.cleaned_data
+                cleaned_data['wiki'] = wiki
+                _parse_team(cleaned_data)
+
+        form = TeamForm(initial=form.cleaned_data)
+        return render(request, 'wiki-team-form.html',
+                      {'form': form, 'action': reverse('core:teams')})
 
 
 def login_page(request):
