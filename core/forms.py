@@ -17,7 +17,7 @@ class TeamForm(forms.ModelForm):
 
 
 class TeamsForm(forms.Form):
-    wiki = forms.CharField(widget=forms.Textarea)
+    wiki = forms.URLField()
     location_market = forms.ChoiceField(
         choices=[('', '---------')] + list(COUNTRIES.items())
     )
