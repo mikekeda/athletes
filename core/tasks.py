@@ -1,16 +1,15 @@
 from bs4 import BeautifulSoup
-from celery import Celery, shared_task
 import logging
 import requests
 from urllib.parse import urlparse
 
 from django.db.utils import IntegrityError
 
+from core.celery import app
 from core.constans import COUNTRIES
 from core.models import Athlete, Team
 
 
-app = Celery('athletes')
 log = logging.getLogger('athletes')
 
 
@@ -52,7 +51,7 @@ def create_athlete_task(wiki, data):
         return False
 
 
-@shared_task
+@app.task
 def parse_team(cleaned_data, skip_errors=False):
     wiki_url = cleaned_data.get('wiki', '')
     log.info(f"parsing team {wiki_url}")
