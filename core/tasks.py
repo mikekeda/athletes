@@ -170,3 +170,9 @@ def parse_team(cleaned_data, skip_errors=False):
     result['skipped'] = [link for link in result['skipped'] if link]
 
     return result
+
+
+@shared_task
+def add_task(x, y):
+    print('in')
+    return x + y

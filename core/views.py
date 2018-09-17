@@ -19,7 +19,7 @@ from django.utils.decorators import method_decorator
 
 from core.forms import TeamForm, TeamsForm
 from core.models import COUNTRIES, Athlete
-from core.tasks import parse_team
+from core.tasks import parse_team, add_task
 
 
 log = logging.getLogger('athletes')
@@ -206,6 +206,7 @@ def crm_page(request):
 
 def about_page(request):
     """ About page. """
+    add_task.delay(1, 2)
     return render(request, 'about.html')
 
 
@@ -273,7 +274,9 @@ class ParseTeamsView(View):
 
                 cleaned_data = form.cleaned_data.copy()
                 cleaned_data['wiki'] = link['href']
-                parse_team.delay(cleaned_data, True)
+                # parse_team.delay(cleaned_data, True)
+                a = add_task.apply_async((1, 2), ignore_result=True)
+                print(a)
 
         form = TeamsForm(initial=form.cleaned_data)
         return render(request, 'wiki-team-form.html',
