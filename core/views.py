@@ -275,6 +275,8 @@ class ParseTeamsView(View):
                 cleaned_data['wiki'] = link['href']
                 parse_team.delay(cleaned_data, True)
 
+        form.cleaned_data.pop('wiki', '')
+        form.cleaned_data.pop('location_market', '')
         form = TeamsForm(initial=form.cleaned_data)
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:teams')})
