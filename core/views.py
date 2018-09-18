@@ -234,10 +234,11 @@ def map_page(request):
     max_total = max(cont.values(), default=1)
     countries = MAP_COUNTRIES.copy()
     for country in countries:
+        country['total'] = cont.get(country['id'], 0)
+
         # Calculate opacity for each country, more athletes - darker.
         # Min opacity = 0.1, max opacity = 1 (for country with max athletes)
-        country['opacity'] = (0.9 * cont.get(country['id'], 0) / max_total
-                              + 0.1)
+        country['opacity'] = 0.9 * country['total'] / max_total + 0.1
 
     return render(request, 'map.html', {'countries': countries})
 

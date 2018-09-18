@@ -69,6 +69,6 @@ $(document).ready( function () {
 
     $('form select').select2();
 
-    // $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' })
+    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' })
 
 });
