@@ -303,6 +303,9 @@ class ParseTeamsView(View):
             links = soup.select(selector)
 
             for link in links:
+                if not link.get('href'):
+                    continue
+
                 if link['href'][:4] != 'http':
                     link['href'] = site + link['href']
 
