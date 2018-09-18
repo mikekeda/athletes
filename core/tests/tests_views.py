@@ -31,6 +31,14 @@ class AthletesViewTest(TestCase):
         resp = self.client.get(reverse('core:crm'))
         self.assertEqual(resp.status_code, 200)
 
+    def test_views_map_page(self):
+        resp = self.client.get(reverse('core:map'))
+        self.assertRedirects(resp, '/login?next=/map')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('core:map'))
+        self.assertEqual(resp.status_code, 200)
+
     def testt_views_athletes_api(self):
         resp = self.client.get(reverse('core:athletes-api'))
         self.assertRedirects(resp, '/login?next=/api/athletes')
@@ -45,6 +53,14 @@ class AthletesViewTest(TestCase):
 
         self.client.login(username='testuser', password='12345')
         resp = self.client.get(reverse('core:team'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_views_teams_page(self):
+        resp = self.client.get(reverse('core:teams'))
+        self.assertRedirects(resp, '/admin/login/?next=/teams')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('core:teams'))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_login_page(self):

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Map" %}{% endblock title %}
+
+{% block content %}
+
+<svg id="map" class="mt-9" version="1.1" viewBox="0 0 1000 700">
+    <g>
+        {% for country in countries %}
+	        <path id="{{ country.id }}" title="{{ country.title }}" fill-opacity="{{ country.opacity }}" data-toggle="tooltip" data-placement="right" d="{{ country.d }}"/>
+        {% endfor %}
+    </g>
+</svg>
+{% endblock content %}

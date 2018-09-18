@@ -11,12 +11,13 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
-from django.db.models import Q, F
+from django.db.models import Q, F, Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.utils.decorators import method_decorator
 
+from core.constans import CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm
 from core.models import COUNTRIES, Athlete
 from core.tasks import parse_team
@@ -207,6 +208,33 @@ def crm_page(request):
 def about_page(request):
     """ About page. """
     return render(request, 'about.html')
+
+
+@login_required
+def map_page(request):
+    """ Map page. """
+    category = request.GET.get('category', '').capitalize()
+
+    if category in CATEGORIES:
+        # Filter by category.
+        qs = Athlete.objects.filter(category=category)
+    else:
+        qs = Athlete.objects.all()
+
+    # Count how many athletes we have for each country.
+    cont = qs.values('location_market').annotate(
+        total=Count('location_market'))
+    cont = {c['location_market']: c['total'] for c in cont}
+
+    max_total = max(cont.values(), default=1)
+    countries = MAP_COUNTRIES.copy()
+    for country in countries:
+        # Calculate opacity for each country, more athletes - darker.
+        # Min opacity = 0.1, max opacity = 1 (for country with max athletes)
+        country['opacity'] = (0.9 * cont.get(country['id'], 0) / max_total
+                              + 0.1)
+
+    return render(request, 'map.html', {'countries': countries})
 
 
 def terms(request):
