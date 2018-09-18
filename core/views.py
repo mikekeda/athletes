@@ -259,13 +259,14 @@ class ParseTeamsView(View):
         """ Form submit. """
         form = TeamsForm(data=request.POST)
         if form.is_valid():
-            wiki_url = form.cleaned_data.get('wiki', '')
+            selector = form.cleaned_data.get('selector')
+            wiki_url = form.cleaned_data.get('wiki')
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
             log.info(f"parsing teams {wiki_url}")
             html = requests.get(wiki_url)
             soup = BeautifulSoup(html.content, 'html.parser')
-            links = soup.select("table tr > td:nth-of-type(1) > a")
+            links = soup.select(selector)
 
             for link in links:
                 if link['href'][:4] != 'http':
@@ -273,11 +274,14 @@ class ParseTeamsView(View):
 
                 cleaned_data = form.cleaned_data.copy()
                 cleaned_data['wiki'] = link['href']
+                cleaned_data.pop('selector', '')
                 parse_team.delay(cleaned_data, True)
 
-        form.cleaned_data.pop('wiki', '')
-        form.cleaned_data.pop('location_market', '')
-        form = TeamsForm(initial=form.cleaned_data)
+            # Clean fields
+            for key in ('wiki', 'location_market'):
+                form.cleaned_data.pop(key, '')
+            form = TeamsForm(initial=form.cleaned_data)
+
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:teams')})
 

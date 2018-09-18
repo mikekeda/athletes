@@ -1,7 +1,21 @@
+from bs4 import BeautifulSoup
+
 from django import forms
+from django.core.exceptions import ValidationError
 
 from core.constans import COUNTRIES, CATEGORIES
 from core.models import Team
+
+
+def validate_selector(selector: str):
+    soup = BeautifulSoup('', 'html.parser')
+    try:
+        soup.select(selector)
+        return
+    except ValueError:
+        pass
+
+    raise ValidationError('Not valid selector')
 
 
 class TeamForm(forms.ModelForm):
@@ -27,4 +41,8 @@ class TeamsForm(forms.Form):
     )
     category = forms.ChoiceField(
         choices=[('', '---------')] + list(CATEGORIES.items())
+    )
+    selector = forms.CharField(
+        initial="table tr > td:nth-of-type(1) > a",
+        validators=[validate_selector],
     )
