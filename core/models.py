@@ -297,6 +297,8 @@ class Athlete(models.Model):
     def get_twitter_info(self):
         """ Get info from Twitter. """
         log.info(f"Get info from Twitter for Athlete {self.name}")
+        self.twitter = 0
+        self.twitter_info = []
 
         urlencoded_name = urllib.parse.quote_plus(self.name)
 
