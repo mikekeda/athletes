@@ -213,7 +213,7 @@ def about_page(request):
 @login_required
 def map_page(request):
     """ Map page. """
-    category = request.GET.get('category', '').capitalize()
+    category = request.GET.get('category', '').title()
 
     if category in CATEGORIES:
         # Filter by category.
