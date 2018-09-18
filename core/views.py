@@ -92,8 +92,13 @@ def _process_datatables_params(querydict: dict) -> tuple:
     while f'order[{cnt}][column]' in querydict:
         sortcol = int(querydict.get(f'order[{cnt}][column]'))
         sort_dir = querydict.get(f'order[{cnt}][dir]')
-        sort_key = '-' if sort_dir == 'desc' else ''
-        order.append(sort_key + col_data[sortcol]['data'])
+
+        if col_data[sortcol]['data'] == 'age':
+            sort_key = '' if sort_dir == 'desc' else '-'
+            order.append(sort_key + 'birthday')
+        else:
+            sort_key = '-' if sort_dir == 'desc' else ''
+            order.append(sort_key + col_data[sortcol]['data'])
 
         cnt += 1
 
