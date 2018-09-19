@@ -126,7 +126,7 @@ class Athlete(models.Model):
     name = models.CharField(max_length=255, blank=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
-        max_length=400
+        max_length=600
     )
     domestic_market = models.CharField(
         max_length=2,
@@ -194,6 +194,10 @@ class Athlete(models.Model):
     @property
     def market_export(self):
         return self.domestic_market != self.location_market
+
+    @property
+    def slug(self):
+        return self.wiki.split('/')[-1]
 
     def photo_preview(self):
         return format_html('<img src="{}"/>', self.photo)
