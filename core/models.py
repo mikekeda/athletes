@@ -123,6 +123,9 @@ class Athlete(models.Model):
     """ Athlete model. """
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True)
+    photo = models.URLField(
+        default='https://cdn.mkeda.me/athletes/img/no-avatar.png'
+    )
     domestic_market = models.CharField(
         max_length=2,
         blank=True,
@@ -172,6 +175,7 @@ class Athlete(models.Model):
             (12, _("December"))
         )
     )
+    international = models.BooleanField(default=False)
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twitter = models.PositiveIntegerField(null=True, blank=True)
     additional_info = JSONField(default=dict, blank=True)
