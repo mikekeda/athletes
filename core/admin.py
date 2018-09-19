@@ -67,7 +67,7 @@ class AthleteInline(admin.TabularInline):
 
 
 class AthleteAdmin(ImportExportModelAdmin):
-    readonly_fields = ('added', 'updated')
+    readonly_fields = ('photo_preview', 'added', 'updated')
     list_filter = ('gender', 'category', DomesticMarketListFilter)
     list_display = ('name',)
     search_fields = ('name',)

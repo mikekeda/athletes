@@ -9,6 +9,7 @@ import urllib.parse
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
@@ -124,7 +125,8 @@ class Athlete(models.Model):
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True)
     photo = models.URLField(
-        default='https://cdn.mkeda.me/athletes/img/no-avatar.png'
+        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        max_length=400
     )
     domestic_market = models.CharField(
         max_length=2,
@@ -193,6 +195,9 @@ class Athlete(models.Model):
     def market_export(self):
         return self.domestic_market != self.location_market
 
+    def photo_preview(self):
+        return format_html('<img src="{}"/>', self.photo)
+
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
         log.info(f"Parsing Athlete {self.wiki}")
@@ -228,10 +233,22 @@ class Athlete(models.Model):
             return
 
         self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
+        self.international = False
+
+        img = card.select_one('img')
+        if img and img.get('src'):
+            self.photo = 'https://' + img['src'].strip('//')
 
         for row in card.find_all('tr'):
             td = row.find_all(recursive=False)
-            if len(td) > 1:
+            if len(td) > 0:
+                key = str(td[0].string or td[0].text).replace('\xa0', ' ')
+                val = str(td[1].text).strip() if len(td) > 1 else ''
+
+                self.international |= 'national team' in key.lower()
+                info[key] = val
+
+            if val:
                 key = str(td[0].string).replace('\xa0', ' ')
                 val = str(td[1].text).strip()
 
@@ -260,8 +277,6 @@ class Athlete(models.Model):
                     country = val.split(',')[-1].strip()
                     if country in WIKI_COUNTRIES:
                         self.domestic_market = WIKI_COUNTRIES[country]
-
-                info[key] = val
 
         self.additional_info = info
         log.debug(info)
