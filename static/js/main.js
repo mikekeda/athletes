@@ -22,6 +22,12 @@ $(document).ready( function () {
         columnDefs: [
             {
                 "render": function ( data, type, row ) {
+                    return '<a href="/athlete/' + row.slug + '">' + data + '</a>';
+                },
+                "targets": 0
+            },
+            {
+                "render": function ( data, type, row ) {
                     return '<i class="material-icons dp48 tiny text-warning">star</i>'.repeat(parseInt(data));
                 },
                 "targets": 7

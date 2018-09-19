@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}About us{% endblock %}
+
+{% block content %}
+    <div class="container mt-9">
+        <div class="col-sm-4 float-left">{{ athlete.photo_preview }}</div>
+        <div class="col-sm-8 float-right">
+            <h1>{{ athlete.name }}</h1>
+            <p>Category: {{ athlete.category }}</p>
+            <p>Gander: {{ athlete.gender }}</p>
+            <p>Date of Birth (Age): {{ athlete.birthday }} ({{ athlete.age }})</p>
+            <p>Place of Birth: {{ athlete.domestic_market }}</p>
+            <p>Team: {{ athlete.team }}</p>
+            <p>Location: {{ athlete.location_market }}</p>
+            <p>Twitter followers: {{ athlete.twitter }}</p>
+            <p>International: {{ athlete.international }}</p>
+        </div>
+    </div>
+{% endblock %}

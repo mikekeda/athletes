@@ -13,7 +13,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
 from django.db.models import Q, F, Count
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
 
@@ -30,7 +30,8 @@ def _serialize_qs(qs):
     props = {}  # serialize removes properties, so we need to add them again
 
     for obj in qs:
-        props[obj.id] = {'age': obj.age, 'market_export': obj.market_export}
+        props[obj.id] = {'age': obj.age, 'market_export': obj.market_export,
+                         'slug': obj.slug}
 
         for field in Athlete._meta.get_fields():
             try:
@@ -321,6 +322,13 @@ class ParseTeamsView(View):
 
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:teams')})
+
+
+def athlete_page(request, slug):
+    """ Athlete page. """
+    athlete = get_object_or_404(Athlete, wiki__endswith=slug)
+
+    return render(request, 'profile.html', {'athlete': athlete})
 
 
 def login_page(request):
