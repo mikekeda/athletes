@@ -285,6 +285,8 @@ class Athlete(models.Model):
         self.additional_info = info
         log.debug(info)
 
+        return self.additional_info
+
     def get_location(self):
         """ Get athlete domestic_market with geocoding. """
         log.info(f"Geocoding Athlete {self.name}")
@@ -340,6 +342,8 @@ class Athlete(models.Model):
         else:
             log.warning(f"Failed getting twitter info for Athlete {self.name}")
 
+        return self.twitter_info
+
     def get_youtube_info(self):
         """ Get info from Youtube. """
         log.info(f"Get info from Youtube for Athlete {self.name}")
@@ -365,6 +369,8 @@ class Athlete(models.Model):
                 log.info(f"No youtube info for Athlete {self.name}")
         else:
             log.warning(f"Failed getting youtube info for Athlete {self.name}")
+
+        return self.youtube_info
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Q
 from django.db.utils import DataError
 from easy_select2 import select2_modelform
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportActionModelAdmin
 
 from core.models import Athlete, Team
 
@@ -66,7 +66,7 @@ class AthleteInline(admin.TabularInline):
     extra = 1
 
 
-class AthleteAdmin(ImportExportModelAdmin):
+class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     readonly_fields = ('photo_preview', 'added', 'updated')
     list_filter = ('gender', 'category', DomesticMarketListFilter)
     list_display = ('name',)
@@ -75,7 +75,7 @@ class AthleteAdmin(ImportExportModelAdmin):
     actions = [update_data_from_wiki, update_location, update_twitter]
 
 
-class TeamAdmin(ImportExportModelAdmin):
+class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     readonly_fields = ('added', 'updated')
     list_filter = ('gender', 'category')
     list_display = ('team',)
