@@ -29,6 +29,10 @@ auth = OAuth1(
 class Team(models.Model):
     wiki = models.URLField(unique=True)
     team = models.CharField(max_length=255, blank=True)
+    photo = models.URLField(
+        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        max_length=600
+    )
     location_market = models.CharField(
         max_length=2,
         blank=True,
@@ -46,6 +50,9 @@ class Team(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def photo_preview(self):
+        return format_html('<img src="{}"/>', self.photo)
 
     def get_data_from_wiki(self, soup=None):
         """ Get information about team from Wiki. """
@@ -68,15 +75,21 @@ class Team(models.Model):
             log.warning(f"Skipping Team {self.wiki} (no person card)")
             return
 
+        img = card.select_one('img')
+        if img and img.get('src'):
+            self.photo = 'https://' + img['src'].strip('//')
+
         for row in card.find_all('tr'):
             td = row.find_all(recursive=False)
-            if len(td) > 1:
-                key = str(td[0].string).replace('\xa0', ' ')
-                val = str(td[1].text).strip()
+            if td:
+                key = str(td[0].string or td[0].text).replace('\xa0', ' ')
+                val = str(td[1].text).strip() if len(td) > 1 else ''
 
                 info[key] = val
 
         self.additional_info = info
+
+        return self.additional_info
 
     def get_location(self):
         """ Get team location (latitude and longitude). """

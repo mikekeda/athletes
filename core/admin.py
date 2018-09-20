@@ -76,7 +76,7 @@ class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
 
 class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('added', 'updated')
+    readonly_fields = ('photo_preview', 'added', 'updated')
     list_filter = ('gender', 'category')
     list_display = ('team',)
     search_fields = ('team',)
