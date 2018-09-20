@@ -340,6 +340,32 @@ class Athlete(models.Model):
         else:
             log.warning(f"Failed getting twitter info for Athlete {self.name}")
 
+    def get_youtube_info(self):
+        """ Get info from Youtube. """
+        log.info(f"Get info from Youtube for Athlete {self.name}")
+        self.youtube_info = []
+
+        urlencoded_name = urllib.parse.quote_plus(self.name)
+
+        url = (
+            "https://www.googleapis.com/youtube/v3/search"
+            "?maxResults=10"  # max 10
+            "&type=channel"
+            "&part=snippet"
+            f"&regionCode={self.location_market}"
+            f"&key={settings.GEOCODING_API_KEY}"
+            f"&q={urlencoded_name}"
+        )
+        res = requests.get(url)
+        if res.status_code == 200:
+            youtube_info = res.json()
+            if youtube_info:
+                pass
+            else:
+                log.info(f"No youtube info for Athlete {self.name}")
+        else:
+            log.warning(f"Failed getting youtube info for Athlete {self.name}")
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.name:
