@@ -182,6 +182,7 @@ class Athlete(models.Model):
     twitter = models.PositiveIntegerField(null=True, blank=True)
     additional_info = JSONField(default=dict, blank=True)
     twitter_info = JSONField(default=dict, blank=True)
+    youtube_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -252,7 +253,7 @@ class Athlete(models.Model):
                 self.international |= 'national team' in key.lower()
                 info[key] = val
 
-            if val:
+            if len(td) > 1:
                 key = str(td[0].string).replace('\xa0', ' ')
                 val = str(td[1].text).strip()
 
@@ -347,7 +348,7 @@ class Athlete(models.Model):
     def get_youtube_info(self):
         """ Get info from Youtube. """
         log.info(f"Get info from Youtube for Athlete {self.name}")
-        self.youtube_info = []
+        self.youtube_info = {}
 
         urlencoded_name = urllib.parse.quote_plus(self.name)
 
@@ -363,8 +364,22 @@ class Athlete(models.Model):
         res = requests.get(url)
         if res.status_code == 200:
             youtube_info = res.json()
-            if youtube_info:
-                pass
+            if youtube_info and youtube_info['items']:
+                channel_id = youtube_info['items'][0]['id']['channelId']
+                url = (
+                    "https://www.googleapis.com/youtube/v3/channels"
+                    f"?id={channel_id}"
+                    "&part=snippet,statistics"
+                    f"&key={settings.GEOCODING_API_KEY}"
+                )
+                res = requests.get(url)
+                if res.status_code == 200:
+                    youtube_info = res.json()
+                    if youtube_info and youtube_info['items']:
+                        self.youtube_info = youtube_info['items'][0][
+                            'statistics']
+                        self.youtube_info.update(youtube_info['items'][0][
+                                                     'snippet'])
             else:
                 log.info(f"No youtube info for Athlete {self.name}")
         else:
@@ -385,6 +400,10 @@ class Athlete(models.Model):
         if not self.twitter_info:
             # Try to get amount od followers from twitter.
             self.get_twitter_info()
+
+        if not self.get_youtube_info:
+            # Try to get youtube info.
+            self.get_youtube_info()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)

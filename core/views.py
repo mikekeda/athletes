@@ -116,7 +116,8 @@ def athletes_api(request):
     total = Athlete.objects.count()
 
     # Form queryset.
-    qs = Athlete.objects.defer('additional_info', 'twitter_info')
+    qs = Athlete.objects.defer('additional_info', 'twitter_info',
+                               'youtube_info')
 
     if filters:
         for field, val in filters.items():
