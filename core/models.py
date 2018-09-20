@@ -181,7 +181,7 @@ class Athlete(models.Model):
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twitter = models.PositiveIntegerField(null=True, blank=True)
     additional_info = JSONField(default=dict, blank=True)
-    twitter_info = JSONField(default=list, blank=True)
+    twitter_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -328,15 +328,15 @@ class Athlete(models.Model):
 
         url = (
             "https://api.twitter.com/1.1/users/search.json"
-            "?count=10"  # max 10
-            f"&q={urlencoded_name}"
+            "?count=1"  # we need only 1
+            f"&q={urlencoded_name} {self.category}"
         )
         res = requests.get(url, auth=auth)
         if res.status_code == 200:
             twitter_info = res.json()
             if twitter_info:
                 self.twitter = twitter_info[0]['followers_count']
-                self.twitter_info = twitter_info
+                self.twitter_info = twitter_info[0]
             else:
                 log.info(f"No twitter info for Athlete {self.name}")
         else:
@@ -353,7 +353,7 @@ class Athlete(models.Model):
 
         url = (
             "https://www.googleapis.com/youtube/v3/search"
-            "?maxResults=10"  # max 10
+            "?maxResults=1"  # we need only 1
             "&type=channel"
             "&part=snippet"
             f"&regionCode={self.location_market}"

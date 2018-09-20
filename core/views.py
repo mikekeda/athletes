@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import requests
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote_plus
 
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -326,6 +326,7 @@ class ParseTeamsView(View):
 
 def athlete_page(request, slug):
     """ Athlete page. """
+    slug = quote_plus(slug)
     athlete = get_object_or_404(Athlete, wiki__endswith=slug)
 
     return render(request, 'profile.html', {'athlete': athlete})
