@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("Started Twitter import")
 
-        aids = list(Athlete.objects.filter(twitter_info=[]).values_list(
+        aids = list(Athlete.objects.filter(twitter_info={}).values_list(
             'id',flat=True))
 
         self.stdout.write(f"{len(aids)} athletes to update")
@@ -30,7 +30,7 @@ class Command(BaseCommand):
             except DataError as e:
                 # Remove twitter_info and try to save one more time.
                 log.warning(f"{athlete.name} {repr(e)}")
-                athlete.twitter_info = []
+                athlete.twitter_info = {}
                 super(Athlete, athlete).save()
 
             time.sleep(1)  # we have a limit (900 requests per 15m)

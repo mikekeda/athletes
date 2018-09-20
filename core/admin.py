@@ -53,7 +53,7 @@ def update_twitter(_, __, queryset):
             obj.save()
         except DataError:
             # Remove twitter_info and try to save one more time.
-            obj.twitter_info = []
+            obj.twitter_info = {}
             super(Athlete, obj).save()
 
 
