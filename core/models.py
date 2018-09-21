@@ -396,7 +396,6 @@ class Athlete(models.Model, ModelMixin):
                         self.domestic_market = WIKI_COUNTRIES[country]
 
         self.additional_info = info
-        log.debug(info)
 
         return self.additional_info
 
