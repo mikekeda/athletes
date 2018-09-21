@@ -28,7 +28,10 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
-                    return '<a href="/team/' + row.team_model + '">' + data + '</a>';
+                    if (row.team_model) {
+                        return '<a href="/team/' + row.team_model + '">' + data + '</a>';
+                    }
+                    return data;
                 },
                 "targets": 5
             },
