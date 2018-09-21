@@ -251,6 +251,10 @@ class Athlete(models.Model):
             return
 
         self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
+        if self.age > 45:
+            log.warning(f"Skipping Athlete {self.wiki} (too old)")
+            return
+
         self.international = False
 
         img = card.select_one('img')

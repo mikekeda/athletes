@@ -25,6 +25,10 @@
   height: 34px !important;
 }
 
+.icon {
+  width: 32px;
+}
+
 #map {
     display: block;
     margin: 0 auto;

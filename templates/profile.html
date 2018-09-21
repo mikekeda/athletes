@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% load static from staticfiles %}
+{% load core_tags %}
+
 {% block title %}{{ athlete.name }}{% endblock %}
 
 {% block content %}
@@ -15,6 +18,17 @@
                 <p>Location: {{ athlete.location_market }}</p>
                 <p>Twitter followers: {{ athlete.twitter }}</p>
                 <p>International: {{ athlete.international }}</p>
+                <div>
+                    {% if athlete.twitter_info %}
+                        <a href="https://twitter.com/{{ athlete.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
+                        <span class="badge">{{ athlete.twitter_info|get_item:'followers_count' }}</span>
+                    {% endif %}
+                    {% if athlete.youtube_info %}
+                        <a href="https://www.youtube.com/user/{{ athlete.youtube_info|get_item:"customUrl" }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
+                        <span class="badge">{{ athlete.youtube_info|get_item:'subscriberCount' }}</span>
+                    {% endif %}
+                    <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
+                </div>
             </div>
         </div>
     </div>
