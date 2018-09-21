@@ -24,7 +24,7 @@
                         <span class="badge">{{ athlete.twitter_info|get_item:'followers_count' }}</span>
                     {% endif %}
                     {% if athlete.youtube_info %}
-                        <a href="https://www.youtube.com/user/{{ athlete.youtube_info|get_item:"customUrl" }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
+                        <a href="https://www.youtube.com/user/{{ athlete.youtube_info|get_item:"channelId" }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
                         <span class="badge">{{ athlete.youtube_info|get_item:'subscriberCount' }}</span>
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->

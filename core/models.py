@@ -95,6 +95,9 @@ class ModelMixin:
             youtube_info = res.json()
             if youtube_info and youtube_info['items']:
                 channel_id = youtube_info['items'][0]['id']['channelId']
+
+                self.youtube_info.update({'channelId': channel_id})
+
                 url = (
                     "https://www.googleapis.com/youtube/v3/channels"
                     "?part=snippet,statistics"
@@ -105,8 +108,8 @@ class ModelMixin:
                 if res.status_code == 200:
                     youtube_info = res.json()
                     if youtube_info and youtube_info['items']:
-                        self.youtube_info = youtube_info['items'][0][
-                            'statistics']
+                        self.youtube_info.update(youtube_info['items'][0][
+                                                     'statistics'])
                         self.youtube_info.update(youtube_info['items'][0][
                                                      'snippet'])
             else:
