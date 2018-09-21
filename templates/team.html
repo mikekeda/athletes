@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
+{% load core_tags %}
+
+{% block title %}{{ team.name }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-9">
+        <div class="row">
+            <div class="col-sm-4 float-left">{{ team.photo_preview }}</div>
+            <div class="col-sm-8 float-right">
+                <h1>{{ team.name }}</h1>
+                <p>Category: {{ team.category }}</p>
+                <p>Gander: {{ team.gender }}</p>
+                <p>Location: {{ team.location_market }}</p>
+                <div>
+                    {% if team.twitter_info %}
+                        <a href="https://twitter.com/{{ team.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
+                        <span class="badge">{{ team.twitter_info|get_item:'followers_count' }}</span>
+                    {% endif %}
+                    {% if team.youtube_info %}
+                        <a href="https://www.youtube.com/channel/{{ team.youtube_info|get_item:"channelId" }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
+                        <span class="badge">{{ team.youtube_info|get_item:'subscriberCount' }}</span>
+                    {% endif %}
+                    <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

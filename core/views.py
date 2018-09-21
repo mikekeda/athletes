@@ -17,9 +17,9 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
 
-from core.constans import CATEGORIES, MAP_COUNTRIES
+from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm
-from core.models import COUNTRIES, Athlete
+from core.models import Athlete, Team
 from core.tasks import parse_team
 
 
@@ -331,6 +331,13 @@ def athlete_page(request, slug):
     athlete = get_object_or_404(Athlete, wiki__endswith=slug)
 
     return render(request, 'profile.html', {'athlete': athlete})
+
+
+def team_page(request, pk):
+    """ Team page. """
+    team = get_object_or_404(Team, pk=pk)
+
+    return render(request, 'team.html', {'team': team})
 
 
 def login_page(request):

@@ -28,6 +28,12 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
+                    return '<a href="/team/' + row.team_model + '">' + data + '</a>';
+                },
+                "targets": 5
+            },
+            {
+                "render": function ( data, type, row ) {
                     return '<i class="material-icons dp48 tiny text-warning">star</i>'.repeat(parseInt(data));
                 },
                 "targets": 7
