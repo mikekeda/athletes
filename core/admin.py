@@ -38,6 +38,9 @@ def update_data_from_wiki(_, __, queryset):
         obj.save()
 
 
+update_data_from_wiki.short_description = "Update data from Wikipedia"
+
+
 def update_location(_, __, queryset):
     """ Update location for selected teams. """
     for obj in queryset:
@@ -45,7 +48,7 @@ def update_location(_, __, queryset):
         obj.save()
 
 
-def update_twitter(_, __, queryset):
+def update_twitter_info(_, __, queryset):
     """ Update twitter followers for selected athletes. """
     for obj in queryset:
         obj.get_twitter_info()
@@ -57,7 +60,16 @@ def update_twitter(_, __, queryset):
             super(Athlete, obj).save()
 
 
-update_data_from_wiki.short_description = "Update data from Wikipedia"
+def update_youtube_info(_, __, queryset):
+    """ Update youtube info. """
+    for obj in queryset:
+        obj.get_youtube_info()
+        try:
+            obj.save()
+        except DataError:
+            # Remove youtube_info and try to save one more time.
+            obj.youtube_info = {}
+            super(Athlete, obj).save()
 
 
 class AthleteInline(admin.TabularInline):
@@ -72,16 +84,18 @@ class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     form = AthleteForm
-    actions = [update_data_from_wiki, update_location, update_twitter]
+    actions = [update_data_from_wiki, update_location, update_twitter_info,
+               update_youtube_info]
 
 
 class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     readonly_fields = ('photo_preview', 'added', 'updated')
     list_filter = ('gender', 'category')
-    list_display = ('team',)
-    search_fields = ('team',)
+    list_display = ('name',)
+    search_fields = ('name',)
     form = TeamForm
-    actions = [update_data_from_wiki, update_location]
+    actions = [update_data_from_wiki, update_location, update_twitter_info,
+               update_youtube_info]
     inlines = [AthleteInline]
 
 

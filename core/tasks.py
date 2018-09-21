@@ -84,13 +84,14 @@ def parse_team(cleaned_data, skip_errors=False):
         "#Current_playing_lists")
     if skip_errors and not title:
         return
-    cleaned_data['team'] = soup.title.string.split(' - Wikipedia')[0]
+    cleaned_data['name'] = soup.title.string.split(' - Wikipedia')[0]
     table = title[0].parent.find_next_sibling("table")
 
     team, _ = Team.objects.get_or_create(**cleaned_data)
     team.get_data_from_wiki(soup)
     team.save()
 
+    cleaned_data['team'] = cleaned_data.pop('name', '')
     cleaned_data['team_model'] = team
     cleaned_data.pop('wiki', '')
     result = {'skipped': [], 'parsed': []}

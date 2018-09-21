@@ -27,7 +27,8 @@ class TeamForm(forms.ModelForm):
 
     class Meta:
         model = Team
-        exclude = ('team', 'longitude', 'latitude', 'additional_info')
+        exclude = ('name', 'longitude', 'latitude', 'photo',
+                   'additional_info', 'twitter_info', 'youtube_info')
 
 
 class TeamsForm(forms.Form):

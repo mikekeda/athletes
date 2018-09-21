@@ -26,9 +26,101 @@ auth = OAuth1(
 )
 
 
-class Team(models.Model):
+class ModelMixin:
+    """ Mixin class that has common methods. """
+    wiki = None
+    name = None
+    category = None
+    location_market = None
+    photo = None
+    twitter = None
+    twitter_info = {}
+    youtube_info = {}
+
+    @property
+    def slug(self):
+        return self.wiki.split('/')[-1]
+
+    def photo_preview(self):
+        return format_html('<img src="{}"/>', self.photo)
+
+    def get_twitter_info(self):
+        """ Get info from Twitter. """
+        model = self.__class__.__name__
+
+        log.info(f"Get info from Twitter for {model} {self.name}")
+        self.twitter_info = {}
+
+        urlencoded_name = urllib.parse.quote_plus(self.name)
+
+        url = (
+            "https://api.twitter.com/1.1/users/search.json"
+            "?count=1"  # we need only 1
+            f"&q={urlencoded_name} {self.category}"
+        )
+        res = requests.get(url, auth=auth)
+        if res.status_code == 200:
+            twitter_info = res.json()
+            if twitter_info:
+                self.twitter = twitter_info[0]['followers_count']
+                self.twitter_info = twitter_info[0]
+            else:
+                log.info(f"No twitter info for {model} {self.name}")
+        else:
+            log.warning(f"Failed getting twitter info for {model} {self.name} "
+                        f"({res.status_code})")
+
+        return self.twitter_info
+
+    def get_youtube_info(self):
+        """ Get info from Youtube. """
+        model = self.__class__.__name__
+
+        log.info(f"Get info from Youtube for {model} {self.name}")
+        self.youtube_info = {}
+
+        urlencoded_name = urllib.parse.quote_plus(self.name)
+
+        url = (
+            "https://www.googleapis.com/youtube/v3/search"
+            "?maxResults=1"  # we need only 1
+            "&type=channel"
+            "&part=snippet"
+            f"&regionCode={self.location_market}"
+            f"&key={settings.GEOCODING_API_KEY}"
+            f"&q={urlencoded_name}"
+        )
+        res = requests.get(url)
+        if res.status_code == 200:
+            youtube_info = res.json()
+            if youtube_info and youtube_info['items']:
+                channel_id = youtube_info['items'][0]['id']['channelId']
+                url = (
+                    "https://www.googleapis.com/youtube/v3/channels"
+                    "?part=snippet,statistics"
+                    f"&key={settings.GEOCODING_API_KEY}"
+                    f"&id={channel_id}"
+                )
+                res = requests.get(url)
+                if res.status_code == 200:
+                    youtube_info = res.json()
+                    if youtube_info and youtube_info['items']:
+                        self.youtube_info = youtube_info['items'][0][
+                            'statistics']
+                        self.youtube_info.update(youtube_info['items'][0][
+                                                     'snippet'])
+            else:
+                log.info(f"No youtube info for {model} {self.name}")
+        else:
+            log.warning(f"Failed getting youtube info for {model} {self.name} "
+                        f"({res.status_code})")
+
+        return self.youtube_info
+
+
+class Team(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
-    team = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
         max_length=600
@@ -45,14 +137,13 @@ class Team(models.Model):
     )
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())
-    additional_info = JSONField(default=dict, blank=True)
     longitude = models.FloatField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
+    additional_info = JSONField(default=dict, blank=True)
+    twitter_info = JSONField(default=dict, blank=True)
+    youtube_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
-    def photo_preview(self):
-        return format_html('<img src="{}"/>', self.photo)
 
     def get_data_from_wiki(self, soup=None):
         """ Get information about team from Wiki. """
@@ -93,7 +184,7 @@ class Team(models.Model):
 
     def get_location(self):
         """ Get team location (latitude and longitude). """
-        log.info(f"Geocoding Team {self.team}")
+        log.info(f"Geocoding Team {self.name}")
 
         if self.additional_info:
             address = self.additional_info.get(
@@ -118,22 +209,30 @@ class Team(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        if not self.team:
-            # If team isn't set - send request to Wiki to get athlete info.
+        if not self.name:
+            # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
 
         # Get team location (latitude and longitude).
         if not self.latitude or not self.longitude:
             self.get_location()
 
+        if not self.twitter_info:
+            # Try to get twitter info.
+            self.get_twitter_info()
+
+        if not self.youtube_info:
+            # Try to get youtube info.
+            self.get_youtube_info()
+
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
 
     def __str__(self):
-        return self.team
+        return self.name
 
 
-class Athlete(models.Model):
+class Athlete(models.Model, ModelMixin):
     """ Athlete model. """
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True)
@@ -208,13 +307,6 @@ class Athlete(models.Model):
     @property
     def market_export(self):
         return self.domestic_market != self.location_market
-
-    @property
-    def slug(self):
-        return self.wiki.split('/')[-1]
-
-    def photo_preview(self):
-        return format_html('<img src="{}"/>', self.photo)
 
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
@@ -337,77 +429,10 @@ class Athlete(models.Model):
                                 log.info(f"Found {self.domestic_market}")
                                 return component['short_name']
 
-    def get_twitter_info(self):
-        """ Get info from Twitter. """
-        log.info(f"Get info from Twitter for Athlete {self.name}")
-        self.twitter_info = {}
-
-        urlencoded_name = urllib.parse.quote_plus(self.name)
-
-        url = (
-            "https://api.twitter.com/1.1/users/search.json"
-            "?count=1"  # we need only 1
-            f"&q={urlencoded_name} {self.category}"
-        )
-        res = requests.get(url, auth=auth)
-        if res.status_code == 200:
-            twitter_info = res.json()
-            if twitter_info:
-                self.twitter = twitter_info[0]['followers_count']
-                self.twitter_info = twitter_info[0]
-            else:
-                log.info(f"No twitter info for Athlete {self.name}")
-        else:
-            log.warning(f"Failed getting twitter info for Athlete {self.name}")
-
-        return self.twitter_info
-
-    def get_youtube_info(self):
-        """ Get info from Youtube. """
-        log.info(f"Get info from Youtube for Athlete {self.name}")
-        self.youtube_info = {}
-
-        urlencoded_name = urllib.parse.quote_plus(self.name)
-
-        url = (
-            "https://www.googleapis.com/youtube/v3/search"
-            "?maxResults=1"  # we need only 1
-            "&type=channel"
-            "&part=snippet"
-            f"&regionCode={self.location_market}"
-            f"&key={settings.GEOCODING_API_KEY}"
-            f"&q={urlencoded_name}"
-        )
-        res = requests.get(url)
-        if res.status_code == 200:
-            youtube_info = res.json()
-            if youtube_info and youtube_info['items']:
-                channel_id = youtube_info['items'][0]['id']['channelId']
-                url = (
-                    "https://www.googleapis.com/youtube/v3/channels"
-                    f"?id={channel_id}"
-                    "&part=snippet,statistics"
-                    f"&key={settings.GEOCODING_API_KEY}"
-                )
-                res = requests.get(url)
-                if res.status_code == 200:
-                    youtube_info = res.json()
-                    if youtube_info and youtube_info['items']:
-                        self.youtube_info = youtube_info['items'][0][
-                            'statistics']
-                        self.youtube_info.update(youtube_info['items'][0][
-                                                     'snippet'])
-            else:
-                log.info(f"No youtube info for Athlete {self.name}")
-        else:
-            log.warning(f"Failed getting youtube info for Athlete {self.name}")
-
-        return self.youtube_info
-
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.name:
-            # If name isn't set - send request to Wiki to get athlete info.
+            # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
 
         if not self.domestic_market:
@@ -418,7 +443,7 @@ class Athlete(models.Model):
             # Try to get amount od followers from twitter.
             self.get_twitter_info()
 
-        if not self.get_youtube_info:
+        if not self.youtube_info:
             # Try to get youtube info.
             self.get_youtube_info()
 
