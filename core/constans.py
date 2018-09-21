@@ -10,6 +10,7 @@ CATEGORIES = {
     "Football": "Football",
     "Golf": "Golf",
     "Gymnastics": "Gymnastics",
+    "Handball": "Handball",
     "Ice Hockey": "Ice Hockey",
     "Rugby": "Rugby",
     "Swimming": "Swimming",
