@@ -330,6 +330,11 @@ def athlete_page(request, slug):
     slug = quote_plus(slug)
     athlete = get_object_or_404(Athlete, wiki__endswith=slug)
 
+    if not athlete.youtube_info:
+        # Try to get youtube info.
+        athlete.get_youtube_info()
+        super(Athlete, athlete).save()
+
     return render(request, 'profile.html', {'athlete': athlete})
 
 
