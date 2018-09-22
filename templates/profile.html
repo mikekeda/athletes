@@ -14,7 +14,7 @@
                 <p>Gander: {{ athlete.gender }}</p>
                 <p>Date of Birth (Age): {{ athlete.birthday }} ({{ athlete.age }})</p>
                 <p>Place of Birth: {{ athlete.domestic_market }}</p>
-                <p>Team: <a href="{% url 'core:team' athlete.team_model.pk %}">{{ athlete.team }}</a></p>
+                <p>Team: {% if athlete.team_model %}<a href="{% url 'core:team' athlete.team_model.pk %}">{{ athlete.team }}</a>{% else %}{{ athlete.team }}{% endif %}</p>
                 <p>Location: {{ athlete.location_market }}</p>
                 <p>Twitter followers: {{ athlete.twitter }}</p>
                 <p>International: {{ athlete.international }}</p>

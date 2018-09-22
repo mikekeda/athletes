@@ -93,7 +93,8 @@ class ModelMixin:
         res = requests.get(url)
         if res.status_code == 200:
             youtube_info = res.json()
-            if youtube_info and youtube_info['items']:
+            if youtube_info and youtube_info['items'] and \
+                    youtube_info['items'][0]['id'].get('channelId'):
                 channel_id = youtube_info['items'][0]['id']['channelId']
 
                 self.youtube_info.update({'channelId': channel_id})
