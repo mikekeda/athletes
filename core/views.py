@@ -91,7 +91,11 @@ def _process_datatables_params(querydict: dict) -> tuple:
     order = []
     cnt = 0
     while f'order[{cnt}][column]' in querydict:
-        sortcol = int(querydict.get(f'order[{cnt}][column]'))
+        try:
+            sortcol = int(querydict.get(f'order[{cnt}][column]'))
+        except ValueError:
+            sortcol = 0
+
         sort_dir = querydict.get(f'order[{cnt}][dir]')
 
         if col_data[sortcol]['data'] == 'age':
@@ -132,21 +136,23 @@ def athletes_api(request):
             elif field == 'age':
                 val = val.split('-')
 
-                for i, _ in enumerate(val):
-                    today = datetime.date.today()
-                    val[i] = datetime.date(today.year - int(val[i]),
-                                           today.month, today.day)
+                if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
+                    for i, _ in enumerate(val):
+                        today = datetime.date.today()
+                        val[i] = datetime.date(today.year - int(val[i]),
+                                               today.month, today.day)
 
-                qs = qs.filter(birthday__gte=val[1], birthday__lte=val[0])
+                    qs = qs.filter(birthday__gte=val[1], birthday__lte=val[0])
                 continue
 
             model_field = Athlete._meta.get_field(field)
 
             if field in ('instagram', 'twitter'):
                 val = val.split('-')
-                qs = qs.filter(
-                    **{f'{field}__gte': val[0], f'{field}__lte': val[1]}
-                )
+                if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
+                    qs = qs.filter(
+                        **{f'{field}__gte': val[0], f'{field}__lte': val[1]}
+                    )
             elif field in ('domestic_market', 'location_market'):
                 country_val = [
                     code
