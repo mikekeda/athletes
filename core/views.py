@@ -147,7 +147,7 @@ def athletes_api(request):
 
             model_field = Athlete._meta.get_field(field)
 
-            if field in ('instagram', 'twitter'):
+            if field in ('marketability', 'instagram', 'twitter'):
                 val = val.split('-')
                 if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
                     qs = qs.filter(

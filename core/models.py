@@ -8,6 +8,7 @@ import urllib.parse
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -273,7 +274,9 @@ class Athlete(models.Model, ModelMixin):
     marketability = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
-        choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5)),
+        validators=[
+            MaxValueValidator(100)
+        ]
     )
     optimal_campaign = models.PositiveSmallIntegerField(
         null=True,
