@@ -7,6 +7,7 @@ from requests_oauthlib import OAuth1
 import urllib.parse
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.core.validators import MaxValueValidator
 from django.db import models
@@ -455,6 +456,22 @@ class Athlete(models.Model, ModelMixin):
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
+
+    def __str__(self):
+        return self.name
+
+
+class AthletesList(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    athletes = models.ManyToManyField(Athlete)
+    user = models.ForeignKey(
+        User,
+        related_name='athletes_lists',
+        on_delete=models.CASCADE
+    )
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

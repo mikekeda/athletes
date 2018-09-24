@@ -4,7 +4,7 @@ from django.db.utils import DataError
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
-from core.models import Athlete, Team
+from core.models import Athlete, Team, AthletesList
 
 AthleteForm = select2_modelform(Athlete)
 TeamForm = select2_modelform(Team)
@@ -99,5 +99,14 @@ class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     inlines = [AthleteInline]
 
 
+class AthletesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    list_filter = ('user__username',)
+    list_display = ('name',)
+    search_fields = ('name',)
+    autocomplete_fields = ('athletes',)
+    model = AthletesList
+
+
 admin.site.register(Athlete, AthleteAdmin)
 admin.site.register(Team, TeamAdmin)
+admin.site.register(AthletesList, AthletesListAdmin)

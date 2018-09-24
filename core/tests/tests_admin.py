@@ -38,3 +38,13 @@ class ToolAdminTest(TestCase):
         resp = self.client.get('/admin/core/athlete/add/')
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'admin/change_form.html')
+
+    def test_admin_athletelist(self):
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get('/admin/core/athleteslist/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin/base.html')
+
+        resp = self.client.get('/admin/core/athleteslist/add/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin/change_form.html')
