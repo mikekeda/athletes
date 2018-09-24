@@ -138,6 +138,14 @@ def parse_team(cleaned_data, skip_errors=False):
                 link, site, cleaned_data
             )
             result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Cricket":
+        links = table.select("tr > td:nth-of-type(2) > a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
     else:
         # Default parsing.
         # Go through all table rows.
