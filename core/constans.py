@@ -6,6 +6,7 @@ CATEGORIES = {
     "Basketball": "Basketball",
     "College Basketball": "College Basketball",
     "College Football": "College Football",
+    "Cricket": "Cricket",
     "Cycling": "Cycling",
     "Football": "Football",
     "Golf": "Golf",
