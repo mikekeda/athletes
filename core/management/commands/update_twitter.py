@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.stdout.write("Started Twitter import")
 
         aids = list(Athlete.objects.filter(twitter_info={}).values_list(
-            'id',flat=True))
+            'id', flat=True))
 
         self.stdout.write(f"{len(aids)} athletes to update")
 

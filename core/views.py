@@ -333,7 +333,7 @@ class ParseTeamsView(View):
 
 def athlete_page(request, slug):
     """ Athlete page. """
-    slug = quote_plus(slug)
+    slug = quote_plus(slug, safe='()')
     athlete = get_object_or_404(Athlete, wiki__endswith=slug)
 
     if not athlete.youtube_info:
@@ -347,8 +347,9 @@ def athlete_page(request, slug):
 def team_page(request, pk):
     """ Team page. """
     team = get_object_or_404(Team, pk=pk)
+    athletes = Athlete.objects.filter(team_model=team).only('name', 'wiki')
 
-    return render(request, 'team.html', {'team': team})
+    return render(request, 'team.html', {'team': team, 'athletes': athletes})
 
 
 def login_page(request):
