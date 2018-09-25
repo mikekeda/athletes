@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import csv
 import datetime
 import json
 import logging
@@ -17,8 +18,6 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
 
-from import_export import resources
-
 from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm
 from core.models import Athlete, Team, AthletesList
@@ -26,13 +25,6 @@ from core.tasks import parse_team
 
 
 log = logging.getLogger('athletes')
-
-
-class AthleteResource(resources.ModelResource):
-    """ Export resource for Athlete model. """
-
-    class Meta:
-        model = Athlete
 
 
 def _serialize_qs(qs):
@@ -291,11 +283,22 @@ def athletes_export_page(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="athletes.csv"'
 
-    csv_content = AthleteResource().export(
-        queryset=Athlete.objects.filter(pk__in=ids)
-    ).csv
+    qs = Athlete.objects.filter(pk__in=ids).defer(
+        'additional_info', 'twitter_info', 'youtube_info'
+    )
+    content = _serialize_qs(qs)
 
-    response.write(csv_content)
+    fields = [
+        'name', 'domestic_market', 'age', 'gender', 'location_market',
+        'team', 'category', 'marketability', 'optimal_campaign',
+        'market_export', 'instagram', 'twitter',
+    ]
+
+    writer = csv.writer(response)
+    writer.writerow(fields)
+    for athletes in content:
+        row = [athletes[key] for key in fields]
+        writer.writerow(row)
 
     return response
 
@@ -375,6 +378,7 @@ class ParseTeamsView(View):
                       {'form': form, 'action': reverse('core:teams')})
 
 
+@login_required
 def athlete_page(request, slug):
     """ Athlete page. """
     slug = quote_plus(slug, safe='()')
@@ -388,6 +392,7 @@ def athlete_page(request, slug):
     return render(request, 'profile.html', {'athlete': athlete})
 
 
+@login_required
 def team_page(request, pk):
     """ Team page. """
     team = get_object_or_404(Team, pk=pk)
