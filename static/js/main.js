@@ -1,7 +1,10 @@
 $(document).ready( function () {
+    let $athletes_table = $('table#athletes-table');
+    let $athletes_export_link = $('a#athletes-export-link');
+    let ids;
     let e;
 
-    let table = $('#athletes-table').DataTable({
+    let table = $athletes_table.DataTable({
         serverSide: true,
         ajax: {
             url: '/api/athletes',
@@ -29,7 +32,7 @@ $(document).ready( function () {
         columnDefs: [
             {
                 "render": function ( data, type, row ) {
-                    return '<input type="checkbox" data-id="' + data + '">';
+                    return '<input type="checkbox" class="athlete-checkbox" data-id="' + data + '">';
                 },
                 "width": "20px",
                 "targets": 0
@@ -96,6 +99,16 @@ $(document).ready( function () {
 
     $('#athletes_lists').change(function() {
         table.ajax.reload();
+    });
+
+    $athletes_table.on('change', '.athlete-checkbox', function() {
+        ids = '';
+
+        $athletes_table.find('.athlete-checkbox:checked').each(function () {
+            ids += ',' + this.getAttribute("data-id");
+        });
+
+        $athletes_export_link.attr("href", $athletes_export_link.data('href') + ids.substr(1));
     });
 
 });

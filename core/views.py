@@ -12,10 +12,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
 from django.db.models import Q, F, Count
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
+
+from import_export import resources
 
 from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm
@@ -24,6 +26,13 @@ from core.tasks import parse_team
 
 
 log = logging.getLogger('athletes')
+
+
+class AthleteResource(resources.ModelResource):
+    """ Export resource for Athlete model. """
+
+    class Meta:
+        model = Athlete
 
 
 def _serialize_qs(qs):
@@ -270,6 +279,25 @@ def map_page(request):
 def terms(request):
     """ Terms of service page. """
     return render(request, 'terms.html')
+
+
+@login_required
+def athletes_export_page(request):
+    """ Export athletes to csv file. """
+    ids = request.GET.get('ids', '').split(',')
+    ids = [pk for pk in ids if pk.isdigit()]
+    ids = ids or [-1]  # not existing id
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="athletes.csv"'
+
+    csv_content = AthleteResource().export(
+        queryset=Athlete.objects.filter(pk__in=ids)
+    ).csv
+
+    response.write(csv_content)
+
+    return response
 
 
 @method_decorator(staff_member_required, name='dispatch')
