@@ -1,9 +1,15 @@
 $(document).ready( function () {
+    let e;
+
     let table = $('#athletes-table').DataTable({
         serverSide: true,
         ajax: {
             url: '/api/athletes',
-            dataSrc: 'data'
+            dataSrc: 'data',
+            data: function (d) {
+                e = document.getElementById("athletes_lists");
+                d.list_id = e.options[e.selectedIndex].value;
+            }
         },
         columns: [
             { "data": "name" },
@@ -78,6 +84,10 @@ $(document).ready( function () {
 
     $('form select').select2();
 
-    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' })
+    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
+
+    $('#athletes_lists').change(function() {
+        table.ajax.reload();
+    });
 
 });

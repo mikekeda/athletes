@@ -5,6 +5,16 @@
 
 {% block content %}
     <div class="mt-6">
+        <div class="form-group col-sm-6 col-md-4 col-lg-2 offset-sm-3 offset-md-4 offset-lg-5">
+            <label for="athletes_lists" class="col-form-label col-sm-12 col-md-4">List</label>
+            <select name="athletes_lists" id="athletes_lists" class="form-control col-sm-12 col-md-8 float-right">
+                <option selected value>Show all</option>
+                {% for athletes_list in athletes_lists %}
+                    <option value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
         <table id="athletes-table" class="table table-striped" style="table-layout: fixed; width: 100%;">
             <thead>
                 <tr>

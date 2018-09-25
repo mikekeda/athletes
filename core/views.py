@@ -19,7 +19,7 @@ from django.utils.decorators import method_decorator
 
 from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm
-from core.models import Athlete, Team
+from core.models import Athlete, Team, AthletesList
 from core.tasks import parse_team
 
 
@@ -123,6 +123,16 @@ def athletes_api(request):
     qs = Athlete.objects.defer('additional_info', 'twitter_info',
                                'youtube_info')
 
+    list_id = None
+    try:
+        list_id = int(request.GET.get('list_id'))
+        athletes_ids = AthletesList.objects.filter(
+            user=request.user, pk=list_id).values_list(
+            'athletes__id', flat=True)
+        qs = qs.filter(pk__in=athletes_ids)
+    except (ValueError, TypeError):
+        pass
+
     if filters:
         for field, val in filters.items():
             # Process filtering by properties.
@@ -186,7 +196,7 @@ def athletes_api(request):
         )
 
     # Count filtered rows.
-    if filters or search:
+    if filters or search or list_id:
         filtered = qs.count()
     else:
         filtered = total  # no need to count filtered rows
@@ -210,8 +220,11 @@ def athletes_api(request):
 def crm_page(request):
     """ CRM page. """
     model = Athlete._meta
+    athletes_lists = AthletesList.objects.filter(user=request.user).only(
+        'pk', 'name')
 
     return render(request, 'crm.html', {
+        'athletes_lists': athletes_lists,
         'gender_choices': model.get_field('gender').choices,
         'category_choices': model.get_field('category').choices,
         'optimal_campaign_choices': model.get_field('optimal_campaign').choices
