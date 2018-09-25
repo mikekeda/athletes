@@ -41,7 +41,10 @@ def _serialize_qs(qs):
                 pass
 
     data = json.loads(serializers.serialize('json', qs))
-    data = [{**obj['fields'], **props.get(obj['pk'], {})} for obj in data]
+    data = [
+        {**obj['fields'], **props.get(obj['pk'], {}), 'pk': obj['pk']}
+        for obj in data
+    ]
 
     return data
 

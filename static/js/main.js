@@ -12,6 +12,7 @@ $(document).ready( function () {
             }
         },
         columns: [
+            { "data": "pk" },
             { "data": "name" },
             { "data": "domestic_market" },
             { "data": "age" },
@@ -28,9 +29,16 @@ $(document).ready( function () {
         columnDefs: [
             {
                 "render": function ( data, type, row ) {
+                    return '<input type="checkbox" data-id="' + data + '">';
+                },
+                "width": "20px",
+                "targets": 0
+            },
+            {
+                "render": function ( data, type, row ) {
                     return '<a href="/athlete/' + row.slug + '">' + data + '</a>';
                 },
-                "targets": 0
+                "targets": 1
             },
             {
                 "render": function ( data, type, row ) {
@@ -39,13 +47,13 @@ $(document).ready( function () {
                     }
                     return data;
                 },
-                "targets": 5
+                "targets": 6
             },
             {
                 "render": function ( data, type, row ) {
                     return data ? '<i class="material-icons dp48 text-success">check</i>' : '';
                 },
-                "targets": 9
+                "targets": 10
             },
         ],
         language: {
