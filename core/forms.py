@@ -36,6 +36,7 @@ class AthletesListForm(forms.ModelForm):
 
     class Meta:
         model = AthletesList
+        exclude = ('user',)
 
 
 class TeamsForm(forms.Form):
