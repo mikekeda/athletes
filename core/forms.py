@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from core.constans import COUNTRIES, CATEGORIES
-from core.models import Team
+from core.models import Team, AthletesList
 
 
 def validate_selector(selector: str):
@@ -29,6 +29,13 @@ class TeamForm(forms.ModelForm):
         model = Team
         exclude = ('name', 'longitude', 'latitude', 'photo',
                    'additional_info', 'twitter_info', 'youtube_info')
+
+
+class AthletesListForm(forms.ModelForm):
+    """ AthletesList form. """
+
+    class Meta:
+        model = AthletesList
 
 
 class TeamsForm(forms.Form):
