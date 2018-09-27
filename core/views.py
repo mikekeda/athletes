@@ -19,7 +19,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 
 from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
-from core.forms import TeamForm, TeamsForm
+from core.forms import TeamForm, TeamsForm, AthletesListForm
 from core.models import Athlete, Team, AthletesList
 from core.tasks import parse_team
 
@@ -223,11 +223,13 @@ def athletes_api(request):
 @login_required
 def crm_page(request):
     """ CRM page. """
+    form = AthletesListForm()
     model = Athlete._meta
     athletes_lists = AthletesList.objects.filter(user=request.user).only(
         'pk', 'name')
 
     return render(request, 'crm.html', {
+        'form': form,
         'athletes_lists': athletes_lists,
         'gender_choices': model.get_field('gender').choices,
         'category_choices': model.get_field('category').choices,

@@ -1,9 +1,47 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load widget_tweaks %}
 
 {% block title %}{% trans "Athletes" %}{% endblock title %}
 
 {% block content %}
+<!-- Modal -->
+    <!-- Modal -->
+    <div class="modal{% if form.errors %} error{% endif %}" id="add-athletes-list" tabindex="-1" role="dialog" aria-labelledby="AthletesListModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="add-athletes-list-label">{% trans "Add Athletes list" %}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label class="control-label col-form-label col-sm-12" for="{{ field.auto_id }}">{{ field.label_tag }}</label>
+                                <div class="col-sm-12">
+                                    {{ field|add_class:"form-control" }}
+                                </div>
+                                {% if field.errors %}
+                                    <div class="col-sm-12 pull-right" role="alert">
+                                        <div class="alert alert-warning" >
+                                            {{ field.errors }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="modal-footer">
+                            <button type="button" class="btn bg-light btn-outline-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+                            <button type="submit" class="btn btn-primary btn-md pull-right">{% trans "Save" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="mt-6">
         <div>
             <div class="form-group float-left col-sm-6 col-md-4 col-lg-2 offset-sm-2 offset-md-3 offset-lg-4">
@@ -16,8 +54,13 @@
                 </select>
             </div>
             <div class="float-left btn btn-outline-secondary">
-                <a id="athletes-export-link" download data-href="{% url 'core:athletes_export' %}?ids=" href="{% url 'core:athletes_export' %}?ids=">{% trans "Export athletes" %}</a>
+                <a id="athletes-export-link" class="text-dark" download data-href="{% url 'core:athletes_export' %}?ids=" href="{% url 'core:athletes_export' %}?ids=">{% trans "Export athletes" %}</a>
             </div>
+
+            <!-- Button trigger modal -->
+            <!--<button type="button" class="add-btn btn btn-outline-secondary text-dark ml-3" data-toggle="modal" data-target="#add-athletes-list">-->
+                <!--<span class="glyphicon glyphicon-plus"></span> {% trans "Add Athletes list" %}-->
+            <!--</button>-->
         </div>
 
         <table id="athletes-table" class="table table-striped" style="table-layout: fixed; width: 100%;">

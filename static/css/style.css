@@ -36,3 +36,7 @@
     max-width: 100vw;
     max-height: calc(100vh - 120px);
 }
+
+#add-athletes-list .select2-container {
+    width: 100% !important;
+}
