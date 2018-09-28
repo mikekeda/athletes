@@ -414,13 +414,16 @@ def athlete_page(request, slug):
     """ Athlete page. """
     slug = quote_plus(slug, safe='()')
     athlete = get_object_or_404(Athlete, wiki__endswith=slug)
+    athletes_lists = AthletesList.objects.filter(user=request.user).only(
+        'pk', 'name')
 
     if not athlete.youtube_info:
         # Try to get youtube info.
         athlete.get_youtube_info()
         super(Athlete, athlete).save()
 
-    return render(request, 'profile.html', {'athlete': athlete})
+    return render(request, 'profile.html', {'athlete': athlete,
+                                            'athletes_lists': athletes_lists})
 
 
 @login_required

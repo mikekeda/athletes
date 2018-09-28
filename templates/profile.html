@@ -7,7 +7,15 @@
 {% block content %}
     <div class="container mt-9">
         <div class="row">
-            <div class="col-sm-4 float-left">{{ athlete.photo_preview }}</div>
+            <div class="col-sm-4 float-left">
+                {{ athlete.photo_preview }}
+{#                <select name="athletes_lists" id="athletes_lists" class="form-control col-sm-12 col-md-8 mt-3">#}
+{#                    <option selected value></option>#}
+{#                    {% for athletes_list in athletes_lists %}#}
+{#                        <option value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>#}
+{#                    {% endfor %}#}
+{#                </select>#}
+            </div>
             <div class="col-sm-8 float-right">
                 <h1>{{ athlete.name }}</h1>
                 <p>Category: {{ athlete.category }}</p>
