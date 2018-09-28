@@ -81,7 +81,8 @@ def parse_team(cleaned_data, skip_errors=False):
         "#Current_playing_squad") or soup.select(
         "#Playing_squad") or soup.select(
         "#Current_playing_list_and_coaches") or soup.select(
-        "#Current_playing_lists")
+        "#Current_playing_lists") or soup.select(
+        "#Team_Roster")
     if skip_errors and not title:
         return
     cleaned_data['name'] = soup.title.string.split(' - Wikipedia')[0]
