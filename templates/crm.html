@@ -5,17 +5,16 @@
 {% block title %}{% trans "Athletes" %}{% endblock title %}
 
 {% block content %}
-<!-- Modal -->
     <!-- Modal -->
     <div class="modal{% if form.errors %} error{% endif %}" id="add-athletes-list" tabindex="-1" role="dialog" aria-labelledby="AthletesListModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="add-athletes-list-label">{% trans "Add Athletes list" %}</h4>
+                    <h4 class="modal-title" id="add-athletes-list-label">{% trans "Create Athletes list for selected athletes" %}</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ form_action }}" method="post" class="add-form clearfix form-horizontal">
+                    <form action="{% url 'core:athletes_list' %}" method="post" class="add-form clearfix form-horizontal">
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="form-group">
@@ -32,6 +31,12 @@
                                 {% endif %}
                             </div>
                         {% endfor %}
+                        <div class="form-group d-none">
+                            <label class="control-label col-sm-2" for="id_athletes">Athletes</label>
+                            <div class="col-sm-12">
+                                <input type="text" name="id_athletes" id="id_athletes" class="form-control">
+                            </div>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn bg-light btn-outline-secondary" data-dismiss="modal">{% trans "Close" %}</button>
                             <button type="submit" class="btn btn-primary btn-md pull-right">{% trans "Save" %}</button>
@@ -58,9 +63,9 @@
             </div>
 
             <!-- Button trigger modal -->
-            <!--<button type="button" class="add-btn btn btn-outline-secondary text-dark ml-3" data-toggle="modal" data-target="#add-athletes-list">-->
-                <!--<span class="glyphicon glyphicon-plus"></span> {% trans "Add Athletes list" %}-->
-            <!--</button>-->
+            <button type="button" class="add-btn btn btn-outline-secondary text-dark ml-3" data-toggle="modal" data-target="#add-athletes-list">
+                <span class="glyphicon glyphicon-plus"></span> {% trans "Add Athletes list" %}
+            </button>
         </div>
 
         <table id="athletes-table" class="table table-striped" style="table-layout: fixed; width: 100%;">

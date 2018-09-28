@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core import serializers
 from django.db.models import Q, F, Count
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -240,6 +240,32 @@ def crm_page(request):
 def about_page(request):
     """ About page. """
     return render(request, 'about.html')
+
+
+@login_required
+def athletes_list_api(request):
+    """ Create Athletes_list. """
+    if request.is_ajax():
+        form = AthletesListForm(request.POST)
+        if form.is_valid():
+            athletes_ids = request.POST.get('id_athletes', '').split(',')
+            athletes_ids = [pk for pk in athletes_ids if pk.isdigit()]
+
+            athletes_list = form.save(commit=False)
+            athletes_list.user = request.user
+
+            athletes_list.save()
+            athletes_list.athletes.add(*athletes_ids)
+
+            return JsonResponse({
+                "id": athletes_list.pk,
+                "name": athletes_list.name,
+                "success": True
+            })
+
+        return JsonResponse({"success": False})
+
+    raise Http404
 
 
 @login_required

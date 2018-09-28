@@ -1,6 +1,8 @@
 $(document).ready( function () {
     let $athletes_table = $('table#athletes-table');
+    let $athletes_lists = $('#athletes_lists');
     let $athletes_export_link = $('a#athletes-export-link');
+    let $athletes_list_form = $('#add-athletes-list form');
     let ids;
     let e;
 
@@ -97,7 +99,7 @@ $(document).ready( function () {
 
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
-    $('#athletes_lists').change(function() {
+    $athletes_lists.change(function() {
         table.ajax.reload();
     });
 
@@ -107,8 +109,25 @@ $(document).ready( function () {
         $athletes_table.find('.athlete-checkbox:checked').each(function () {
             ids += ',' + this.getAttribute("data-id");
         });
+        ids = ids.substr(1);
 
-        $athletes_export_link.attr("href", $athletes_export_link.data('href') + ids.substr(1));
+        $athletes_export_link.attr("href", $athletes_export_link.data('href') + ids);
+        $athletes_list_form.find('#id_athletes').val(ids);
+    });
+
+    $athletes_list_form.submit(function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: '/athletes_list',
+            type: 'POST',
+            data: $athletes_list_form.serialize(),
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                $athletes_lists.find('option:first').after($('<option>', {value: data.id, text: data.name}));
+                $athletes_list_form.parents('#add-athletes-list').modal('hide');
+            }
+        });
     });
 
 });
