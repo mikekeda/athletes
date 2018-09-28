@@ -272,12 +272,15 @@ def athletes_list_api(request):
 def map_page(request):
     """ Map page. """
     category = request.GET.get('category', '').title()
+    gender = request.GET.get('gender')
 
+    qs = Athlete.objects
     if category in CATEGORIES:
         # Filter by category.
-        qs = Athlete.objects.filter(category=category)
-    else:
-        qs = Athlete.objects.all()
+        qs = qs.filter(category=category)
+    if gender:
+        # Filter by category.
+        qs = qs.filter(gender=gender)
 
     # Count how many athletes we have for each country.
     cont = qs.values('location_market').annotate(
