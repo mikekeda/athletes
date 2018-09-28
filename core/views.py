@@ -422,7 +422,7 @@ def athlete_page(request, slug):
         athlete.get_youtube_info()
         super(Athlete, athlete).save()
 
-    return render(request, 'profile.html', {'athlete': athlete,
+    return render(request, 'athlete.html', {'athlete': athlete,
                                             'athletes_lists': athletes_lists})
 
 

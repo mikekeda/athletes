@@ -44,7 +44,7 @@ class ModelMixin:
         return self.wiki.split('/')[-1]
 
     def photo_preview(self):
-        return format_html('<img src="{}"/>', self.photo)
+        return format_html('<img class="w-100" src="{}"/>', self.photo)
 
     def get_twitter_info(self):
         """ Get info from Twitter. """
