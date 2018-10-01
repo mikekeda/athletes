@@ -62,6 +62,12 @@ $(document).ready( function () {
                 },
                 "targets": 10
             },
+            {
+                "render": function ( data, type, row ) {
+                    return data ? data.toLocaleString() : '';
+                },
+                "targets": 12
+            },
         ],
         language: {
             "lengthMenu": "Show _MENU_ athletes per page",
