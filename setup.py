@@ -13,7 +13,7 @@ setup(
         'celery==4.2.1',
         'requests_oauthlib==1.0.0',
 
-        'django==2.1',
+        'django==2.1.2',
         'django-widget-tweaks==1.4.3',
         'django-easy-select2==1.5.5',
         'django-import-export',  # Installed from git due the the bug
