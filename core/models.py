@@ -464,7 +464,7 @@ class Athlete(models.Model, ModelMixin):
 class AthletesList(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    athletes = models.ManyToManyField(Athlete)
+    athletes = models.ManyToManyField(Athlete, related_name='athletes_lists')
     user = models.ForeignKey(
         User,
         related_name='athletes_lists',

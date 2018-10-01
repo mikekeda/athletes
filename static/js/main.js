@@ -3,6 +3,7 @@ $(document).ready( function () {
     let $athletes_lists = $('#athletes_lists');
     let $athletes_export_link = $('a#athletes-export-link');
     let $athletes_list_form = $('#add-athletes-list form');
+    let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
     let ids;
     let e;
 
@@ -127,6 +128,17 @@ $(document).ready( function () {
                 $athletes_lists.find('option:first').after($('<option>', {value: data.id, text: data.name}));
                 $athletes_list_form.parents('#add-athletes-list').modal('hide');
             }
+        });
+    });
+
+    $athletes_lists_form.change(function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: $athletes_lists_form.attr('action'),
+            type: 'POST',
+            data: $athletes_lists_form.serialize(),
+            dataType: 'json'
         });
     });
 

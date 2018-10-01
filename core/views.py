@@ -413,9 +413,16 @@ class ParseTeamsView(View):
 def athlete_page(request, slug):
     """ Athlete page. """
     slug = quote_plus(slug, safe='()')
-    athlete = get_object_or_404(Athlete, wiki__endswith=slug)
+    athlete = get_object_or_404(
+        Athlete.objects.prefetch_related('athletes_lists'),
+        wiki__endswith=slug
+    )
     athletes_lists = AthletesList.objects.filter(user=request.user).only(
         'pk', 'name')
+
+    # Check if the athlete is in any list.
+    for athletes_list in athletes_lists:
+        athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
     if not athlete.youtube_info:
         # Try to get youtube info.
@@ -424,6 +431,44 @@ def athlete_page(request, slug):
 
     return render(request, 'athlete.html', {'athlete': athlete,
                                             'athletes_lists': athletes_lists})
+
+
+@login_required
+def add_athletes_to_list_api(request):
+    """ Add an athlete to the lists. """
+    if request.is_ajax():
+        athlete_id = request.POST.get('athlete')
+        # Only int values are allowed.
+        athlete_id = athlete_id if athlete_id.isdigit() else -1
+
+        new_lists_ids = request.POST.getlist('athletes_lists')
+        # Only int values are allowed.
+        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+
+        athlete = get_object_or_404(
+            Athlete.objects.prefetch_related('athletes_lists'),
+            pk=athlete_id
+        )
+        old_lists_ids = set([
+            athletes_list.pk
+            for athletes_list in athlete.athletes_lists.all()
+            if athletes_list.user == request.user  # filter by current user
+        ])
+
+        athletes_lists = AthletesList.objects.filter(
+            pk__in=new_lists_ids ^ old_lists_ids,
+            user=request.user  # filter by current user
+        )
+
+        for athletes_list in athletes_lists:
+            if athletes_list.pk in new_lists_ids - old_lists_ids:
+                athletes_list.athletes.add(athlete)  # add
+            elif athletes_list.pk in old_lists_ids - new_lists_ids:
+                athletes_list.athletes.remove(athlete)  # remove
+
+        return JsonResponse({"success": True})
+
+    raise Http404
 
 
 @login_required

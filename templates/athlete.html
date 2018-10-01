@@ -6,16 +6,21 @@
 {% block title %}{{ athlete.name }}{% endblock %}
 
 {% block content %}
-    <div class="container mt-9">
+    <div class="athlete-page container mt-9">
         <div class="row">
             <div class="col-sm-4 float-left">
                 {{ athlete.photo_preview }}
                 <div class=" mt-3">
-                    <select multiple name="athletes_lists" id="athletes_lists" class="form-control select2">
-                        {% for athletes_list in athletes_lists %}
-                            <option value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
-                        {% endfor %}
-                    </select>
+                    <form action="{% url 'core:athletes_list' %}" id="athletes_lists_form" data-id="{{ athlete.id }}">
+                        {% csrf_token %}
+                        <input type="number" name="athlete" class="d-none" value="{{ athlete.id }}">
+                        <label for="athletes_lists">{% trans "Is part of lists" %}:</label>
+                        <select multiple name="athletes_lists" name="athletes_lists" id="athletes_lists" class="form-control select2">
+                            {% for athletes_list in athletes_lists %}
+                                <option {% if athletes_list.selected %}selected{% endif %} value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
                 </div>
             </div>
             <div class="col-sm-8 float-right">

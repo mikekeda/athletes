@@ -40,3 +40,7 @@
 #add-athletes-list .select2-container {
     width: 100% !important;
 }
+
+.athlete-page .select2-selection--multiple {
+    height: auto !important;
+}
