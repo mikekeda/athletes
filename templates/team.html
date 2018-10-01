@@ -7,9 +7,23 @@
 {% block title %}{{ team.name }}{% endblock %}
 
 {% block content %}
-    <div class="container mt-9">
+    <div class="team-page container mt-9">
         <div class="row">
-            <div class="col-sm-4 float-left">{{ team.photo_preview }}</div>
+            <div class="col-sm-4 float-left">
+                {{ team.photo_preview }}
+                <div class=" mt-3">
+                    <form action="{% url 'core:teams_list' %}" id="teams_lists_form">
+                        {% csrf_token %}
+                        <input type="number" name="team" class="d-none" value="{{ team.id }}">
+                        <label for="teams_lists">{% trans "Is part of lists" %}:</label>
+                        <select multiple name="teams_lists" name="teams_lists" id="teams_lists" class="form-control select2">
+                            {% for teams_list in teams_lists %}
+                                <option {% if teams_list.selected %}selected{% endif %} value="{{ teams_list.pk }}">{{ teams_list.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
             <div class="col-sm-8 float-right">
                 <h1 class="mb-3">{{ team.name }}</h1>
                 <p>Category: {{ team.category }}</p>

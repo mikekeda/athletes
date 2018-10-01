@@ -41,6 +41,7 @@
     width: 100% !important;
 }
 
-.athlete-page .select2-selection--multiple {
+.athlete-page .select2-selection--multiple,
+.team-page .select2-selection--multiple {
     height: auto !important;
 }

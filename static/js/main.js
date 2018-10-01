@@ -4,6 +4,7 @@ $(document).ready( function () {
     let $athletes_export_link = $('a#athletes-export-link');
     let $athletes_list_form = $('#add-athletes-list form');
     let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
+    let $teams_lists_form = $('.team-page #teams_lists_form');
     let ids;
     let e;
 
@@ -138,6 +139,17 @@ $(document).ready( function () {
             url: $athletes_lists_form.attr('action'),
             type: 'POST',
             data: $athletes_lists_form.serialize(),
+            dataType: 'json'
+        });
+    });
+
+    $teams_lists_form.change(function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: $teams_lists_form.attr('action'),
+            type: 'POST',
+            data: $teams_lists_form.serialize(),
             dataType: 'json'
         });
     });

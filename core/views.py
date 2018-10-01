@@ -20,7 +20,7 @@ from django.utils.decorators import method_decorator
 
 from core.constans import COUNTRIES, CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm, AthletesListForm
-from core.models import Athlete, Team, AthletesList
+from core.models import Athlete, Team, AthletesList, TeamsList
 from core.tasks import parse_team
 
 
@@ -424,6 +424,7 @@ def athlete_page(request, slug):
     for athletes_list in athletes_lists:
         athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
+    # TODO[Mike] Remove this latter.
     if not athlete.youtube_info:
         # Try to get youtube info.
         athlete.get_youtube_info()
@@ -434,7 +435,7 @@ def athlete_page(request, slug):
 
 
 @login_required
-def add_athletes_to_list_api(request):
+def add_athlete_to_lists_api(request):
     """ Add an athlete to the lists. """
     if request.is_ajax():
         athlete_id = request.POST.get('athlete')
@@ -477,7 +478,53 @@ def team_page(request, pk):
     team = get_object_or_404(Team, pk=pk)
     athletes = Athlete.objects.filter(team_model=team).only('name', 'wiki')
 
-    return render(request, 'team.html', {'team': team, 'athletes': athletes})
+    teams_lists = TeamsList.objects.filter(user=request.user).only(
+        'pk', 'name')
+
+    # Check if the athlete is in any list.
+    for teams_list in teams_lists:
+        teams_list.selected = teams_list in team.teams_lists.all()
+
+    return render(request, 'team.html', {'team': team, 'athletes': athletes,
+                                         'teams_lists': teams_lists})
+
+
+@login_required
+def add_team_to_lists_api(request):
+    """ Add an team to the lists. """
+    if request.is_ajax():
+        team_id = request.POST.get('team')
+        # Only int values are allowed.
+        team_id = team_id if team_id.isdigit() else -1
+
+        new_lists_ids = request.POST.getlist('teams_lists')
+        # Only int values are allowed.
+        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+
+        team = get_object_or_404(
+            Team.objects.prefetch_related('teams_lists'),
+            pk=team_id
+        )
+        old_lists_ids = set([
+            teams_list.pk
+            for teams_list in team.teams_lists.all()
+            if teams_list.user == request.user  # filter by current user
+        ])
+
+        teams_lists = TeamsList.objects.filter(
+            pk__in=new_lists_ids ^ old_lists_ids,
+            user=request.user  # filter by current user
+        )
+
+        for teams_list in teams_lists:
+            if teams_list.pk in new_lists_ids - old_lists_ids:
+                teams_list.teams.add(team)  # add
+            elif teams_list.pk in old_lists_ids - new_lists_ids:
+                teams_list.teams.remove(team)  # remove
+
+        return JsonResponse({"success": True})
+
+    raise Http404
 
 
 def login_page(request):

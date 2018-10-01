@@ -475,3 +475,19 @@ class AthletesList(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TeamsList(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    teams = models.ManyToManyField(Team, related_name='teams_lists')
+    user = models.ForeignKey(
+        User,
+        related_name='teams_lists',
+        on_delete=models.CASCADE
+    )
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
