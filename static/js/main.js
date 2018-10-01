@@ -95,7 +95,7 @@ $(document).ready( function () {
         });
     });
 
-    $('form select').select2();
+    $('form select, .select2').select2();
 
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
