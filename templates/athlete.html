@@ -29,9 +29,9 @@
                 <p>Category: {{ athlete.category }}</p>
                 <p>Gander: {{ athlete.get_gender_display }}</p>
                 <p>Date of Birth (Age): {{ athlete.birthday }} ({{ athlete.age }})</p>
-                <p>Place of Birth: {{ athlete.get_domestic_market_display }}</p>
+                <p>Place of Birth: <i class="flag flag-{{ athlete.domestic_market|lower }}"></i> {{ athlete.get_domestic_market_display }}</p>
                 <p>Team: {% if athlete.team_model %}<a href="{% url 'core:team' athlete.team_model.pk %}">{{ athlete.team }}</a>{% else %}{{ athlete.team }}{% endif %}</p>
-                <p>Location: {{ athlete.get_location_market_display }}</p>
+                <p>Location: <i class="flag flag-{{ athlete.location_market|lower }}"></i> {{ athlete.get_location_market_display }}</p>
                 <p>Marketability: {{ athlete.marketability }}</p>
                 <p>International: {{ athlete.international }}</p>
                 <div>
