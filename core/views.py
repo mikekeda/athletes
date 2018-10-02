@@ -412,7 +412,7 @@ class ParseTeamsView(View):
 @login_required
 def athlete_page(request, slug):
     """ Athlete page. """
-    slug = quote_plus(slug, safe='()')
+    slug = quote_plus(slug, safe='(,)')
     athlete = get_object_or_404(
         Athlete.objects.prefetch_related('athletes_lists'),
         wiki__endswith=slug
