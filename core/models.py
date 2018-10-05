@@ -91,11 +91,11 @@ class ModelMixin:
         history = self.youtube_info.get('history', {})
         now = datetime.datetime.now()
         if self.youtube_info:
-            last_update = self.youtube_info.get(
-                'updated', str(datetime.datetime(1900, 1, 1))
-            )
+            week_ago = str(now - datetime.timedelta(weeks=1))
+            last_update = self.youtube_info.get('updated', week_ago)
+
             # If last update was more then 1 week before - update history.
-            if last_update < str(now - datetime.timedelta(weeks=1)):
+            if last_update <= week_ago:
                 history[last_update] = {}
                 for key in historical_keys:
                     history[last_update][key] = self.youtube_info.get(key, 0)
