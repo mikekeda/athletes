@@ -171,7 +171,7 @@ def athlete_page(request, slug):
         athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
     # TODO[Mike] Remove this latter.
-    if not athlete.youtube_info:
+    if not athlete.youtube_info.get('updated'):
         # Try to get youtube info.
         athlete.get_youtube_info()
         super(Athlete, athlete).save()

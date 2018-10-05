@@ -84,47 +84,74 @@ class ModelMixin:
         model = self.__class__.__name__
 
         log.info(f"Get info from Youtube for {model} {self.name}")
+        historical_keys = ('commentCount', 'subscriberCount', 'videoCount',
+                           'viewCount')
+
+        channel_id = self.youtube_info.get('channelId')
+        history = self.youtube_info.get('history', {})
+        now = datetime.datetime.now()
+        if self.youtube_info:
+            last_update = self.youtube_info.get(
+                'updated', str(datetime.datetime(1900, 1, 1))
+            )
+            # If last update was more then 1 week before - update history.
+            if last_update < str(now - datetime.timedelta(weeks=1)):
+                history[last_update] = {}
+                for key in historical_keys:
+                    history[last_update][key] = self.youtube_info.get(key, 0)
+
         self.youtube_info = {}
 
-        urlencoded_name = urllib.parse.quote_plus(self.name)
+        if not channel_id:
+            urlencoded_name = urllib.parse.quote_plus(self.name)
 
-        url = (
-            "https://www.googleapis.com/youtube/v3/search"
-            "?maxResults=1"  # we need only 1
-            "&type=channel"
-            "&part=snippet"
-            f"&regionCode={self.location_market}"
-            f"&key={settings.GEOCODING_API_KEY}"
-            f"&q={urlencoded_name}"
-        )
-        res = requests.get(url)
-        if res.status_code == 200:
-            youtube_info = res.json()
-            if youtube_info and youtube_info['items'] and \
-                    youtube_info['items'][0]['id'].get('channelId'):
-                channel_id = youtube_info['items'][0]['id']['channelId']
-
-                self.youtube_info.update({'channelId': channel_id})
-
-                url = (
-                    "https://www.googleapis.com/youtube/v3/channels"
-                    "?part=snippet,statistics"
-                    f"&key={settings.GEOCODING_API_KEY}"
-                    f"&id={channel_id}"
-                )
-                res = requests.get(url)
-                if res.status_code == 200:
-                    youtube_info = res.json()
-                    if youtube_info and youtube_info['items']:
-                        self.youtube_info.update(youtube_info['items'][0][
-                                                     'statistics'])
-                        self.youtube_info.update(youtube_info['items'][0][
-                                                     'snippet'])
+            url = (
+                "https://www.googleapis.com/youtube/v3/search"
+                "?maxResults=1"  # we need only 1
+                "&type=channel"
+                "&part=snippet"
+                f"&regionCode={self.location_market}"
+                f"&key={settings.GEOCODING_API_KEY}"
+                f"&q={urlencoded_name}"
+            )
+            res = requests.get(url)
+            if res.status_code == 200:
+                youtube_info = res.json()
+                if youtube_info and youtube_info['items'] and \
+                        youtube_info['items'][0]['id'].get('channelId'):
+                    channel_id = youtube_info['items'][0]['id']['channelId']
+                else:
+                    log.info(f"No youtube info for {model} {self.name}")
             else:
-                log.info(f"No youtube info for {model} {self.name}")
-        else:
-            log.warning(f"Failed getting youtube info for {model} {self.name} "
-                        f"({res.status_code})")
+                log.warning(
+                    f"Failed getting youtube info for {model} {self.name} "
+                    f"({res.status_code})")
+
+        if channel_id:
+            self.youtube_info.update({'channelId': channel_id})
+
+            url = (
+                "https://www.googleapis.com/youtube/v3/channels"
+                "?part=snippet,statistics"
+                f"&key={settings.GEOCODING_API_KEY}"
+                f"&id={channel_id}"
+            )
+            res = requests.get(url)
+            if res.status_code == 200:
+                youtube_info = res.json()
+                if youtube_info and youtube_info['items']:
+                    self.youtube_info.update(youtube_info['items'][0][
+                                                 'statistics'])
+                    self.youtube_info.update(youtube_info['items'][0][
+                                                 'snippet'])
+                    self.youtube_info['updated'] = str(now)
+                    self.youtube_info['history'] = history
+                else:
+                    log.info("Updating youtube info: no data "
+                             f"for {model} {self.name}")
+            else:
+                log.warning(f"Failed updating youtube info "
+                            f"for {model} {self.name} ({res.status_code})")
 
         return self.youtube_info
 
@@ -232,7 +259,7 @@ class Team(models.Model, ModelMixin):
             # Try to get twitter info.
             self.get_twitter_info()
 
-        if not self.youtube_info:
+        if not self.youtube_info.get('updated'):
             # Try to get youtube info.
             self.get_youtube_info()
 
@@ -455,7 +482,7 @@ class Athlete(models.Model, ModelMixin):
             # Try to get amount od followers from twitter.
             self.get_twitter_info()
 
-        if not self.youtube_info:
+        if not self.youtube_info.get('updated'):
             # Try to get youtube info.
             self.get_youtube_info()
 
