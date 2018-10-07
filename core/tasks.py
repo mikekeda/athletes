@@ -3,6 +3,7 @@ import logging
 import requests
 from urllib.parse import urlparse
 
+from django.db.models import Q
 from django.db.utils import IntegrityError
 
 from core.celery import app
@@ -179,3 +180,14 @@ def parse_team(cleaned_data, skip_errors=False):
     result['skipped'] = [link for link in result['skipped'] if link]
 
     return result
+
+
+@app.task
+def weekly_youtube_update():
+    aids = sorted(Athlete.objects.filter(~Q(youtube_info={})).values_list(
+        'id', flat=True))
+
+    for aid in aids:
+        athlete = Athlete.objects.get(id=aid)
+        athlete.get_youtube_info()
+        super(Athlete, athlete).save()

@@ -155,6 +155,28 @@ class ModelMixin:
 
         return self.youtube_info
 
+    @property
+    def get_youtube_weekly_stats(self):
+        """ Youtube weekly statistic (subscriberCount, viewCount). """
+        stats = []
+        if self.youtube_info.get('history'):
+            history = self.youtube_info['history']
+            last_update = self.youtube_info['updated']
+            history[last_update] = {}
+            for key in historical_keys:
+                history[last_update][key] = self.youtube_info.get(key, 0)
+
+            dates = sorted(history.keys(), reverse=True)
+            for i, d in enumerate(dates[:-1]):
+                stats.append((d[:10], (
+                    int(history[d]['subscriberCount']) - int(
+                        history[dates[i - 1]]['subscriberCount']),
+                    int(history[d]['viewCount']) - int(
+                        history[dates[i - 1]]['viewCount']),
+                )))
+
+        return stats
+
 
 class Team(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
