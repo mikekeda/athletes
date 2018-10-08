@@ -19,7 +19,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'every-week': {
         'task': 'core.tasks.weekly_youtube_update',
-        'schedule': crontab(hour=3, day_of_week=1),
+        'schedule': crontab(hour=3, minute=0, day_of_week=1),
         'args': ()
     },
 }
