@@ -100,8 +100,6 @@ class ModelMixin:
                 for key in historical_keys:
                     history[last_update][key] = self.youtube_info.get(key, 0)
 
-        self.youtube_info = {}
-
         if not channel_id:
             urlencoded_name = urllib.parse.quote_plus(self.name)
 
@@ -128,8 +126,6 @@ class ModelMixin:
                     f"({res.status_code})")
 
         if channel_id:
-            self.youtube_info.update({'channelId': channel_id})
-
             url = (
                 "https://www.googleapis.com/youtube/v3/channels"
                 "?part=snippet,statistics"
@@ -140,6 +136,7 @@ class ModelMixin:
             if res.status_code == 200:
                 youtube_info = res.json()
                 if youtube_info and youtube_info['items']:
+                    self.youtube_info = {'channelId': channel_id}
                     self.youtube_info.update(youtube_info['items'][0][
                                                  'statistics'])
                     self.youtube_info.update(youtube_info['items'][0][
@@ -162,9 +159,11 @@ class ModelMixin:
         if self.youtube_info.get('history'):
             history = self.youtube_info['history']
             last_update = self.youtube_info['updated']
-            history[last_update] = {}
-            for key in historical_keys:
-                history[last_update][key] = self.youtube_info.get(key, 0)
+            history[last_update] = {
+                'subscriberCount': self.youtube_info.get('subscriberCount',
+                                                         '0'),
+                'viewCount': self.youtube_info.get('viewCount', '0'),
+            }
 
             dates = sorted(history.keys(), reverse=True)
             for i, d in enumerate(dates[:-1]):
