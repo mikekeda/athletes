@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup
 import logging
-import requests
 from urllib.parse import urlparse, quote_plus
 
+import requests
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout
@@ -10,14 +10,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.views import View
 from django.utils.decorators import method_decorator
+from django.views import View
 
 from core.constans import CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, TeamsForm, AthletesListForm
 from core.models import Athlete, Team, AthletesList, TeamsList
 from core.tasks import parse_team
-
 
 log = logging.getLogger('athletes')
 

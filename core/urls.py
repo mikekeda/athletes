@@ -1,13 +1,11 @@
 from django.urls import path
 
-
 from core.views.api import (athletes_api, athletes_export_api,
                             athletes_list_api, add_athlete_to_lists_api,
                             add_team_to_lists_api)
 from core.views.pages import (crm_page, about_page, login_page, logout_page,
                               ParseTeamView, ParseTeamsView, athlete_page,
                               terms_page, map_page, team_page)
-
 
 app_name = "Athletes"
 

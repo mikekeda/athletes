@@ -1,5 +1,5 @@
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 
 User = get_user_model()
 
@@ -46,5 +46,15 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, 'admin/base.html')
 
         resp = self.client.get('/admin/core/athleteslist/add/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin/change_form.html')
+
+    def test_admin_teamslist(self):
+        self.client.login(username='testadmin', password='12345')
+        resp = self.client.get('/admin/core/teamslist/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'admin/base.html')
+
+        resp = self.client.get('/admin/core/teamslist/add/')
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'admin/change_form.html')

@@ -1,15 +1,14 @@
-from bs4 import BeautifulSoup
 import logging
-import requests
 from urllib.parse import urlparse
 
+import requests
+from bs4 import BeautifulSoup
 from django.db.models import Q
 from django.db.utils import IntegrityError
 
 from core.celery import app
 from core.constans import COUNTRIES
 from core.models import Athlete, Team
-
 
 log = logging.getLogger('athletes')
 

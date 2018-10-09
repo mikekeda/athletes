@@ -1,11 +1,10 @@
-from bs4 import BeautifulSoup
-from bs4.element import Tag
 import datetime
 import logging
-import requests
-from requests_oauthlib import OAuth1
 import urllib.parse
 
+import requests
+from bs4 import BeautifulSoup
+from bs4.element import Tag
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
@@ -13,10 +12,10 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
+from requests_oauthlib import OAuth1
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
-
 
 log = logging.getLogger('athletes')
 

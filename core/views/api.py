@@ -13,7 +13,6 @@ from core.constans import COUNTRIES
 from core.forms import AthletesListForm
 from core.models import Athlete, Team, AthletesList, TeamsList
 
-
 log = logging.getLogger('athletes')
 
 
