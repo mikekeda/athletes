@@ -191,7 +191,3 @@ def weekly_youtube_update():
         athlete = Athlete.objects.get(id=aid)
         athlete.get_youtube_info()
         super(Athlete, athlete).save()
-
-@app.task
-def test_task():
-    print('in')

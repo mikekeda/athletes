@@ -22,11 +22,6 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=0, day_of_week=1),
         'args': ()
     },
-    'test-every-week': {
-        'task': 'core.tasks.test_task',
-        'schedule': crontab(hour=3, minute=0, day_of_week=2),
-        'args': ()
-    },
 }
 
 app.conf.timezone = 'UTC'
