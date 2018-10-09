@@ -169,9 +169,9 @@ class ModelMixin:
             for i, d in enumerate(dates[:-1]):
                 stats.append((d[:10], (
                     int(history[d]['subscriberCount']) - int(
-                        history[dates[i - 1]]['subscriberCount']),
+                        history[dates[i + 1]]['subscriberCount']),
                     int(history[d]['viewCount']) - int(
-                        history[dates[i - 1]]['viewCount']),
+                        history[dates[i + 1]]['viewCount']),
                 )))
 
         return stats
