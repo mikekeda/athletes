@@ -57,6 +57,9 @@
     <script type="text/javascript" src="{% static 'node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'node_modules/datatables/media/js/jquery.dataTables.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'easy_select2/vendor/select2/js/select2.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'node_modules/moment/min/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'node_modules/chart.js/dist/Chart.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    {% block script %}{% endblock script %}
   </body>
 </html>
