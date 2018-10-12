@@ -27,7 +27,7 @@
             <div class="col-sm-8 float-right">
                 <h1 class="mb-3">{{ team.name }}</h1>
                 <p>Category: {{ team.category }}</p>
-                <p>Gander: {{ team.get_gender_display }}</p>
+                <p>Gender: {{ team.get_gender_display }}</p>
                 <p>Location: <i class="flag flag-{{ team.location_market|lower }}"></i> {{ team.get_location_market_display }}</p>
                 <div>
                     {% if team.twitter_info %}
