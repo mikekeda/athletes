@@ -45,7 +45,103 @@
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
                 </div>
+                <canvas id="youtube-metric" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+    var i;
+    var _date;
+    var stats = {{ athlete.get_youtube_weekly_stats|safe }};
+
+    var stats_subscribers =[];
+    var stats_views =[];
+
+    for (i in stats) {
+        _date = new Date(stats[i][0]);
+
+        stats_subscribers.push({
+            "x": _date,
+            "y": stats[i][1][0]
+        });
+
+        stats_views.push({
+            "x": _date,
+            "y": stats[i][1][1]
+        });
+    }
+
+    var lineChartData = {
+        datasets: [{
+            label: 'New Subscribers',
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgb(255, 99, 132)',
+            fill: false,
+            data: stats_subscribers,
+            yAxisID: 'y-axis-1',
+        }, {
+            label: 'New views',
+            borderColor: 'rgb(54, 162, 235)',
+            backgroundColor: 'rgb(54, 162, 235)',
+            fill: false,
+            data: stats_views,
+            yAxisID: 'y-axis-2'
+        }]
+    };
+
+    window.onload = function() {
+        var ctx = document.getElementById('youtube-metric').getContext('2d');
+        window.myLine = Chart.Line(ctx, {
+            data: lineChartData,
+            options: {
+                responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title: {
+                    display: true,
+                    text: 'Youtube metric'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            parser: 'YYYY-MM-DD',
+                            tooltipFormat: 'll'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: 'left',
+                        ticks: {
+                            fontColor: 'rgb(255, 99, 132)'
+                        },
+                        id: 'y-axis-1',
+                    }, {
+                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: 'right',
+                        ticks: {
+                            fontColor: 'rgb(54, 162, 235)'
+                        },
+                        id: 'y-axis-2',
+
+                        // grid line settings
+                        gridLines: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                    }],
+                }
+            }
+        });
+    };
+</script>
 {% endblock %}
