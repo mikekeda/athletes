@@ -14,8 +14,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from core.constans import CATEGORIES, MAP_COUNTRIES
-from core.forms import TeamForm, TeamsForm, AthletesListForm
-from core.models import Athlete, Team, AthletesList, TeamsList
+from core.forms import TeamForm, LeagueForm, AthletesListForm
+from core.models import Athlete, League, Team, AthletesList, TeamsList
 from core.tasks import parse_team
 
 log = logging.getLogger('athletes')
@@ -51,22 +51,26 @@ class ParseTeamView(View):
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class ParseTeamsView(View):
+class ParseLeagueView(View):
     """ Crawling athletes from team list wiki page. """
 
     # noinspection PyMethodMayBeStatic
     def get(self, request):
         """ Get form. """
-        form = TeamsForm()
+        form = LeagueForm()
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:teams')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
         """ Form submit. """
-        form = TeamsForm(data=request.POST)
+        form = LeagueForm(data=request.POST)
+
         if form.is_valid():
-            selector = form.cleaned_data.get('selector')
+            selector = form.cleaned_data.pop('selector')
+
+            league, _ = League.objects.get_or_create(**form.cleaned_data)
+
             wiki_url = form.cleaned_data.get('wiki')
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
@@ -84,13 +88,15 @@ class ParseTeamsView(View):
 
                 cleaned_data = form.cleaned_data.copy()
                 cleaned_data['wiki'] = link['href']
+                cleaned_data['league__pk'] = league.pk
                 cleaned_data.pop('selector', '')
                 parse_team.delay(cleaned_data, True)
 
-            # Clean fields
+            # Clean fields and add selector.
+            form.cleaned_data['selector'] = selector
             for key in ('wiki', 'location_market'):
                 form.cleaned_data.pop(key, '')
-            form = TeamsForm(initial=form.cleaned_data)
+            form = LeagueForm(initial=form.cleaned_data)
 
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:teams')})

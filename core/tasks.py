@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 
 from core.celery import app
 from core.constans import COUNTRIES
-from core.models import Athlete, Team
+from core.models import Athlete, League, Team
 
 log = logging.getLogger('athletes')
 
@@ -90,6 +90,9 @@ def parse_team(cleaned_data, skip_errors=False):
 
     team, _ = Team.objects.get_or_create(**cleaned_data)
     team.get_data_from_wiki(soup)
+    if cleaned_data.get('league__pk'):
+        team.league = League.objects.filter(pk=cleaned_data.pop(
+            'league__pk')).first()
     team.save()
 
     cleaned_data['team'] = cleaned_data.pop('name', '')

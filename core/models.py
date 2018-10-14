@@ -176,6 +176,100 @@ class ModelMixin:
         return stats
 
 
+class League(models.Model, ModelMixin):
+    wiki = models.URLField(unique=True)
+    name = models.CharField(max_length=255, blank=True)
+    photo = models.URLField(
+        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        max_length=600
+    )
+    location_market = models.CharField(
+        max_length=2,
+        blank=True,
+        choices=COUNTRIES.items(),
+    )
+    gender = models.CharField(
+        max_length=15,
+        blank=True,
+        choices=(("male", _("Male")), ("female", _("Female"))),
+    )
+    category = models.CharField(max_length=255, blank=True,
+                                choices=CATEGORIES.items())
+    additional_info = JSONField(default=dict, blank=True)
+    twitter_info = JSONField(default=dict, blank=True)
+    youtube_info = JSONField(default=dict, blank=True)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def get_data_from_wiki(self, soup=None):
+        """ Get information about league from Wiki. """
+        log.info(f"Parsing League {self.wiki}")
+
+        if not soup:
+            html = requests.get(self.wiki)
+            if html.status_code != 200:
+                # League page doesn't exist.
+                log.warning(
+                    f"Skipping League {self.wiki} ({html.status_code})"
+                )
+                return
+
+            soup = BeautifulSoup(html.content, 'html.parser')
+
+        card = soup.find("table", {"class": "infobox"})
+        info = {}
+
+        # Get name.
+        name = card.select(".fn") or soup.find_all("caption")
+        if name:
+            self.name = name[0].string or name[0].contents[0]
+            if isinstance(self.name, Tag):
+                self.name = self.name.string or self.name.text
+        else:
+            self.name = soup.title.string.split(' - Wikipedia')[0]
+
+        if not card or card.parent.attrs.get('role') == "navigation":
+            # League page doesn't have person card - skip.
+            log.warning(f"Skipping League {self.wiki} (no person card)")
+            return
+
+        img = card.select_one('img')
+        if img and img.get('src'):
+            self.photo = 'https://' + img['src'].strip('//')
+
+        for row in card.find_all('tr'):
+            td = row.find_all(recursive=False)
+            if td:
+                key = str(td[0].string or td[0].text).replace('\xa0', ' ')
+                val = str(td[1].text).strip() if len(td) > 1 else ''
+
+                info[key] = val
+
+        self.additional_info = info
+
+        return self.additional_info
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.name:
+            # If name isn't set - send request to Wiki to get additional info.
+            self.get_data_from_wiki()
+
+        if not self.twitter_info:
+            # Try to get twitter info.
+            self.get_twitter_info()
+
+        if not self.youtube_info.get('updated'):
+            # Try to get youtube info.
+            self.get_youtube_info()
+
+        super().save(force_insert=force_insert, force_update=force_update,
+                     using=using, update_fields=update_fields)
+
+    def __str__(self):
+        return self.name
+
+
 class Team(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True)
@@ -192,6 +286,13 @@ class Team(models.Model, ModelMixin):
         max_length=15,
         blank=True,
         choices=(("male", _("Male")), ("female", _("Female"))),
+    )
+    league = models.ForeignKey(
+        League,
+        null=True,
+        blank=True,
+        related_name='teams',
+        on_delete=models.SET_NULL
     )
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())

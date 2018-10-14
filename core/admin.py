@@ -4,9 +4,10 @@ from django.db.utils import DataError
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
-from core.models import Athlete, Team, AthletesList, TeamsList
+from core.models import Athlete, League, Team, AthletesList, TeamsList
 
 AthleteForm = select2_modelform(Athlete)
+LeagueForm = select2_modelform(League)
 TeamForm = select2_modelform(Team)
 
 
@@ -78,6 +79,12 @@ class AthleteInline(admin.TabularInline):
     extra = 1
 
 
+class TeamInline(admin.TabularInline):
+    model = Team
+    form = TeamForm
+    extra = 1
+
+
 class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     readonly_fields = ('photo_preview', 'added', 'updated')
     list_filter = ('gender', 'category', DomesticMarketListFilter)
@@ -86,6 +93,17 @@ class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     form = AthleteForm
     actions = [update_data_from_wiki, update_location, update_twitter_info,
                update_youtube_info]
+
+
+class LeagueAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    readonly_fields = ('photo_preview', 'added', 'updated')
+    list_filter = ('gender', 'category')
+    list_display = ('name',)
+    search_fields = ('name',)
+    form = LeagueForm
+    actions = [update_data_from_wiki, update_twitter_info,
+               update_youtube_info]
+    inlines = [TeamInline]
 
 
 class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
@@ -116,6 +134,7 @@ class TeamsListListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
 
 admin.site.register(Athlete, AthleteAdmin)
+admin.site.register(League, LeagueAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(AthletesList, AthletesListAdmin)
 admin.site.register(TeamsList, TeamsListListAdmin)
