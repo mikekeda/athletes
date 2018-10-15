@@ -26,6 +26,9 @@ class Command(BaseCommand):
         for i, tid in enumerate(tids):
             team = Team.objects.get(id=tid)
 
+            if not team.additional_info.get('League'):
+                continue
+
             self.stdout.write(f"{i}: check {team.name} team")
 
             site = urlparse(team.wiki)
@@ -33,6 +36,9 @@ class Command(BaseCommand):
             html = requests.get(team.wiki)
             soup = BeautifulSoup(html.content, 'html.parser')
             card = soup.find("table", {"class": "vcard"})
+
+            if not card:
+                continue
 
             for row in card.select('tr'):
                 td = row.find_all(recursive=False)
