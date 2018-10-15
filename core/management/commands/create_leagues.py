@@ -55,9 +55,14 @@ class Command(BaseCommand):
 
                         league, created = League.objects.get_or_create(
                             wiki=link['href'],
-                            location_market=team.location_market,
-                            gender=team.gender,
-                            category=team.category
+                            defaults={
+                                'location_market': team.location_market,
+                                'gender': team.gender,
+                                'category': team.category,
+                            }
                         )
+                        team.league = league
+                        team.save()
+
                         if created:
                             self.stdout.write(f"{league.name} created")
