@@ -219,6 +219,11 @@ class League(models.Model, ModelMixin):
         card = soup.find("table", {"class": "infobox"})
         info = {}
 
+        if not card or card.parent.attrs.get('role') == "navigation":
+            # League page doesn't have person card - skip.
+            log.warning(f"Skipping League {self.wiki} (no person card)")
+            return
+
         # Get name.
         name = card.select(".fn") or soup.find_all("caption")
         if name:
