@@ -4,7 +4,8 @@ from django.db.utils import DataError
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
-from core.models import Athlete, League, Team, AthletesList, TeamsList
+from core.models import (Athlete, League, Team, AthletesList, TeamsList,
+                         LeaguesList)
 
 AthleteForm = select2_modelform(Athlete)
 LeagueForm = select2_modelform(League)
@@ -118,6 +119,7 @@ class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
 
 class AthletesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    readonly_fields = ('added', 'updated')
     list_filter = ('user__username',)
     list_display = ('name',)
     search_fields = ('name',)
@@ -125,7 +127,8 @@ class AthletesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = AthletesList
 
 
-class TeamsListListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+class TeamsListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    readonly_fields = ('added', 'updated')
     list_filter = ('user__username',)
     list_display = ('name',)
     search_fields = ('name',)
@@ -133,8 +136,18 @@ class TeamsListListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = TeamsList
 
 
+class LeaguesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    readonly_fields = ('added', 'updated')
+    list_filter = ('user__username',)
+    list_display = ('name',)
+    search_fields = ('name',)
+    autocomplete_fields = ('leagues',)
+    model = LeaguesList
+
+
 admin.site.register(Athlete, AthleteAdmin)
 admin.site.register(League, LeagueAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(AthletesList, AthletesListAdmin)
-admin.site.register(TeamsList, TeamsListListAdmin)
+admin.site.register(TeamsList, TeamsListAdmin)
+admin.site.register(LeaguesList, LeaguesListAdmin)

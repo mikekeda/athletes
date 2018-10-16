@@ -13,6 +13,7 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from requests_oauthlib import OAuth1
+from urllib.parse import urlparse
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
@@ -346,6 +347,8 @@ class Team(models.Model, ModelMixin):
 
         card = soup.find("table", {"class": "vcard"})
         info = {}
+        site = urlparse(self.wiki)
+        site = f'{site.scheme}://{site.hostname}'
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # Team page doesn't have person card - skip.
@@ -363,6 +366,24 @@ class Team(models.Model, ModelMixin):
                 val = str(td[1].text).strip() if len(td) > 1 else ''
 
                 info[key] = val
+
+                if key == 'League' and td[1] and not self.league:
+                    link = td[1].find('a')
+                    if not link or not link.get('href'):
+                        continue
+
+                    if link['href'][:4] != 'http':
+                        link['href'] = site + link['href']
+
+                    league, created = League.objects.get_or_create(
+                        wiki=link['href'],
+                        defaults={
+                            'location_market': self.location_market,
+                            'gender': self.gender,
+                            'category': self.category,
+                        }
+                    )
+                    self.league = league
 
         self.additional_info = info
 
@@ -664,6 +685,22 @@ class TeamsList(models.Model):
     user = models.ForeignKey(
         User,
         related_name='teams_lists',
+        on_delete=models.CASCADE
+    )
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class LeaguesList(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    leagues = models.ManyToManyField(League, related_name='leagues_lists')
+    user = models.ForeignKey(
+        User,
+        related_name='leagues_lists',
         on_delete=models.CASCADE
     )
     added = models.DateTimeField(auto_now_add=True)

@@ -15,7 +15,8 @@ from django.views import View
 
 from core.constans import CATEGORIES, MAP_COUNTRIES
 from core.forms import TeamForm, LeagueForm, AthletesListForm
-from core.models import Athlete, League, Team, AthletesList, TeamsList
+from core.models import (Athlete, League, Team, AthletesList, TeamsList,
+                         LeaguesList)
 from core.tasks import parse_team
 
 log = logging.getLogger('athletes')
@@ -30,7 +31,7 @@ class ParseTeamView(View):
         """ Get form. """
         form = TeamForm()
         return render(request, 'wiki-team-form.html',
-                      {'form': form, 'action': reverse('core:team')})
+                      {'form': form, 'action': reverse('core:team_parse')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
@@ -44,10 +45,10 @@ class ParseTeamView(View):
             return render(request, 'wiki-team-form.html',
                           {'form': form, 'parsed': result['parsed'],
                            'skipped': result['skipped'],
-                           'action': reverse('core:team')})
+                           'action': reverse('core:team_parse')})
 
         return render(request, 'wiki-team-form.html',
-                      {'form': form, 'action': reverse('core:team')})
+                      {'form': form, 'action': reverse('core:team_parse')})
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -59,7 +60,7 @@ class ParseLeagueView(View):
         """ Get form. """
         form = LeagueForm()
         return render(request, 'wiki-team-form.html',
-                      {'form': form, 'action': reverse('core:teams')})
+                      {'form': form, 'action': reverse('core:league_parse')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
@@ -99,7 +100,7 @@ class ParseLeagueView(View):
             form = LeagueForm(initial=form.cleaned_data)
 
         return render(request, 'wiki-team-form.html',
-                      {'form': form, 'action': reverse('core:teams')})
+                      {'form': form, 'action': reverse('core:league_parse')})
 
 
 @login_required
@@ -200,6 +201,23 @@ def team_page(request, pk):
 
     return render(request, 'team.html', {'team': team, 'athletes': athletes,
                                          'teams_lists': teams_lists})
+
+
+@login_required
+def league_page(request, pk):
+    """ League page. """
+    league = get_object_or_404(League, pk=pk)
+    teams = Team.objects.filter(league=league).only('name', 'wiki')
+
+    league_lists = LeaguesList.objects.filter(user=request.user).only(
+        'pk', 'name')
+
+    # Check if the athlete is in any list.
+    for league_list in league_lists:
+        league_list.selected = league_list in league.leagues_lists.all()
+
+    return render(request, 'league.html', {'league': league, 'teams': teams,
+                                           'league_lists': league_lists})
 
 
 def login_page(request):

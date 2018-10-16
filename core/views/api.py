@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404
 
 from core.constans import COUNTRIES
 from core.forms import AthletesListForm
-from core.models import Athlete, Team, AthletesList, TeamsList
+from core.models import (Athlete, League, Team, AthletesList, TeamsList,
+                         LeaguesList)
 
 log = logging.getLogger('athletes')
 
@@ -362,6 +363,44 @@ def add_team_to_lists_api(request):
                 teams_list.teams.add(team)  # add
             elif teams_list.pk in old_lists_ids - new_lists_ids:
                 teams_list.teams.remove(team)  # remove
+
+        return JsonResponse({"success": True})
+
+    raise Http404
+
+
+@login_required
+def add_league_to_lists_api(request):
+    """ Add an league to the lists. """
+    if request.is_ajax():
+        league_id = request.POST.get('league')
+        # Only int values are allowed.
+        league_id = league_id if league_id.isdigit() else -1
+
+        new_lists_ids = request.POST.getlist('leagues_lists')
+        # Only int values are allowed.
+        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+
+        league = get_object_or_404(
+            League.objects.prefetch_related('leagues_lists'),
+            pk=league_id
+        )
+        old_lists_ids = set([
+            leagues_list.pk
+            for leagues_list in league.leagues_lists.all()
+            if leagues_list.user == request.user  # filter by current user
+        ])
+
+        leagues_lists = LeaguesList.objects.filter(
+            pk__in=new_lists_ids ^ old_lists_ids,
+            user=request.user  # filter by current user
+        )
+
+        for leagues_list in leagues_lists:
+            if leagues_list.pk in new_lists_ids - old_lists_ids:
+                leagues_list.leagues.add(league)  # add
+            elif leagues_list.pk in old_lists_ids - new_lists_ids:
+                leagues_list.leagues.remove(league)  # remove
 
         return JsonResponse({"success": True})
 

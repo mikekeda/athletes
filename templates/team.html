@@ -16,7 +16,7 @@
                         {% csrf_token %}
                         <input type="number" name="team" class="d-none" value="{{ team.id }}">
                         <label for="teams_lists">{% trans "Is part of lists" %}:</label>
-                        <select multiple name="teams_lists" name="teams_lists" id="teams_lists" class="form-control select2">
+                        <select multiple name="teams_lists" id="teams_lists" class="form-control select2">
                             {% for teams_list in teams_lists %}
                                 <option {% if teams_list.selected %}selected{% endif %} value="{{ teams_list.pk }}">{{ teams_list.name }}</option>
                             {% endfor %}
@@ -29,6 +29,7 @@
                 <p>Category: {{ team.category }}</p>
                 <p>Gender: {{ team.get_gender_display }}</p>
                 <p>Location: <i class="flag flag-{{ team.location_market|lower }}"></i> {{ team.get_location_market_display }}</p>
+                <p>League: {% if team.league %}<a href="{% url 'core:league' team.league.pk %}">{{ team.league }}</a>{% endif %}</p>
                 <div>
                     {% if team.twitter_info %}
                         <a href="https://twitter.com/{{ team.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>

@@ -14,19 +14,19 @@ class AthletesViewTest(TestCase):
         test_user.save()
 
     def test_views_team_page(self):
-        resp = self.client.get(reverse('core:team'))
+        resp = self.client.get(reverse('core:team_parse'))
         self.assertRedirects(resp, '/admin/login/?next=/team')
 
         self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:team'))
+        resp = self.client.get(reverse('core:team_parse'))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_teams_page(self):
-        resp = self.client.get(reverse('core:league'))
+        resp = self.client.get(reverse('core:league_parse'))
         self.assertRedirects(resp, '/admin/login/?next=/league')
 
         self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:league'))
+        resp = self.client.get(reverse('core:league_parse'))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_crm_page(self):

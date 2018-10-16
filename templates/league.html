@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load humanize %}
+{% load core_tags %}
+
+{% block title %}{{ league.name }}{% endblock %}
+
+{% block content %}
+    <div class="team-page container mt-9">
+        <div class="row">
+            <div class="col-sm-4 float-left">
+                {{ league.photo_preview }}
+                <div class=" mt-3">
+                    <form action="{% url 'core:leagues_list' %}" id="teams_lists_form">
+                        {% csrf_token %}
+                        <input type="number" name="league" class="d-none" value="{{ league.id }}">
+                        <label for="leagues_lists">{% trans "Is part of lists" %}:</label>
+                        <select multiple name="leagues_lists" id="leagues_lists" class="form-control select2">
+                            {% for league_list in league_lists %}
+                                <option {% if league_list.selected %}selected{% endif %} value="{{ league_list.pk }}">{{ league_list.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+            <div class="col-sm-8 float-right">
+                <h1 class="mb-3">{{ league.name }}</h1>
+                <p>Category: {{ league.category }}</p>
+                <p>Gender: {{ league.get_gender_display }}</p>
+                <p>Location: <i class="flag flag-{{ league.location_market|lower }}"></i> {{ league.get_location_market_display }}</p>
+                <div>
+                    {% if league.twitter_info %}
+                        <a href="https://twitter.com/{{ league.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
+                        <span class="badge">{{ league.twitter_info|get_item:'followers_count'|intcomma }}</span>
+                    {% endif %}
+                    {% if league.youtube_info %}
+                        <a href="https://www.youtube.com/channel/{{ league.youtube_info|get_item:'channelId' }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
+                        <span class="badge">{{ league.youtube_info|get_item:'subscriberCount'|intcomma }}</span>
+                    {% endif %}
+                    <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
+                </div>
+                <div class="mt-3">
+                    <h2 class="h4">{% trans 'Teams' %}:</h2>
+                    <ul>
+                        {% for team in teams %}
+                            <li><a href="{% url 'core:team' team.pk %}">{{ team.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
