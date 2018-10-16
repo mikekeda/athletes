@@ -45,7 +45,22 @@
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
                 </div>
-                <canvas id="youtube-metric" width="400" height="200"></canvas>
+                <ul class="nav nav-tabs mt-3" id="charts" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="youtube-stats-tab" data-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="youtube-trends" role="tabpanel" aria-labelledby="home-tab">
+                        <canvas id="youtube-trends-canv" width="400" height="200"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="youtube-stats" role="tabpanel" aria-labelledby="profile-tab">
+                        <canvas id="youtube-stats-canv" width="400" height="200"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -54,33 +69,38 @@
 
 {% block script %}
 <script>
-    var i;
-    var _date;
-    var stats = {{ athlete.get_youtube_weekly_stats|safe }};
+    let i;
+    let _date;
+    let trends = {{ athlete.get_youtube_weekly_stats|safe }};
+    let stats = {{ athlete.get_youtube_stats|safe }};
 
-    var stats_subscribers =[];
-    var stats_views =[];
+    let stats_subscribers;
+    let stats_views;
+    let lineChartData;
 
-    for (i in stats) {
-        _date = new Date(stats[i][0]);
+    stats_subscribers = [];
+    stats_views = [];
+
+    for (i in trends) {
+        _date = new Date(trends[i][0]);
 
         stats_subscribers.push({
             "x": _date,
-            "y": stats[i][1][0]
+            "y": trends[i][1][0]
         });
 
         stats_views.push({
             "x": _date,
-            "y": stats[i][1][1]
+            "y": trends[i][1][1]
         });
     }
 
     // TODO[Mike] Debug info, should be removed latter.
-    console.log("stats", stats);
+    console.log("stats", trends);
     console.log("stats_subscribers", stats_subscribers);
     console.log("stats_views", stats_views);
 
-    var lineChartData = {
+    lineChartData = {
         datasets: [{
             label: 'New Subscribers',
             borderColor: 'rgb(255, 99, 132)',
@@ -99,8 +119,10 @@
     };
 
     window.onload = function() {
-        var ctx = document.getElementById('youtube-metric').getContext('2d');
-        window.myLine = Chart.Line(ctx, {
+        let ctx_trends = document.getElementById('youtube-trends-canv').getContext('2d');
+        let ctx_stats = document.getElementById('youtube-stats-canv').getContext('2d');
+
+        window.trends = Chart.Line(ctx_trends, {
             data: lineChartData,
             options: {
                 responsive: true,
@@ -108,7 +130,90 @@
                 stacked: false,
                 title: {
                     display: true,
-                    text: 'Youtube metric'
+                    text: 'Youtube trends'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            parser: 'YYYY-MM-DD',
+                            tooltipFormat: 'll'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: 'left',
+                        ticks: {
+                            fontColor: 'rgb(255, 99, 132)'
+                        },
+                        id: 'y-axis-1',
+                    }, {
+                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: 'right',
+                        ticks: {
+                            fontColor: 'rgb(54, 162, 235)'
+                        },
+                        id: 'y-axis-2',
+
+                        // grid line settings
+                        gridLines: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                    }],
+                }
+            }
+        });
+
+        stats_subscribers = [];
+        stats_views = [];
+
+        for (i in stats) {
+            _date = new Date(stats[i][0]);
+
+            stats_subscribers.push({
+                "x": _date,
+                "y": stats[i][1][0]
+            });
+
+            stats_views.push({
+                "x": _date,
+                "y": stats[i][1][1]
+            });
+        }
+
+        lineChartData = {
+            datasets: [{
+                label: 'Subscribers',
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgb(255, 99, 132)',
+                fill: false,
+                data: stats_subscribers,
+                yAxisID: 'y-axis-1',
+            }, {
+                label: 'Views',
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgb(54, 162, 235)',
+                fill: false,
+                data: stats_views,
+                yAxisID: 'y-axis-2'
+            }]
+        };
+
+        window.stats = Chart.Line(ctx_stats, {
+            data: lineChartData,
+            options: {
+                responsive: true,
+                hoverMode: 'index',
+                stacked: false,
+                title: {
+                    display: true,
+                    text: 'Youtube stats'
                 },
                 scales: {
                     xAxes: [{

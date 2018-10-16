@@ -152,6 +152,28 @@ class ModelMixin:
         return self.youtube_info
 
     @property
+    def get_youtube_stats(self):
+        """ Youtube statistic (subscriberCount, viewCount). """
+        stats = []
+        if self.youtube_info.get('history'):
+            history = self.youtube_info['history']
+            last_update = self.youtube_info['updated']
+            history[last_update] = {
+                'subscriberCount': self.youtube_info.get('subscriberCount',
+                                                         '0'),
+                'viewCount': self.youtube_info.get('viewCount', '0'),
+            }
+
+            dates = sorted(history.keys(), reverse=True)
+            for d in dates:
+                stats.append([d[:10], [
+                    int(history[d]['subscriberCount']),
+                    int(history[d]['viewCount']),
+                ]])
+
+        return stats
+
+    @property
     def get_youtube_weekly_stats(self):
         """ Youtube weekly statistic (subscriberCount, viewCount). """
         stats = []
