@@ -236,18 +236,26 @@ def athletes_list_api(request):
             body = QueryDict(request.body)
             list_id = body.get('list_id')
             athletes_ids = body.getlist('athletes_ids[]')
-            athletes_ids = [pk for pk in athletes_ids if pk.isdigit()]
+            athletes_ids = [int(pk) for pk in athletes_ids if pk.isdigit()]
 
             if athletes_ids and list_id and list_id.isdigit():
                 athletes_list = AthletesList.objects.filter(
                     pk=list_id, user=request.user).first()
-                athletes_list.athletes.add(*athletes_ids)
 
-                return JsonResponse({
-                    "id": athletes_list.pk,
-                    "name": athletes_list.name,
-                    "success": True
-                })
+                if athletes_list:
+                    old = athletes_list.athletes.values_list('id', flat=True)
+
+                    athletes_list.athletes.add(*[
+                        pk
+                        for pk in athletes_ids
+                        if pk not in old
+                    ])
+
+                    return JsonResponse({
+                        "id": athletes_list.pk,
+                        "name": athletes_list.name,
+                        "success": True
+                    })
 
         return JsonResponse({"success": False})
 
