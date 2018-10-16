@@ -49,10 +49,10 @@
 
     <div class="mt-6">
         <div>
-            <div class="form-group float-left col-sm-6 col-md-4 col-lg-2 offset-sm-2 offset-md-3 offset-lg-4">
+            <div class="form-group float-left col-sm-4 col-md-3 col-lg-2 offset-md-1 offset-lg-2">
                 <label for="athletes_lists" class="col-form-label col-sm-12 col-md-4">List</label>
                 <select name="athletes_lists" id="athletes_lists" class="form-control col-sm-12 col-md-8 float-right">
-                    <option selected value>Show all</option>
+                    <option selected value>{% trans "Show all" %}</option>
                     {% for athletes_list in athletes_lists %}
                         <option value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
                     {% endfor %}
@@ -63,9 +63,20 @@
             </div>
 
             <!-- Button trigger modal -->
-            <button type="button" class="add-btn btn btn-outline-secondary text-dark ml-3" data-toggle="modal" data-target="#add-athletes-list">
-                <span class="glyphicon glyphicon-plus"></span> {% trans "Add Athletes list" %}
+            <button type="button" class="float-left add-btn btn btn-outline-secondary text-dark ml-3 " data-toggle="modal" data-target="#add-athletes-list">
+                <span class="glyphicon glyphicon-plus"></span> {% trans "Create list of Athletes" %}
             </button>
+
+
+            <div class="form-group float-left col-sm-4 col-md-3 col-lg-2">
+                <label for="add_athletes_to_list" class="col-form-label col-sm-12 col-md-6">{% trans "Add to" %}</label>
+                <select name="add_athletes_to_list" id="add_athletes_to_list" class="form-control col-sm-12 col-md-6 float-right" data-csrf_token="{{ csrf_token }}">
+                    <option selected value></option>
+                    {% for athletes_list in athletes_lists %}
+                        <option value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
         <table id="athletes-table" class="table table-striped" style="table-layout: fixed; width: 100%;">

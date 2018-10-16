@@ -1,6 +1,7 @@
 $(document).ready( function () {
     let $athletes_table = $('table#athletes-table');
     let $athletes_lists = $('#athletes_lists');
+    let $add_athletes_to_list = $('#add_athletes_to_list');
     let $athletes_export_link = $('a#athletes-export-link');
     let $athletes_list_form = $('#add-athletes-list form');
     let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
@@ -109,6 +110,34 @@ $(document).ready( function () {
 
     $athletes_lists.change(function() {
         table.ajax.reload();
+    });
+
+    $add_athletes_to_list.change(function() {
+        if ($add_athletes_to_list.val() === '') {
+            return false;
+        }
+
+        ids = [];
+        $athletes_table.find('.athlete-checkbox:checked').each(function () {
+            ids.push(this.getAttribute("data-id"));
+        });
+
+        $.ajax({
+            url: '/athletes_list',
+            type: 'PUT',
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", $add_athletes_to_list.data('csrf_token'));
+            },
+            data: {
+                athletes_ids: ids,
+                list_id: $add_athletes_to_list.val()
+            },
+            dataType: 'json',
+        });
+
+        $add_athletes_to_list.val('');
+
+        alert("Added");
     });
 
     $athletes_table.on('change', '.athlete-checkbox', function() {

@@ -6,7 +6,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.db.models import Q, F
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, Http404, QueryDict
 from django.shortcuts import get_object_or_404
 
 from core.constans import COUNTRIES
@@ -211,24 +211,43 @@ def athletes_api(request):
 
 @login_required
 def athletes_list_api(request):
-    """ Create Athletes_list. """
+    """ Create or Update Athletes_list. """
     if request.is_ajax():
-        form = AthletesListForm(request.POST)
-        if form.is_valid():
-            athletes_ids = request.POST.get('id_athletes', '').split(',')
+        if request.method == "POST":
+            # Create Athletes_list.
+            form = AthletesListForm(request.POST)
+            if form.is_valid():
+                athletes_ids = request.POST.get('id_athletes', '').split(',')
+                athletes_ids = [pk for pk in athletes_ids if pk.isdigit()]
+
+                athletes_list = form.save(commit=False)
+                athletes_list.user = request.user
+
+                athletes_list.save()
+                athletes_list.athletes.add(*athletes_ids)
+
+                return JsonResponse({
+                    "id": athletes_list.pk,
+                    "name": athletes_list.name,
+                    "success": True
+                })
+        elif request.method == "PUT":
+            # Add Athletes to Athletes_list.
+            body = QueryDict(request.body)
+            list_id = body.get('list_id')
+            athletes_ids = body.getlist('athletes_ids[]')
             athletes_ids = [pk for pk in athletes_ids if pk.isdigit()]
 
-            athletes_list = form.save(commit=False)
-            athletes_list.user = request.user
+            if athletes_ids and list_id and list_id.isdigit():
+                athletes_list = AthletesList.objects.filter(
+                    pk=list_id, user=request.user).first()
+                athletes_list.athletes.add(*athletes_ids)
 
-            athletes_list.save()
-            athletes_list.athletes.add(*athletes_ids)
-
-            return JsonResponse({
-                "id": athletes_list.pk,
-                "name": athletes_list.name,
-                "success": True
-            })
+                return JsonResponse({
+                    "id": athletes_list.pk,
+                    "name": athletes_list.name,
+                    "success": True
+                })
 
         return JsonResponse({"success": False})
 
