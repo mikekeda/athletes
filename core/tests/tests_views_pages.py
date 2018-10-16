@@ -22,11 +22,11 @@ class AthletesViewTest(TestCase):
         self.assertEqual(resp.status_code, 302)
 
     def test_views_teams_page(self):
-        resp = self.client.get(reverse('core:teams'))
-        self.assertRedirects(resp, '/admin/login/?next=/teams')
+        resp = self.client.get(reverse('core:league'))
+        self.assertRedirects(resp, '/admin/login/?next=/league')
 
         self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:teams'))
+        resp = self.client.get(reverse('core:league'))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_crm_page(self):
