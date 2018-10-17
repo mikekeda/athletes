@@ -18,9 +18,14 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    'every-week': {
-        'task': 'core.tasks.weekly_youtube_update',
+    'every-monday': {
+        'task': 'core.tasks.weekly_athletes_youtube_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=1),
+        'args': ()
+    },
+    'every-saturday': {
+        'task': 'core.tasks.weekly_youtube_update',
+        'schedule': crontab(hour=3, minute=0, day_of_week=6),
         'args': ()
     },
 }

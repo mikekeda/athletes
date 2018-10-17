@@ -185,7 +185,7 @@ def parse_team(cleaned_data, skip_errors=False):
 
 
 @app.task
-def weekly_youtube_update():
+def weekly_athletes_youtube_update():
     aids = sorted(Athlete.objects.filter(~Q(youtube_info={})).values_list(
         'id', flat=True))
 
@@ -193,3 +193,15 @@ def weekly_youtube_update():
         athlete = Athlete.objects.get(id=aid)
         athlete.get_youtube_info()
         super(Athlete, athlete).save()
+
+
+@app.task
+def weekly_youtube_update():
+    for cls in (League, Team):
+        ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list(
+            'id', flat=True))
+
+        for _id in ids:
+            obj = cls.objects.get(id=_id)
+            obj.get_youtube_info()
+            super(cls, obj).save()
