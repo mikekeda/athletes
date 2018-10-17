@@ -54,23 +54,34 @@ class ModelMixin:
     def get_twitter_info(self):
         """ Get info from Twitter. """
         model = self.__class__.__name__
+        if self.twitter_info.get('screen_name'):
+            log.info(f"Update info from Twitter for {model} {self.name}")
+            screen_name = self.twitter_info['screen_name']
 
-        log.info(f"Get info from Twitter for {model} {self.name}")
-        self.twitter_info = {}
+            url = (
+                "https://api.twitter.com/1.1/users/show.json"
+                f"?screen_name={screen_name}"
+            )
 
-        urlencoded_name = urllib.parse.quote_plus(self.name)
+        else:
+            log.info(f"Get info from Twitter for {model} {self.name}")
+            urlencoded_name = urllib.parse.quote_plus(self.name)
 
-        url = (
-            "https://api.twitter.com/1.1/users/search.json"
-            "?count=1"  # we need only 1
-            f"&q={urlencoded_name} {self.category}"
-        )
+            url = (
+                "https://api.twitter.com/1.1/users/search.json"
+                "?count=1"  # we need only 1
+                f"&q={urlencoded_name} {self.category}"
+            )
+
         res = requests.get(url, auth=auth)
         if res.status_code == 200:
             twitter_info = res.json()
             if twitter_info:
-                self.twitter = twitter_info[0]['followers_count']
-                self.twitter_info = twitter_info[0]
+                if isinstance(twitter_info, list):
+                    twitter_info = twitter_info[0]
+
+                self.twitter = twitter_info['followers_count']
+                self.twitter_info = twitter_info
             else:
                 log.info(f"No twitter info for {model} {self.name}")
         else:
@@ -95,7 +106,7 @@ class ModelMixin:
             last_update = self.youtube_info.get('updated', week_ago)
 
             # If last update was more then 1 week before - update history.
-            if last_update <= week_ago:
+            if last_update <= week_ago:  # TODO: Improve this
                 history[last_update] = {}
                 for key in historical_keys:
                     history[last_update][key] = self.youtube_info.get(key, 0)
