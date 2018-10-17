@@ -105,11 +105,9 @@ class ModelMixin:
             week_ago = str(now - datetime.timedelta(weeks=1))
             last_update = self.youtube_info.get('updated', week_ago)
 
-            # If last update was more then 1 week before - update history.
-            if last_update <= week_ago:  # TODO: Improve this
-                history[last_update] = {}
-                for key in historical_keys:
-                    history[last_update][key] = self.youtube_info.get(key, 0)
+            history[last_update] = {}
+            for key in historical_keys:
+                history[last_update][key] = self.youtube_info.get(key, 0)
 
         if not channel_id:
             urlencoded_name = urllib.parse.quote_plus(self.name)
