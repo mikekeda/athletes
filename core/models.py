@@ -354,7 +354,8 @@ class Team(models.Model, ModelMixin):
 
             soup = BeautifulSoup(html.content, 'html.parser')
 
-        card = soup.find("table", {"class": "vcard"})
+        card = soup.find("table", {"class": "vcard"}) \
+               or soup.find("table", {"class": "infobox"})
         info = {}
         site = urlparse(self.wiki)
         site = f'{site.scheme}://{site.hostname}'
