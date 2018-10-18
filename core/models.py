@@ -364,7 +364,7 @@ class Team(models.Model, ModelMixin):
             log.warning(f"Skipping Team {self.wiki} (no person card)")
             return
 
-        img = card.select_one('img')
+        img = card.select_one('a.image > img') or card.select_one('img')
         if img and img.get('src'):
             self.photo = 'https://' + img['src'].strip('//')
 
