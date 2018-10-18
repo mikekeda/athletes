@@ -717,3 +717,20 @@ class LeaguesList(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class AthleteFollower(models.Model):
+    athlete = models.ForeignKey(
+        Athlete,
+        related_name='followers',
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        related_name='followed_athletes',
+        on_delete=models.CASCADE
+    )
+    added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.athlete.name}_{self.user.username}'

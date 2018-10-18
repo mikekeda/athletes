@@ -5,7 +5,7 @@ from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList)
+                         LeaguesList, AthleteFollower)
 
 AthleteForm = select2_modelform(Athlete)
 LeagueForm = select2_modelform(League)
@@ -145,9 +145,18 @@ class LeaguesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = LeaguesList
 
 
+class AthleteFollowerAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    readonly_fields = ('added',)
+    list_filter = ('user__username',)
+    search_fields = ('athlete__name',)
+    autocomplete_fields = ('athlete',)
+    model = AthleteFollower
+
+
 admin.site.register(Athlete, AthleteAdmin)
 admin.site.register(League, LeagueAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(AthletesList, AthletesListAdmin)
 admin.site.register(TeamsList, TeamsListAdmin)
 admin.site.register(LeaguesList, LeaguesListAdmin)
+admin.site.register(AthleteFollower, AthleteFollowerAdmin)
