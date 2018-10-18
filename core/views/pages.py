@@ -1,3 +1,4 @@
+from collections import Counter
 import logging
 from urllib.parse import urlparse, quote_plus
 
@@ -199,8 +200,30 @@ def team_page(request, pk):
     for teams_list in teams_lists:
         teams_list.selected = teams_list in team.teams_lists.all()
 
-    return render(request, 'team.html', {'team': team, 'athletes': athletes,
-                                         'teams_lists': teams_lists})
+    # Collect squad age statistic.
+    counter = Counter()
+
+    for athlete in athletes:
+        counter[athlete.age] += 1
+
+    counter = sorted(counter.items())
+
+    age_dataset = {
+        'datasets': [{
+            'data': [c[1] for c in counter],
+            'backgroundColor': [
+                f'rgba(255, 0, 0, {(c[0] - 15) / 30})' for c in counter
+            ]
+        }],
+        'labels': [c[0] for c in counter]
+    }
+
+    return render(request, 'team.html', {
+        'team': team,
+        'athletes': athletes,
+        'teams_lists': teams_lists,
+        'age_dataset': age_dataset
+    })
 
 
 @login_required
