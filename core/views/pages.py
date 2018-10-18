@@ -207,6 +207,7 @@ def team_page(request, pk):
     for athlete in athletes:
         counter[athlete.age] += 1
 
+    total = sum(counter.values())
     counter = sorted(counter.items())
 
     age_dataset = {
@@ -216,7 +217,10 @@ def team_page(request, pk):
                 f'rgba(255, 0, 0, {(c[0] - 15) / 30})' for c in counter
             ]
         }],
-        'labels': [c[0] for c in counter]
+        'labels': [
+            f'{c[0]} ({round(c[1] * 100 / total, 1)}%)'
+            for c in counter
+        ]
     }
 
     # Collect squad domestic_market statistic.
@@ -225,6 +229,7 @@ def team_page(request, pk):
     for athlete in athletes:
         counter[athlete.get_domestic_market_display()] += 1
 
+    total = sum(counter.values())
     counter = sorted(counter.items())
 
     domestic_market_dataset = {
@@ -235,7 +240,10 @@ def team_page(request, pk):
                 f'{random.randint(0, 255)})' for _ in counter
             ]
         }],
-        'labels': [c[0] for c in counter]
+        'labels': [
+            f'{c[0]} ({round(c[1] * 100 / total, 1)}%)'
+            for c in counter
+        ]
     }
 
     return render(request, 'team.html', {
