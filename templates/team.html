@@ -46,7 +46,10 @@
                         <a class="nav-link active" id="current-squad-tab" data-toggle="tab" href="#current-squad" role="tab" aria-controls="current squad" aria-selected="true">{% trans 'Current squad' %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="age-tab" data-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad age" %}</a>
+                        <a class="nav-link" id="age-tab" data-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad ages" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="domestic_market-tab" data-toggle="tab" href="#domestic_market" role="tab" aria-controls="domestic market" aria-selected="false">{% trans "Squad nationalities" %}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
@@ -66,6 +69,9 @@
                     <div class="tab-pane fade" id="age" role="tabpanel" aria-labelledby="profile-tab">
                         <canvas id="age-canv" width="400" height="200"></canvas>
                     </div>
+                    <div class="tab-pane fade" id="domestic_market" role="tabpanel" aria-labelledby="profile-tab">
+                        <canvas id="domestic_market-canv" width="400" height="200"></canvas>
+                    </div>
                     <div class="tab-pane fade" id="youtube-trends" role="tabpanel" aria-labelledby="home-tab">
                         <canvas id="youtube-trends-canv" width="400" height="200"></canvas>
                     </div>
@@ -82,6 +88,8 @@
     let trends = {{ team.get_youtube_weekly_stats|safe }};
     let stats = {{ team.get_youtube_stats|safe }};
     let age_dataset = {{ age_dataset|safe }};
+    let domestic_market_dataset = {{ domestic_market_dataset|safe }};
+
 
     let stats_subscribers;
     let stats_views;
@@ -103,11 +111,6 @@
             "y": trends[i][1][1]
         });
     }
-
-    // TODO[Mike] Debug info, should be removed latter.
-    console.log("stats", trends);
-    console.log("stats_subscribers", stats_subscribers);
-    console.log("stats_views", stats_views);
 
     lineChartData = {
         datasets: [{
@@ -131,6 +134,7 @@
         let ctx_trends = document.getElementById('youtube-trends-canv').getContext('2d');
         let ctx_stats = document.getElementById('youtube-stats-canv').getContext('2d');
         let ctx_age = document.getElementById('age-canv').getContext('2d');
+        let ctx_domestic_market = document.getElementById('domestic_market-canv').getContext('2d');
 
         window.trends = Chart.Line(ctx_trends, {
             data: lineChartData,
@@ -266,6 +270,11 @@
         window.age = new Chart(ctx_age, {
             type: 'pie',
             data: age_dataset
+        });
+
+        window.age = new Chart(ctx_domestic_market, {
+            type: 'pie',
+            data: domestic_market_dataset
         });
     };
 </script>

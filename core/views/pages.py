@@ -1,5 +1,6 @@
 from collections import Counter
 import logging
+import random
 from urllib.parse import urlparse, quote_plus
 
 import requests
@@ -218,11 +219,31 @@ def team_page(request, pk):
         'labels': [c[0] for c in counter]
     }
 
+    # Collect squad domestic_market statistic.
+    counter = Counter()
+
+    for athlete in athletes:
+        counter[athlete.get_domestic_market_display()] += 1
+
+    counter = sorted(counter.items())
+
+    domestic_market_dataset = {
+        'datasets': [{
+            'data': [c[1] for c in counter],
+            'backgroundColor': [
+                f'rgb({random.randint(0, 255)}, {random.randint(0, 255)}, '
+                f'{random.randint(0, 255)})' for _ in counter
+            ]
+        }],
+        'labels': [c[0] for c in counter]
+    }
+
     return render(request, 'team.html', {
         'team': team,
         'athletes': athletes,
         'teams_lists': teams_lists,
-        'age_dataset': age_dataset
+        'age_dataset': age_dataset,
+        'domestic_market_dataset': domestic_market_dataset
     })
 
 
