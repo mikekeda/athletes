@@ -26,10 +26,10 @@
             </div>
             <div class="col-sm-8 float-right">
                 <h1 class="mb-3">{{ team.name }}</h1>
-                <p>Category: {{ team.category }}</p>
-                <p>Gender: {{ team.get_gender_display }}</p>
-                <p>Location: <i class="flag flag-{{ team.location_market|lower }}"></i> {{ team.get_location_market_display }}</p>
-                <p>League: {% if team.league %}<a href="{% url 'core:league' team.league.pk %}">{{ team.league }}</a>{% endif %}</p>
+                <p>{% trans "Category" %}: {{ team.category }}</p>
+                <p>{% trans "Gender" %}: {{ team.get_gender_display }}</p>
+                <p>{% trans "Location" %}: <i class="flag flag-{{ team.location_market|lower }}"></i> {{ team.get_location_market_display }}</p>
+                <p>{% trans "League" %}: {% if team.league %}<a href="{% url 'core:league' team.league.pk %}">{{ team.league }}</a>{% endif %}</p>
                 <div>
                     {% if team.twitter_info %}
                         <a href="https://twitter.com/{{ team.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>

@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}About us{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "About us" %}{% endblock %}
 
 {% block content %}
     <div class="container mt-6">
-        <h1 class="center blue-grey-text">About us</h1>
-        <p>Athletes site.</p>
+        <h1 class="center blue-grey-text">{% trans "About us" %}</h1>
+        <p>{% trans "Athletes site" %}.</p>
     </div>
 {% endblock %}

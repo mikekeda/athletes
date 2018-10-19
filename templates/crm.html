@@ -32,7 +32,7 @@
                             </div>
                         {% endfor %}
                         <div class="form-group d-none">
-                            <label class="control-label col-sm-2" for="id_athletes">Athletes</label>
+                            <label class="control-label col-sm-2" for="id_athletes">{% trans "Athletes" %}</label>
                             <div class="col-sm-12">
                                 <input type="text" name="id_athletes" id="id_athletes" class="form-control">
                             </div>
@@ -50,7 +50,7 @@
     <div class="mt-6">
         <div>
             <div class="form-group float-left col-sm-4 col-md-3 col-lg-2 offset-md-1 offset-lg-2">
-                <label for="athletes_lists" class="col-form-label col-sm-12 col-md-4">List</label>
+                <label for="athletes_lists" class="col-form-label col-sm-12 col-md-4">{% trans "List" %}</label>
                 <select name="athletes_lists" id="athletes_lists" class="form-control col-sm-12 col-md-8 float-right">
                     <option selected value>{% trans "Show all" %}</option>
                     {% for athletes_list in athletes_lists %}
@@ -83,26 +83,26 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>Name</th>
-                    <th>Domestic market</th>
-                    <th>Age</th>
-                    <th>Gender</th>
-                    <th>Location market</th>
-                    <th>Team</th>
-                    <th>Category</th>
-                    <th>Marketability</th>
-                    <th>Optimal campaign</th>
-                    <th>Market export</th>
-                    <th>Instagram</th>
-                    <th>Twitter</th>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Domestic market" %}</th>
+                    <th>{% trans "Age" %}</th>
+                    <th>{% trans "Gender" %}</th>
+                    <th>{% trans "Location market" %}</th>
+                    <th>{% trans "Team" %}</th>
+                    <th>{% trans "Category" %}</th>
+                    <th>{% trans "Marketability" %}</th>
+                    <th>{% trans "Optimal campaign" %}</th>
+                    <th>{% trans "Market export" %}</th>
+                    <th>{% trans "Instagram" %}</th>
+                    <th>{% trans "Twitter" %}</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
                     <th></th>
-                    <th>Name<input type="text" placeholder="Search Name"/></th>
-                    <th>Domestic market<input type="text" placeholder="Search Domestic market"/></th>
-                    <th>Age
+                    <th>{% trans "Name" %}<input type="text" placeholder="{% trans "Search Name" %}"/></th>
+                    <th>{% trans "Domestic market" %}<input type="text" placeholder="{% trans "Search Domestic market" %}"/></th>
+                    <th>{% trans "Age" %}
                         <select>
                             <option selected value></option>
                             <option value="16-21">16 - 21</option>
@@ -111,7 +111,7 @@
                             <option value="40-100">40+</option>
                         </select>
                     </th>
-                    <th>Gender
+                    <th>{% trans "Gender" %}
                         <select>
                             <option selected value></option>
                             {% for value, title in gender_choices %}
@@ -119,9 +119,9 @@
                             {% endfor %}
                         </select>
                     </th>
-                    <th>Location market<input type="text" placeholder="Search Location market"/></th>
-                    <th>Team<input type="text" placeholder="Search Team"/></th>
-                    <th>Category
+                    <th>{% trans "Location market" %}<input type="text" placeholder="{% trans "Search Location market" %}"/></th>
+                    <th>{% trans "Team" %}<input type="text" placeholder="{% trans "Search Team" %}"/></th>
+                    <th>{% trans "Category" %}
                         <select multiple>
                             <option selected value></option>
                             {% for value, title in category_choices %}
@@ -129,7 +129,7 @@
                             {% endfor %}
                         </select>
                     </th>
-                    <th>Marketability
+                    <th>{% trans "Marketability" %}
                         <select multiple>
                             <option selected value></option>
                             <option value="81-100">81 - 100</option>
@@ -139,7 +139,7 @@
                             <option value="1-20">1 - 20</option>
                         </select>
                     </th>
-                    <th>Optimal campaign
+                    <th>{% trans "Optimal campaign" %}
                         <select multiple>
                             <option selected value></option>
                             {% for value, title in optimal_campaign_choices %}
@@ -147,14 +147,14 @@
                             {% endfor %}
                         </select>
                     </th>
-                    <th>Market export
+                    <th>{% trans "Market export" %}
                         <select>
                             <option selected value></option>
                             <option value="true">yes</option>
                             <option value="false">no</option>
                         </select>
                     </th>
-                    <th>Instagram
+                    <th>{% trans "Instagram" %}
                         <select>
                             <option selected value></option>
                             <option value="1000-1000000000">1,000+</option>
@@ -163,7 +163,7 @@
                             <option value="1000000-1000000000">1000,000+</option>
                         </select>
                     </th>
-                    <th>Twitter
+                    <th>{% trans "Twitter" %}
                         <select>
                             <option selected value></option>
                             <option value="1000-1000000000">1,000+</option>

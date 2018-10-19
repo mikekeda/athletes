@@ -1,4 +1,5 @@
-{% block youtube_charts %}
+{% load i18n %}
+
 <script>
     let i;
     let _date;
@@ -28,14 +29,14 @@
 
     lineChartData = {
         datasets: [{
-            label: 'New Subscribers',
+            label: '{% trans "New Subscribers" %}',
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgb(255, 99, 132)',
             fill: false,
             data: stats_subscribers,
             yAxisID: 'y-axis-1',
         }, {
-            label: 'New views',
+            label: '{% trans "New views" %}',
             borderColor: 'rgb(54, 162, 235)',
             backgroundColor: 'rgb(54, 162, 235)',
             fill: false,
@@ -56,7 +57,7 @@
                 stacked: false,
                 title: {
                     display: true,
-                    text: 'Youtube trends'
+                    text: '{% trans "Youtube trends" %}'
                 },
                 scales: {
                     xAxes: [{
@@ -67,7 +68,7 @@
                         },
                         scaleLabel: {
                             display: true,
-                            labelString: 'Date'
+                            labelString: '{% trans "Date" %}'
                         }
                     }],
                     yAxes: [{
@@ -115,14 +116,14 @@
 
         lineChartData = {
             datasets: [{
-                label: 'Subscribers',
+                label: '{% trans "Subscribers" %}',
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgb(255, 99, 132)',
                 fill: false,
                 data: stats_subscribers,
                 yAxisID: 'y-axis-1',
             }, {
-                label: 'Views',
+                label: '{% trans "Views" %}',
                 borderColor: 'rgb(54, 162, 235)',
                 backgroundColor: 'rgb(54, 162, 235)',
                 fill: false,
@@ -139,7 +140,7 @@
                 stacked: false,
                 title: {
                     display: true,
-                    text: 'Youtube stats'
+                    text: '{% trans "Youtube stats" %}'
                 },
                 scales: {
                     xAxes: [{
@@ -150,7 +151,7 @@
                         },
                         scaleLabel: {
                             display: true,
-                            labelString: 'Date'
+                            labelString: '{% trans "Date" %}'
                         }
                     }],
                     yAxes: [{
@@ -180,4 +181,3 @@
         });
     });
 </script>
-{% endblock %}
