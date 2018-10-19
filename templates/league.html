@@ -40,15 +40,38 @@
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
                 </div>
-                <div class="mt-3">
-                    <h2 class="h4">{% trans 'Teams' %}:</h2>
-                    <ul>
-                        {% for team in teams %}
-                            <li><a href="{% url 'core:team' team.pk %}">{{ team.name }}</a></li>
-                        {% endfor %}
-                    </ul>
+
+                <ul class="nav nav-tabs mt-3" id="charts" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="teams-tab" data-toggle="tab" href="#teams" role="tab" aria-controls="teams" aria-selected="true">{% trans "Teams" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="youtube-stats-tab" data-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="charts-content">
+                    <div class="tab-pane fade show active" id="teams" role="tabpanel" aria-labelledby="teams-tab">
+                        <ul class="mt-2">
+                            {% for team in teams %}
+                                <li><a href="{% url 'core:team' team.pk %}">{{ team.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade show" id="youtube-trends" role="tabpanel" aria-labelledby="youtube-trends-tab">
+                        <canvas id="youtube-trends-canv" width="400" height="200"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="youtube-stats" role="tabpanel" aria-labelledby="youtube-stats-tab">
+                        <canvas id="youtube-stats-canv" width="400" height="200"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    {% include "_youtube_charts.html" with obj=league %}
 {% endblock %}
