@@ -734,4 +734,4 @@ class AthleteFollower(models.Model):
     added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.athlete.name}_{self.user.username}'
+        return f'{self.athlete.name} | {self.user.username}'

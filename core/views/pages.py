@@ -178,12 +178,6 @@ def athlete_page(request, slug):
     for athletes_list in athletes_lists:
         athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
-    # TODO[Mike] Remove this latter.
-    if not athlete.youtube_info.get('updated'):
-        # Try to get youtube info.
-        athlete.get_youtube_info()
-        super(Athlete, athlete).save()
-
     return render(request, 'athlete.html', {'athlete': athlete,
                                             'athletes_lists': athletes_lists})
 
