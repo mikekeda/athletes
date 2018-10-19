@@ -256,7 +256,7 @@ class League(models.Model, ModelMixin):
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
 
-        if not self.twitter_info:
+        if not self.twitter_info.get('updated'):
             # Try to get twitter info.
             self.get_twitter_info()
 
@@ -398,7 +398,7 @@ class Team(models.Model, ModelMixin):
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
 
-        if not self.twitter_info:
+        if not self.twitter_info.get('updated'):
             # Try to get twitter info.
             self.get_twitter_info()
 
@@ -621,7 +621,7 @@ class Athlete(models.Model, ModelMixin):
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
 
-        if not self.twitter_info:
+        if not self.twitter_info.get('updated'):
             # Try to get amount od followers from twitter.
             self.get_twitter_info()
 

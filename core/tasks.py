@@ -1,3 +1,4 @@
+import datetime
 import logging
 import urllib.parse
 
@@ -227,6 +228,8 @@ def every_minute_twitter_update():
     for key in keys:
         cache.delete(key)  # first delete the key
 
+        historical_keys = ('followers_count',)
+
         cls_name, pk = key[len('twitter_update_'):].split('_')
         cls = {
             'Athlete': Athlete,
@@ -235,6 +238,15 @@ def every_minute_twitter_update():
         }.get(cls_name)
 
         obj = cls.objects.get(id=pk)
+        history = obj.twitter_info.get('history', {})
+        now = datetime.datetime.now()
+        if obj.twitter_info:
+            week_ago = str(now - datetime.timedelta(weeks=1))
+            last_update = obj.twitter_info.get('updated', week_ago)
+
+            history[last_update] = {}
+            for field in historical_keys:
+                history[last_update][field] = obj.twitter_info.get(field, 0)
 
         if obj.twitter_info.get('screen_name'):
             log.info(f"Update info from Twitter for {cls_name} {obj.name}")
@@ -264,6 +276,8 @@ def every_minute_twitter_update():
 
                 obj.twitter = twitter_info['followers_count']
                 obj.twitter_info = twitter_info
+                obj.twitter_info['updated'] = str(now)
+                obj.twitter_info['history'] = history
             else:
                 log.info(f"No twitter info for {cls_name} {obj.name}")
         else:
