@@ -1,6 +1,6 @@
-from collections import Counter
 import logging
 import random
+from collections import Counter
 from urllib.parse import urlparse, quote_plus
 
 import requests

@@ -3,11 +3,9 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
-
 from django.core.management import BaseCommand
 
 from core.models import Team, League
-
 
 log = logging.getLogger('athletes')
 

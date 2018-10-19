@@ -6,7 +6,6 @@ from django.db.utils import DataError
 
 from core.models import Athlete
 
-
 log = logging.getLogger('athletes')
 
 

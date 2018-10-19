@@ -1,6 +1,7 @@
 import datetime
 import logging
 import urllib.parse
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,7 +14,6 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from requests_oauthlib import OAuth1
-from urllib.parse import urlparse
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
@@ -354,8 +354,8 @@ class Team(models.Model, ModelMixin):
 
             soup = BeautifulSoup(html.content, 'html.parser')
 
-        card = soup.find("table", {"class": "vcard"}) \
-               or soup.find("table", {"class": "infobox"})
+        card = soup.find("table", {"class": "vcard"}) or soup.find(
+            "table", {"class": "infobox"})
         info = {}
         site = urlparse(self.wiki)
         site = f'{site.scheme}://{site.hostname}'

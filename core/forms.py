@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 from django import forms
 from django.core.exceptions import ValidationError
 
-from core.constans import COUNTRIES, CATEGORIES
 from core.models import League, Team, AthletesList
 
 

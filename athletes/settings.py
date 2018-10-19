@@ -2,11 +2,10 @@
 Django settings for Athletes project.
 """
 
-import requests
 import os
 
+import requests
 from django.utils.log import DEFAULT_LOGGING as LOGGING
-
 
 SITE_ENV_PREFIX = 'ATHLETES'
 
