@@ -18,9 +18,19 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
+    'every-sunday': {
+        'task': 'core.tasks.weekly_twitter_update',
+        'schedule': crontab(hour=3, minute=0, day_of_week=0),
+        'args': ()
+    },
     'every-monday': {
         'task': 'core.tasks.weekly_athletes_youtube_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=1),
+        'args': ()
+    },
+    'every-tuesday': {  # long time update
+        'task': 'core.tasks.weekly_athletes_twitter_update',
+        'schedule': crontab(hour=0, minute=0, day_of_week=0),
         'args': ()
     },
     'every-saturday': {

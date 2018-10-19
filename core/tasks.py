@@ -197,6 +197,7 @@ def parse_team(cleaned_data, skip_errors=False):
 
 @app.task
 def weekly_athletes_youtube_update():
+    """ Update youtube info for Athlete weekly. """
     aids = sorted(Athlete.objects.filter(~Q(youtube_info={})).values_list(
         'id', flat=True))
 
@@ -208,6 +209,7 @@ def weekly_athletes_youtube_update():
 
 @app.task
 def weekly_youtube_update():
+    """ Update youtube info for League and Team weekly. """
     for cls in (League, Team):
         ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list(
             'id', flat=True))
@@ -215,6 +217,29 @@ def weekly_youtube_update():
         for _id in ids:
             obj = cls.objects.get(id=_id)
             obj.get_youtube_info()
+            super(cls, obj).save()
+
+
+@app.task
+def weekly_athletes_twitter_update():
+    """ Update twitter info for Athlete weekly. """
+    ids = sorted(Athlete.objects.values_list('id', flat=True))
+
+    for _id in ids:
+        athlete = Athlete.objects.get(id=_id)
+        athlete.get_twitter_info()
+        super(Athlete, athlete).save()
+
+
+@app.task
+def weekly_twitter_update():
+    """ Update twitter info for League and Team weekly. """
+    for cls in (League, Team):
+        ids = sorted(cls.objects.values_list('id', flat=True))
+
+        for _id in ids:
+            obj = cls.objects.get(id=_id)
+            obj.get_twitter_info()
             super(cls, obj).save()
 
 
