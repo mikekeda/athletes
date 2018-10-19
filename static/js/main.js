@@ -50,6 +50,18 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
+                    return '<i class="flag flag-' + row._domestic_market.toLowerCase() + '"></i> ' + data;
+                },
+                "targets": 2
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return '<i class="flag flag-' + row._location_market.toLowerCase() + '"></i> ' + data;
+                },
+                "targets": 5
+            },
+            {
+                "render": function ( data, type, row ) {
                     if (row.team_model) {
                         return '<a href="/team/' + row.team_model + '">' + data + '</a>';
                     }

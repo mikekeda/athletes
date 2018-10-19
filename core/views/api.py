@@ -21,8 +21,13 @@ def _serialize_qs(qs):
     props = {}  # serialize removes properties, so we need to add them again
 
     for obj in qs:
-        props[obj.id] = {'age': obj.age, 'market_export': obj.market_export,
-                         'slug': obj.slug}
+        props[obj.id] = {
+            'age': obj.age,
+            'market_export': obj.market_export,
+            'slug': obj.slug,
+            '_domestic_market': obj.domestic_market,
+            '_location_market': obj.location_market,
+        }
 
         for field in Athlete._meta.get_fields():
             try:
