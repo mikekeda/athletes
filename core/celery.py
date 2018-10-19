@@ -28,6 +28,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=0, day_of_week=6),
         'args': ()
     },
+    'every-minute': {
+        'task': 'core.tasks.every_minute_twitter_update',
+        'schedule': 60.0,
+        'args': ()
+    },
 }
 
 app.conf.timezone = 'UTC'

@@ -1,7 +1,6 @@
 import datetime
 import logging
 import urllib.parse
-from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -9,23 +8,16 @@ from bs4.element import Tag
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
-from requests_oauthlib import OAuth1
 
 from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
                            WIKI_COUNTRIES, WIKI_NATIONALITIES)
 
 log = logging.getLogger('athletes')
-
-auth = OAuth1(
-    settings.TWITTER_APP_KEY,
-    settings.TWITTER_APP_SECRET,
-    settings.TWITTER_OAUTH_TOKEN,
-    settings.TWITTER_OAUTH_TOKEN_SECRET
-)
 
 
 class ModelMixin:
@@ -53,42 +45,7 @@ class ModelMixin:
 
     def get_twitter_info(self):
         """ Get info from Twitter. """
-        model = self.__class__.__name__
-        if self.twitter_info.get('screen_name'):
-            log.info(f"Update info from Twitter for {model} {self.name}")
-            screen_name = self.twitter_info['screen_name']
-
-            url = (
-                "https://api.twitter.com/1.1/users/show.json"
-                f"?screen_name={screen_name}"
-            )
-
-        else:
-            log.info(f"Get info from Twitter for {model} {self.name}")
-            urlencoded_name = urllib.parse.quote_plus(self.name)
-
-            url = (
-                "https://api.twitter.com/1.1/users/search.json"
-                "?count=1"  # we need only 1
-                f"&q={urlencoded_name} {self.category}"
-            )
-
-        res = requests.get(url, auth=auth)
-        if res.status_code == 200:
-            twitter_info = res.json()
-            if twitter_info:
-                if isinstance(twitter_info, list):
-                    twitter_info = twitter_info[0]
-
-                self.twitter = twitter_info['followers_count']
-                self.twitter_info = twitter_info
-            else:
-                log.info(f"No twitter info for {model} {self.name}")
-        else:
-            log.warning(f"Failed getting twitter info for {model} {self.name} "
-                        f"({res.status_code})")
-
-        return self.twitter_info
+        cache.set(f'twitter_update_{self.__class__.__name__}_{self.pk}', '')
 
     def get_youtube_info(self):
         """ Get info from Youtube. """
@@ -292,16 +249,16 @@ class League(models.Model, ModelMixin):
             # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
 
-        if not self.twitter_info:
-            # Try to get twitter info.
-            self.get_twitter_info()
-
         if not self.youtube_info.get('updated'):
             # Try to get youtube info.
             self.get_youtube_info()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
+
+        if not self.twitter_info:
+            # Try to get twitter info.
+            self.get_twitter_info()
 
     def __str__(self):
         return self.name
@@ -357,7 +314,7 @@ class Team(models.Model, ModelMixin):
         card = soup.find("table", {"class": "vcard"}) or soup.find(
             "table", {"class": "infobox"})
         info = {}
-        site = urlparse(self.wiki)
+        site = urllib.parse.urlparse(self.wiki)
         site = f'{site.scheme}://{site.hostname}'
 
         if not card or card.parent.attrs.get('role') == "navigation":
@@ -434,16 +391,16 @@ class Team(models.Model, ModelMixin):
         if not self.latitude or not self.longitude:
             self.get_location()
 
-        if not self.twitter_info:
-            # Try to get twitter info.
-            self.get_twitter_info()
-
         if not self.youtube_info.get('updated'):
             # Try to get youtube info.
             self.get_youtube_info()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
+
+        if not self.twitter_info:
+            # Try to get twitter info.
+            self.get_twitter_info()
 
     def __str__(self):
         return self.name
@@ -657,16 +614,16 @@ class Athlete(models.Model, ModelMixin):
             # Try to geolocate domestic_market.
             self.get_location()
 
-        if not self.twitter_info:
-            # Try to get amount od followers from twitter.
-            self.get_twitter_info()
-
         if not self.youtube_info.get('updated'):
             # Try to get youtube info.
             self.get_youtube_info()
 
         super().save(force_insert=force_insert, force_update=force_update,
                      using=using, update_fields=update_fields)
+
+        if not self.twitter_info:
+            # Try to get amount od followers from twitter.
+            self.get_twitter_info()
 
     def __str__(self):
         return self.name
