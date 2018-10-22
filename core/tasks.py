@@ -228,7 +228,6 @@ def weekly_athletes_twitter_update():
     for _id in ids:
         athlete = Athlete.objects.get(id=_id)
         athlete.get_twitter_info()
-        super(Athlete, athlete).save()
 
 
 @app.task
@@ -240,7 +239,6 @@ def weekly_twitter_update():
         for _id in ids:
             obj = cls.objects.get(id=_id)
             obj.get_twitter_info()
-            super(cls, obj).save()
 
 
 @app.task
