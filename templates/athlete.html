@@ -31,7 +31,7 @@
                 <p>{% trans "Date of Birth (Age)" %}: {{ athlete.birthday }} ({{ athlete.age }})</p>
                 <p>{% trans "Place of Birth" %}: <i class="flag flag-{{ athlete.domestic_market|lower }}"></i> {{ athlete.get_domestic_market_display }}</p>
                 <p>{% trans "Team" %}: {% if athlete.team_model %}<a href="{% url 'core:team' athlete.team_model.pk %}">{{ athlete.team }}</a>{% else %}{{ athlete.team }}{% endif %}</p>
-                <p>{% trans "Location" %}: <i class="flag flag-{{ athlete.location_market|lower }}"></i> {{ athlete.get_location_market_display }}</p>
+                <p>{% trans "Location" %}: <a href="{% url 'core:country' athlete.location_market %}"><i class="flag flag-{{ athlete.location_market|lower }}"></i> {{ athlete.get_location_market_display }}</a></p>
                 <p>{% trans "Marketability" %}: {{ athlete.marketability }}</p>
                 <p>{% trans "International" %}: {{ athlete.international }}</p>
                 <div>

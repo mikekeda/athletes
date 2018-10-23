@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load humanize %}
+{% load core_tags %}
+
+{% block title %}{{ league.name }}{% endblock %}
+
+{% block content %}
+    <div class="team-page container mt-9">
+        <div class="row">
+            <h1 class="mb-3">{{ name }}</h1>
+
+            <table class="table table-striped mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Athletes</th>
+                        <th scope="col">Median athletes age</th>
+                        <th scope="col">Twitter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in stats %}
+                    <tr>
+                        <td>{{ row.category }}</td>
+                        <td>{{ row.athletes }}</td>
+                        <td>{{ row.age }}</td>
+                        <td>{{ row.twitter }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

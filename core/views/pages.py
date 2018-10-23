@@ -1,3 +1,4 @@
+import datetime
 import logging
 import random
 from collections import Counter
@@ -10,12 +11,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Count
+from django.db.models import Count, Sum
+from django.db.models.expressions import RawSQL
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from core.constans import CATEGORIES, MAP_COUNTRIES
+from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES
 from core.forms import TeamForm, LeagueForm, AthletesListForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
                          LeaguesList)
@@ -264,6 +266,33 @@ def league_page(request, pk):
 
     return render(request, 'league.html', {'league': league, 'teams': teams,
                                            'league_lists': league_lists})
+
+
+@login_required
+def country_page(request, code):
+    """ Country page. """
+    code = code.upper()
+    name = COUNTRIES[code]
+
+    window = RawSQL("to_timestamp(avg(extract(epoch from birthday)))", [])
+    window.get_group_by_cols = lambda: []
+
+    stats = Athlete.objects.filter(
+        location_market=code
+    ).values(
+        'category',
+    ).annotate(
+        twitter=Sum('twitter'),
+        athletes=Count('location_market'),
+        birthday=window,
+    )
+    today = datetime.date.today()
+    for row in stats:
+        row['age'] = today.year - row['birthday'].year - (
+                (today.month, today.day) < (
+            row['birthday'].month, row['birthday'].day))
+
+    return render(request, 'country.html', {'name': name, 'stats': stats})
 
 
 def login_page(request):

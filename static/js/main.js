@@ -56,7 +56,7 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
-                    return '<i class="flag flag-' + row._location_market.toLowerCase() + '"></i> ' + data;
+                    return '<a href="/country/' + row._location_market + '"><i class="flag flag-' + row._location_market.toLowerCase() + '"></i> ' + data + '</a>';
                 },
                 "targets": 5
             },
