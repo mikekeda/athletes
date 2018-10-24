@@ -30,7 +30,7 @@ app.conf.beat_schedule = {
     },
     'every-tuesday': {  # long time update
         'task': 'core.tasks.weekly_athletes_twitter_update',
-        'schedule': crontab(hour=0, minute=0, day_of_week=0),
+        'schedule': crontab(hour=0, minute=0, day_of_week=2),
         'args': ()
     },
     'every-saturday': {
