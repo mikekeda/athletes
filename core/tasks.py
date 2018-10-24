@@ -6,13 +6,16 @@ import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import cache
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.template.loader import render_to_string
+from django.utils import timezone
 from requests_oauthlib import OAuth1
 
 from core.celery import app
 from core.constans import COUNTRIES
-from core.models import Athlete, League, Team
+from core.models import Athlete, League, Team, Profile
 
 log = logging.getLogger('athletes')
 
@@ -308,3 +311,38 @@ def every_minute_twitter_update():
                         f"({res.status_code})")
 
         super(cls, obj).save()
+
+
+@app.task
+def daily_update_notifications():
+    """ Send email to users about recent updates. """
+    day_ago = timezone.now() - timezone.timedelta(days=1)
+    subject = "Your followed Athletes were updated"
+
+    profiles = Profile.objects.select_related(
+        'user'
+    ).prefetch_related('followed_athletes').filter(
+        followed_athletes__updated__gte=day_ago
+    )
+    for profile in profiles:
+        name = profile.user.username
+        if profile.user.first_name:
+            name = f"{profile.user.first_name} {profile.user.last_name}"
+
+        text = "Next Athletes were recently updated:"
+        for athlete in profile.followed_athletes.filter(updated__gte=day_ago):
+            text += '\r\n<a href="http://athletes.mkeda.me/athlete/' \
+                    f'{athlete.slug}">{athlete.name}</a>'
+
+        html_content = render_to_string('_alert-email.html', {
+            'subject': subject,
+            'text': text,
+        })
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            f"Tools site <notify@{settings.MAILGUN_SERVER_NAME}>",
+            [f"{name} <{profile.user.email}>"],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
