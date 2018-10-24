@@ -21,7 +21,7 @@ class AthletesViewTest(TestCase):
         resp = self.client.get(reverse('core:team_parse'))
         self.assertEqual(resp.status_code, 302)
 
-    def test_views_teams_page(self):
+    def test_views_league_page(self):
         resp = self.client.get(reverse('core:league_parse'))
         self.assertRedirects(resp, '/admin/login/?next=/league')
 

@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
-{% load static from staticfiles %}
 {% load i18n %}
 {% load humanize %}
-{% load core_tags %}
 
-{% block title %}{{ league.name }}{% endblock %}
+{% block title %}{{ name }}{% endblock %}
 
 {% block content %}
     <div class="team-page container mt-9">
@@ -14,10 +12,10 @@
             <table class="table table-striped mt-2">
                 <thead>
                     <tr>
-                        <th scope="col">Category</th>
-                        <th scope="col">Athletes</th>
-                        <th scope="col">Median athletes age</th>
-                        <th scope="col">Twitter</th>
+                        <th scope="col">{% trans "Category" %}Category</th>
+                        <th scope="col">{% trans "Athletes" %}</th>
+                        <th scope="col">{% trans "Median athletes age" %}</th>
+                        <th scope="col">{% trans "Twitter" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,7 +24,7 @@
                         <td>{{ row.category }}</td>
                         <td>{{ row.athletes }}</td>
                         <td>{{ row.age }}</td>
-                        <td>{{ row.twitter }}</td>
+                        <td>{{ row.twitter|intcomma }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

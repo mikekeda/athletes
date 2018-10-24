@@ -267,6 +267,7 @@ class League(models.Model, ModelMixin):
 class Team(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True)
+    hashtag = models.CharField(max_length=32, blank=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
         max_length=600
