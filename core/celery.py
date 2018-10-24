@@ -40,7 +40,7 @@ app.conf.beat_schedule = {
     },
     'every-day': {
         'task': 'core.tasks.daily_update_notifications',
-        'schedule': crontab(hour=8, minute=0),
+        'schedule': crontab(hour=9, minute=0),
         'args': ()
     },
     'every-minute': {

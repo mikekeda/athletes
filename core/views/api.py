@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from core.constans import COUNTRIES
 from core.forms import AthletesListForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList)
+                         LeaguesList, Profile)
 
 log = logging.getLogger('athletes')
 
@@ -406,6 +406,23 @@ def add_league_to_lists_api(request):
                 leagues_list.leagues.add(league)  # add
             elif leagues_list.pk in old_lists_ids - new_lists_ids:
                 leagues_list.leagues.remove(league)  # remove
+
+        return JsonResponse({"success": True})
+
+    raise Http404
+
+
+@login_required
+def athlete_follow(request, pk):
+    """ Follow/Unfollow athlete. """
+    if request.is_ajax():
+        subscribe = request.POST.get('subscribe') == 'true'
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+
+        if subscribe:
+            profile.followed_athletes.add(pk)
+        else:
+            profile.followed_athletes.remove(pk)
 
         return JsonResponse({"success": True})
 

@@ -20,7 +20,7 @@ from django.views import View
 from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES
 from core.forms import TeamForm, LeagueForm, AthletesListForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList)
+                         LeaguesList, Profile)
 from core.tasks import parse_team
 
 log = logging.getLogger('athletes')
@@ -175,13 +175,17 @@ def athlete_page(request, slug):
     )
     athletes_lists = AthletesList.objects.filter(user=request.user).only(
         'pk', 'name')
+    subscribed = Profile.objects.filter(user=request.user, followed_athletes=athlete).exists()
 
     # Check if the athlete is in any list.
     for athletes_list in athletes_lists:
         athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
-    return render(request, 'athlete.html', {'athlete': athlete,
-                                            'athletes_lists': athletes_lists})
+    return render(request, 'athlete.html', {
+        'athlete': athlete,
+        'athletes_lists': athletes_lists,
+        'subscribed': subscribed
+    })
 
 
 @login_required
@@ -303,7 +307,9 @@ def login_page(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
-            login(request, form.get_user())
+            user = form.get_user()
+            login(request, user)
+            Profile.objects.get_or_create(user=user)
             return redirect(reverse('core:crm'))
 
     return render(request, 'login.html', {'form': form})
