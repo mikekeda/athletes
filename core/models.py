@@ -676,3 +676,28 @@ class LeaguesList(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Profile(models.Model):
+    """ Profile model. """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name='profile',
+        on_delete=models.CASCADE
+    )
+    timezone = models.CharField(
+        max_length=64,
+        default='UTC'
+    )
+    avatar = models.ImageField(
+        upload_to='avatars/',
+        default='/avatars/no-avatar.png'
+    )
+    followed_athletes = models.ManyToManyField(
+        Athlete,
+        related_name='followers',
+        blank=True
+    )
+
+    def __str__(self):
+        return self.user.username

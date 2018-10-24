@@ -12,6 +12,7 @@ setup(
         'beautifulsoup4==4.6.3',
         'celery==4.2.1',
         'requests_oauthlib==1.0.0',
+        'Pillow==5.3.0',
 
         'django==2.1.2',
         'django-widget-tweaks==1.4.3',
