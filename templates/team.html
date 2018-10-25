@@ -42,43 +42,45 @@
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
                 </div>
-                <ul class="nav nav-tabs mt-3" id="charts" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="current-squad-tab" data-toggle="tab" href="#current-squad" role="tab" aria-controls="current squad" aria-selected="true">{% trans 'Current squad' %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="age-tab" data-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad ages" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="domestic_market-tab" data-toggle="tab" href="#domestic_market" role="tab" aria-controls="domestic market" aria-selected="false">{% trans "Squad nationalities" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="youtube-stats-tab" data-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="charts-content">
-                    <div class="tab-pane fade show active" id="current-squad" role="tabpanel" aria-labelledby="current-squad-tab">
-                        <ul class="mt-2">
-                            {% for athlete in athletes %}
-                                <li><a href="/athlete/{{ athlete.slug }}">{{ athlete.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div class="tab-pane fade" id="age" role="tabpanel" aria-labelledby="age-tab">
-                        <canvas id="age-canv" width="400" height="200"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="domestic_market" role="tabpanel" aria-labelledby="domestic_market-tab">
-                        <canvas id="domestic_market-canv" width="400" height="200"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="youtube-trends" role="tabpanel" aria-labelledby="youtube-trends-tab">
-                        <canvas id="youtube-trends-canv" width="400" height="200"></canvas>
-                    </div>
-                    <div class="tab-pane fade" id="youtube-stats" role="tabpanel" aria-labelledby="youtube-stats-tab">
-                        <canvas id="youtube-stats-canv" width="400" height="200"></canvas>
-                    </div>
+            </div>
+        </div>
+        <div class="row mt-3 mb-5">
+            <ul class="nav nav-tabs col-sm-12 mt-3" id="charts" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="current-squad-tab" data-toggle="tab" href="#current-squad" role="tab" aria-controls="current squad" aria-selected="true">{% trans 'Current squad' %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="age-tab" data-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad ages" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="domestic_market-tab" data-toggle="tab" href="#domestic_market" role="tab" aria-controls="domestic market" aria-selected="false">{% trans "Squad nationalities" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="youtube-stats-tab" data-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
+                </li>
+            </ul>
+            <div class="tab-content col-sm-12" id="charts-content">
+                <div class="tab-pane fade show active" id="current-squad" role="tabpanel" aria-labelledby="current-squad-tab">
+                    <ul class="mt-2">
+                        {% for athlete in athletes %}
+                            <li><a href="/athlete/{{ athlete.slug }}">{{ athlete.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="age" role="tabpanel" aria-labelledby="age-tab">
+                    <canvas id="age-canv" width="400" height="200"></canvas>
+                </div>
+                <div class="tab-pane fade" id="domestic_market" role="tabpanel" aria-labelledby="domestic_market-tab">
+                    <canvas id="domestic_market-canv" width="400" height="200"></canvas>
+                </div>
+                <div class="tab-pane fade" id="youtube-trends" role="tabpanel" aria-labelledby="youtube-trends-tab">
+                    <canvas id="youtube-trends-canv" width="400" height="200"></canvas>
+                </div>
+                <div class="tab-pane fade" id="youtube-stats" role="tabpanel" aria-labelledby="youtube-stats-tab">
+                    <canvas id="youtube-stats-canv" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
