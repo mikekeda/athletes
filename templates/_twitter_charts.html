@@ -13,118 +13,63 @@
         let ctx_trends_twitter = document.getElementById('twitter-trends-canv').getContext('2d');
         let ctx_stats_twitter = document.getElementById('twitter-stats-canv').getContext('2d');
 
-        stats_followers = [];
+        function chart(ctx, data, titles) {
+            stats_subscribers = [];
+            stats_views = [];
 
-        for (i_twitter in trends_twitter) {
-            _date_twitter = new Date(trends_twitter[i_twitter][0]);
+            for (i in data) {
+                _date = new Date(data[i][0]);
 
-            stats_followers.push({
-                "x": _date_twitter,
-                "y": trends_twitter[i_twitter][1][0]
+                stats_subscribers.push({
+                    "x": _date,
+                    "y": data[i][1][0]
+                });
+            }
+
+            lineChartData = {
+                datasets: [{
+                    label: titles[0],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    fill: false,
+                    data: stats_subscribers,
+                    yAxisID: 'y-axis-1',
+                }]
+            };
+
+            Chart.Line(ctx, {
+                data: lineChartData,
+                options: {
+                    responsive: true,
+                    hoverMode: 'index',
+                    stacked: false,
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            time: {
+                                parser: 'YYYY-MM-DD',
+                                tooltipFormat: 'll'
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: '{% trans "Date" %}'
+                            }
+                        }],
+                        yAxes: [{
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            ticks: {
+                                fontColor: 'rgb(255, 99, 132)'
+                            },
+                            id: 'y-axis-1',
+                        }],
+                    }
+                }
             });
         }
 
-        lineChartData_twitter = {
-            datasets: [{
-                label: '{% trans "New Followers" %}',
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgb(255, 99, 132)',
-                fill: false,
-                data: stats_followers,
-                yAxisID: 'y-axis-1',
-            }]
-        };
-
-        window.trends = Chart.Line(ctx_trends_twitter, {
-            data: lineChartData_twitter,
-            options: {
-                responsive: true,
-                hoverMode: 'index',
-                stacked: false,
-                title: {
-                    display: true,
-                    text: '{% trans "Twitter trends" %}'
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            parser: 'YYYY-MM-DD',
-                            tooltipFormat: 'll'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: '{% trans "Date" %}'
-                        }
-                    }],
-                    yAxes: [{
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: 'left',
-                        ticks: {
-                            fontColor: 'rgb(255, 99, 132)'
-                        },
-                        id: 'y-axis-1',
-                    }],
-                }
-            }
-        });
-
-        stats_followers = [];
-
-        for (i_twitter in stats_twitter) {
-            _date_twitter = new Date(stats_twitter[i_twitter][0]);
-
-            stats_followers.push({
-                "x": _date_twitter,
-                "y": stats_twitter[i_twitter][1][0]
-            });
-        }
-
-        lineChartData_twitter = {
-            datasets: [{
-                label: '{% trans "Followers" %}',
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgb(255, 99, 132)',
-                fill: false,
-                data: stats_followers,
-                yAxisID: 'y-axis-1',
-            }]
-        };
-
-        window.stats = Chart.Line(ctx_stats_twitter, {
-            data: lineChartData_twitter,
-            options: {
-                responsive: true,
-                hoverMode: 'index',
-                stacked: false,
-                title: {
-                    display: true,
-                    text: '{% trans "Twitter stats" %}'
-                },
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            parser: 'YYYY-MM-DD',
-                            tooltipFormat: 'll'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: '{% trans "Date" %}'
-                        }
-                    }],
-                    yAxes: [{
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: 'left',
-                        ticks: {
-                            fontColor: 'rgb(255, 99, 132)'
-                        },
-                        id: 'y-axis-1',
-                    }],
-                }
-            }
-        });
+        chart(ctx_trends_twitter, trends_twitter, ['{% trans "New Followers" %}']);
+        chart(ctx_stats_twitter, stats_twitter, ['{% trans "Followers" %}']);
     });
 </script>
