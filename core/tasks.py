@@ -317,31 +317,40 @@ def every_minute_twitter_update():
 def daily_update_notifications():
     """ Send email to users about recent updates. """
     day_ago = timezone.now() - timezone.timedelta(days=1)
-    subject = "Your followed Athletes were updated"
+    subject = "Your followed Athletes, Teams, Leagues were recently updated"
 
-    profiles = Profile.objects.select_related(
-        'user'
-    ).prefetch_related('followed_athletes').filter(
-        followed_athletes__updated__gte=day_ago
-    )
-    for profile in profiles:
-        name = profile.user.username
-        if profile.user.first_name:
-            name = f"{profile.user.first_name} {profile.user.last_name}"
+    ids = Profile.objects.exclude(
+        followed_athletes=None,
+        followed_teams=None,
+        followed_leagues=None
+    ).values_list('id', flat=True)
 
-        title = "Next Athletes were recently updated"
-        athletes = profile.followed_athletes.filter(updated__gte=day_ago)
+    for pk in ids:
+        profile = Profile.objects.get(pk=pk)
+
+        updates = {
+            'athletes': profile.followed_athletes.filter(updated__gte=day_ago),
+            'teams': profile.followed_teams.filter(updated__gte=day_ago),
+            'leagues': profile.followed_leagues.filter(updated__gte=day_ago),
+        }
+
+        # If no recent updates - continue.
+        if not any([updates['athletes'], updates['teams'],
+                    updates['leagues']]):
+            continue
 
         html_content = render_to_string('_alert-email.html', {
             'subject': subject,
-            'title': title,
-            'items': athletes,
+            'athletes': updates['athletes'],
+            'teams': updates['teams'],
+            'leagues': updates['leagues'],
         })
+
         msg = EmailMultiAlternatives(
             subject,
-            title + ': ' + ', '.join([a.name for a in athletes]),
+            "Visit our site to check the updates",
             f"Athletes <notify@{settings.MAILGUN_SERVER_NAME}>",
-            [f"{name} <{profile.user.email}>"],
+            [f"{profile.name} <{profile.user.email}>"],
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()

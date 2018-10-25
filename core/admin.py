@@ -149,7 +149,8 @@ class LeaguesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 class ProfileAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = Profile
     form = ProfileForm
-    autocomplete_fields = ('followed_athletes',)
+    autocomplete_fields = ('followed_athletes', 'followed_teams',
+                           'followed_leagues')
 
 
 admin.site.register(Athlete, AthleteAdmin)

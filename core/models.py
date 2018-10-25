@@ -698,6 +698,23 @@ class Profile(models.Model):
         related_name='followers',
         blank=True
     )
+    followed_teams = models.ManyToManyField(
+        Team,
+        related_name='followers',
+        blank=True
+    )
+    followed_leagues = models.ManyToManyField(
+        League,
+        related_name='followers',
+        blank=True
+    )
+
+    @property
+    def name(self):
+        if self.user.first_name:
+            return f"{self.user.first_name} {self.user.last_name}"
+
+        return self.user.username
 
     def __str__(self):
-        return self.user.username
+        return self.name
