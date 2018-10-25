@@ -10,44 +10,44 @@
     let stats_views;
     let lineChartData;
 
-    stats_subscribers = [];
-    stats_views = [];
-
-    for (i in trends) {
-        _date = new Date(trends[i][0]);
-
-        stats_subscribers.push({
-            "x": _date,
-            "y": trends[i][1][0]
-        });
-
-        stats_views.push({
-            "x": _date,
-            "y": trends[i][1][1]
-        });
-    }
-
-    lineChartData = {
-        datasets: [{
-            label: '{% trans "New Subscribers" %}',
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgb(255, 99, 132)',
-            fill: false,
-            data: stats_subscribers,
-            yAxisID: 'y-axis-1',
-        }, {
-            label: '{% trans "New views" %}',
-            borderColor: 'rgb(54, 162, 235)',
-            backgroundColor: 'rgb(54, 162, 235)',
-            fill: false,
-            data: stats_views,
-            yAxisID: 'y-axis-2'
-        }]
-    };
-
     document.addEventListener("DOMContentLoaded", function() {
         let ctx_trends = document.getElementById('youtube-trends-canv').getContext('2d');
         let ctx_stats = document.getElementById('youtube-stats-canv').getContext('2d');
+
+        stats_subscribers = [];
+        stats_views = [];
+
+        for (i in trends) {
+            _date = new Date(trends[i][0]);
+
+            stats_subscribers.push({
+                "x": _date,
+                "y": trends[i][1][0]
+            });
+
+            stats_views.push({
+                "x": _date,
+                "y": trends[i][1][1]
+            });
+        }
+
+        lineChartData = {
+            datasets: [{
+                label: '{% trans "New Subscribers" %}',
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgb(255, 99, 132)',
+                fill: false,
+                data: stats_subscribers,
+                yAxisID: 'y-axis-1',
+            }, {
+                label: '{% trans "New views" %}',
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgb(54, 162, 235)',
+                fill: false,
+                data: stats_views,
+                yAxisID: 'y-axis-2'
+            }]
+        };
 
         window.trends = Chart.Line(ctx_trends, {
             data: lineChartData,

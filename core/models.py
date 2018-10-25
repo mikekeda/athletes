@@ -164,6 +164,47 @@ class ModelMixin:
 
         return stats
 
+    @property
+    def get_twitter_stats(self):
+        """ Twitter statistic (followers_count). """
+        stats = []
+        if self.twitter_info.get('updated'):
+            history = self.twitter_info.get('history', {})
+            last_update = self.twitter_info['updated']
+            history[last_update] = {
+                'followers_count': self.twitter_info.get('followers_count',
+                                                         '0'),
+            }
+
+            dates = sorted(history.keys(), reverse=True)
+            for d in dates:
+                stats.append([d[:10], [
+                    int(history[d]['followers_count']),
+                ]])
+
+        return stats
+
+    @property
+    def get_twitter_trends(self):
+        """ Twitter weekly statistic (followers_count). """
+        stats = []
+        if self.twitter_info.get('history'):
+            history = self.twitter_info['history']
+            last_update = self.twitter_info['updated']
+            history[last_update] = {
+                'followers_count': self.twitter_info.get('followers_count',
+                                                         '0'),
+            }
+
+            dates = sorted(history.keys(), reverse=True)
+            for i, d in enumerate(dates[:-1]):
+                stats.append([d[:10], [
+                    int(history[d]['followers_count']) - int(
+                        history[dates[i + 1]]['followers_count']),
+                ]])
+
+        return stats
+
 
 class League(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
