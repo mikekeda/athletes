@@ -329,19 +329,18 @@ def daily_update_notifications():
         if profile.user.first_name:
             name = f"{profile.user.first_name} {profile.user.last_name}"
 
-        text = "Next Athletes were recently updated:"
-        for athlete in profile.followed_athletes.filter(updated__gte=day_ago):
-            text += '\r\n<a href="http://athletes.mkeda.me/athlete/' \
-                    f'{athlete.slug}">{athlete.name}</a>'
+        title = "Next Athletes were recently updated"
+        athletes = profile.followed_athletes.filter(updated__gte=day_ago)
 
         html_content = render_to_string('_alert-email.html', {
             'subject': subject,
-            'text': text,
+            'title': title,
+            'items': athletes,
         })
         msg = EmailMultiAlternatives(
             subject,
-            text,
-            f"Tools site <notify@{settings.MAILGUN_SERVER_NAME}>",
+            title + ': ' + ', '.join([a.name for a in athletes]),
+            f"Athletes <notify@{settings.MAILGUN_SERVER_NAME}>",
             [f"{name} <{profile.user.email}>"],
         )
         msg.attach_alternative(html_content, "text/html")
