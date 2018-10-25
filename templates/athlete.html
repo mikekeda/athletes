@@ -11,8 +11,11 @@
         <div class="row">
             <div class="col-sm-4 float-left">
                 {{ athlete.photo_preview }}
-                <div class=" mt-3">
-                    <form action="{% url 'core:athletes_list' %}" id="athletes_lists_form">
+                <div class="mt-3">
+                    <a href="{% url 'core:follow_api' 'athlete' athlete.pk %}" class="subscribe-link btn {% if subscribed %}btn-success{% else %}btn-light{% endif %}" data-hover="{% trans 'Unfollow' %}" data-subscribed="{% trans 'Following' %}" data-unsubscribed="{% trans 'Follow' %}">
+                        {% if subscribed %}{% trans "Following" %}{% else %}{% trans "Follow" %}{% endif %}
+                    </a>
+                    <form action="{% url 'core:athletes_list' %}" id="athletes_lists_form" class="mt-3">
                         {% csrf_token %}
                         <input type="number" name="athlete" class="d-none" value="{{ athlete.id }}">
                         <label for="athletes_lists">{% trans "Is part of lists" %}:</label>
@@ -21,9 +24,6 @@
                                 <option {% if athletes_list.selected %}selected{% endif %} value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{% url 'core:athlete_follow' athlete.pk %}" class="subscribe-link btn {% if subscribed %}btn-success{% else %}btn-light{% endif %} mt-3" data-hover="{% trans 'Unfollow' %}" data-subscribed="{% trans 'Following' %}" data-unsubscribed="{% trans 'Follow' %}">
-                            {% if subscribed %}{% trans "Following" %}{% else %}{% trans "Follow" %}{% endif %}
-                        </a>
                     </form>
                 </div>
             </div>
@@ -74,49 +74,5 @@
 
 {% block script %}
     {% include "_youtube_charts.html" with obj=athlete %}
-    <script>
-        let $subscribe_link;
-        let subscribed;
-
-        document.addEventListener("DOMContentLoaded", function() {
-            $subscribe_link = $('.subscribe-link');
-
-            $subscribe_link.hover(
-                function() {
-                    if ($subscribe_link.hasClass('btn-success')) {
-                        $subscribe_link.addClass('btn-danger').text($subscribe_link.data('hover'));
-                    }
-                }, function() {
-                    if ($subscribe_link.hasClass('btn-success')) {
-                        $subscribe_link.removeClass('btn-danger').text($subscribe_link.data('subscribed'));
-                    }
-                }
-            );
-
-            $subscribe_link.click(function(event) {
-                event.preventDefault();
-                subscribed = $subscribe_link.hasClass('btn-success');
-
-                $.ajax({
-                    url: $subscribe_link.attr("href"),
-                    type: 'POST',
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader('X-CSRFTOKEN', '{{ csrf_token }}');
-                    },
-                    data: {
-                        subscribe: !$subscribe_link.hasClass('btn-success')
-                    },
-                })
-                .done(function(data) {
-                    $subscribe_link.toggleClass('btn-success', !subscribed).toggleClass('btn-light', subscribed);
-                    if (subscribed) {
-                        $subscribe_link.text($subscribe_link.data('unsubscribed'));
-                    }
-                    else {
-                        $subscribe_link.text($subscribe_link.data('subscribed'));
-                    }
-                });
-            });
-        });
-    </script>
+    {% include "_follow.html" %}
 {% endblock %}

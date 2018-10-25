@@ -175,7 +175,8 @@ def athlete_page(request, slug):
     )
     athletes_lists = AthletesList.objects.filter(user=request.user).only(
         'pk', 'name')
-    subscribed = Profile.objects.filter(user=request.user, followed_athletes=athlete).exists()
+    subscribed = Profile.objects.filter(user=request.user,
+                                        followed_athletes=athlete).exists()
 
     # Check if the athlete is in any list.
     for athletes_list in athletes_lists:
@@ -184,7 +185,7 @@ def athlete_page(request, slug):
     return render(request, 'athlete.html', {
         'athlete': athlete,
         'athletes_lists': athletes_lists,
-        'subscribed': subscribed
+        'subscribed': subscribed,
     })
 
 
@@ -196,6 +197,8 @@ def team_page(request, pk):
 
     teams_lists = TeamsList.objects.filter(user=request.user).only(
         'pk', 'name')
+    subscribed = Profile.objects.filter(user=request.user,
+                                        followed_teams=team).exists()
 
     # Check if the athlete is in any list.
     for teams_list in teams_lists:
@@ -251,7 +254,8 @@ def team_page(request, pk):
         'athletes': athletes,
         'teams_lists': teams_lists,
         'age_dataset': age_dataset,
-        'domestic_market_dataset': domestic_market_dataset
+        'domestic_market_dataset': domestic_market_dataset,
+        'subscribed': subscribed,
     })
 
 
@@ -263,13 +267,19 @@ def league_page(request, pk):
 
     league_lists = LeaguesList.objects.filter(user=request.user).only(
         'pk', 'name')
+    subscribed = Profile.objects.filter(user=request.user,
+                                        followed_leagues=league).exists()
 
     # Check if the athlete is in any list.
     for league_list in league_lists:
         league_list.selected = league_list in league.leagues_lists.all()
 
-    return render(request, 'league.html', {'league': league, 'teams': teams,
-                                           'league_lists': league_lists})
+    return render(request, 'league.html', {
+        'league': league,
+        'teams': teams,
+        'league_lists': league_lists,
+        'subscribed': subscribed,
+    })
 
 
 @login_required

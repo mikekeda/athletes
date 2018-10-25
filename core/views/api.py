@@ -413,16 +413,20 @@ def add_league_to_lists_api(request):
 
 
 @login_required
-def athlete_follow(request, pk):
-    """ Follow/Unfollow athlete. """
+def follow_api(request, class_name, pk):
+    """ Follow/Unfollow athlete, team, league. """
     if request.is_ajax():
         subscribe = request.POST.get('subscribe') == 'true'
         profile, _ = Profile.objects.get_or_create(user=request.user)
+        followed = getattr(profile, f'followed_{class_name}s', None)
+
+        if not followed:
+            raise Http404
 
         if subscribe:
-            profile.followed_athletes.add(pk)
+            followed.add(pk)
         else:
-            profile.followed_athletes.remove(pk)
+            followed.remove(pk)
 
         return JsonResponse({"success": True})
 

@@ -1,0 +1,45 @@
+<script>
+    let $subscribe_link;
+    let subscribed;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        $subscribe_link = $('.subscribe-link');
+
+        $subscribe_link.hover(
+            function() {
+                if ($subscribe_link.hasClass('btn-success')) {
+                    $subscribe_link.addClass('btn-danger').text($subscribe_link.data('hover'));
+                }
+            }, function() {
+                if ($subscribe_link.hasClass('btn-success')) {
+                    $subscribe_link.removeClass('btn-danger').text($subscribe_link.data('subscribed'));
+                }
+            }
+        );
+
+        $subscribe_link.click(function(event) {
+            event.preventDefault();
+            subscribed = $subscribe_link.hasClass('btn-success');
+
+            $.ajax({
+                url: $subscribe_link.attr("href"),
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRFTOKEN', '{{ csrf_token }}');
+                },
+                data: {
+                    subscribe: !$subscribe_link.hasClass('btn-success')
+                },
+            })
+            .done(function(data) {
+                $subscribe_link.toggleClass('btn-success', !subscribed).toggleClass('btn-light', subscribed);
+                if (subscribed) {
+                    $subscribe_link.text($subscribe_link.data('unsubscribed'));
+                }
+                else {
+                    $subscribe_link.text($subscribe_link.data('subscribed'));
+                }
+            });
+        });
+    });
+</script>
