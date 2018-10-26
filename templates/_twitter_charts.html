@@ -1,21 +1,17 @@
 {% load i18n %}
 
 <script>
-    let i_twitter;
-    let _date_twitter;
     let trends_twitter = {{ obj.get_twitter_trends|safe }};
     let stats_twitter = {{ obj.get_twitter_stats|safe }};
-
-    let stats_followers;
-    let lineChartData_twitter;
+    let ctx_trends_twitter = document.getElementById('twitter-trends-canv').getContext('2d');
+    let ctx_stats_twitter = document.getElementById('twitter-stats-canv').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
-        let ctx_trends_twitter = document.getElementById('twitter-trends-canv').getContext('2d');
-        let ctx_stats_twitter = document.getElementById('twitter-stats-canv').getContext('2d');
-
         function chart(ctx, data, titles) {
-            stats_subscribers = [];
-            stats_views = [];
+            let i;
+            let _date;
+            let stats_subscribers = [];
+            let lineChartData;
 
             for (i in data) {
                 _date = new Date(data[i][0]);

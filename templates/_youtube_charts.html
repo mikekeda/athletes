@@ -1,22 +1,18 @@
 {% load i18n %}
 
 <script>
-    let i;
-    let _date;
     let trends = {{ obj.get_youtube_trends|safe }};
     let stats = {{ obj.get_youtube_stats|safe }};
-
-    let stats_subscribers;
-    let stats_views;
-    let lineChartData;
+    let ctx_trends = document.getElementById('youtube-trends-canv').getContext('2d');
+    let ctx_stats = document.getElementById('youtube-stats-canv').getContext('2d');
 
     document.addEventListener("DOMContentLoaded", function() {
-        let ctx_trends = document.getElementById('youtube-trends-canv').getContext('2d');
-        let ctx_stats = document.getElementById('youtube-stats-canv').getContext('2d');
-
         function chart(ctx, data, titles) {
-            stats_subscribers = [];
-            stats_views = [];
+            let i;
+            let _date;
+            let stats_subscribers = [];
+            let stats_views = [];
+            let lineChartData;
 
             for (i in data) {
                 _date = new Date(data[i][0]);
