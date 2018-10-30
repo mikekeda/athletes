@@ -174,7 +174,7 @@ def athletes_api(request):
             elif model_field.get_internal_type() == 'BooleanField':
                 qs = qs.filter(**{f'{field}': val == 'true'})
             else:
-                qs = qs.filter(**{f'{field}__icontains': val})
+                qs = qs.filter(**{f'{field}__unaccent__icontains': val})
 
     if search:
         # Smart search by name, domestic_market, gender,
@@ -186,11 +186,11 @@ def athletes_api(request):
         ]
 
         qs = qs.filter(
-            Q(name__icontains=search) |
+            Q(name__unaccent__icontains=search) |
             Q(domestic_market__in=country_val) |
             Q(gender__icontains=search) |
             Q(location_market__in=country_val) |
-            Q(team__icontains=search) |
+            Q(team__unaccent__icontains=search) |
             Q(category__icontains=search)
         )
 
