@@ -140,7 +140,7 @@ class ProfileView(View, GetUserMixin):
         timezones += ']'
 
         return render(request, 'profile.html', dict(
-            profile_user=request.user,
+            profile_user=user,
             profile=profile,
             is_current_user=True,
             form=form,
