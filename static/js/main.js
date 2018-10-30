@@ -71,7 +71,7 @@ $(document).ready( function () {
             },
             {
                 "render": function ( data, type, row ) {
-                    return data ? '<i class="material-icons dp48 text-success">check</i>' : '';
+                    return data ? '<spam class="text-success h3">✓</spam>' : '';
                 },
                 "targets": 10
             },
