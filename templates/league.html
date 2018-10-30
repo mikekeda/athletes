@@ -36,10 +36,16 @@
                     {% if league.twitter_info %}
                         <a href="https://twitter.com/{{ league.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
                         <span class="badge">{{ league.twitter_info|get_item:'followers_count'|intcomma }}</span>
+                        {% if twitter_trend_date %}
+                            ({% if twitter_trend > 0 %}<spam class="text-success">🡅</spam>+{% elif twitter_trend < 0 %}<spam class="text-danger">🡇</spam>{% endif %}<span class="badge">{{ twitter_trend }}% {% trans "from" %} {{ twitter_trend_date }}</span>)
+                        {% endif %}
                     {% endif %}
                     {% if league.youtube_info %}
                         <a href="https://www.youtube.com/channel/{{ league.youtube_info|get_item:'channelId' }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
                         <span class="badge">{{ league.youtube_info|get_item:'subscriberCount'|intcomma }}</span>
+                        {% if youtube_trend_date %}
+                            ({% if youtube_trend > 0 %}<spam class="text-success">🡅</spam>+{% elif youtube_trend < 0 %}<spam class="text-danger">🡇</spam>{% endif %}<span class="badge">{{ youtube_trend }}% {% trans "from" %} {{ youtube_trend_date }}</span>)
+                        {% endif %}
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
                 </div>

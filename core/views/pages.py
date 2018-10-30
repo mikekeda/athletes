@@ -245,6 +245,7 @@ def athlete_page(request, slug):
         'athlete': athlete,
         'athletes_lists': athletes_lists,
         'subscribed': subscribed,
+        **athlete.get_trend_info
     })
 
 
@@ -315,6 +316,7 @@ def team_page(request, pk):
         'age_dataset': age_dataset,
         'domestic_market_dataset': domestic_market_dataset,
         'subscribed': subscribed,
+        **team.get_trend_info
     })
 
 
@@ -338,6 +340,7 @@ def league_page(request, pk):
         'teams': teams,
         'league_lists': league_lists,
         'subscribed': subscribed,
+        **league.get_trend_info
     })
 
 

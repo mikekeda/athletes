@@ -2,7 +2,7 @@
 
 <script>
     let trends_twitter = {{ obj.get_twitter_trends|safe }};
-    let stats_twitter = {{ obj.get_twitter_stats|safe }};
+    let stats_twitter = {{ twitter_stats|safe }};
     let ctx_trends_twitter = document.getElementById('twitter-trends-canv').getContext('2d');
     let ctx_stats_twitter = document.getElementById('twitter-stats-canv').getContext('2d');
 
