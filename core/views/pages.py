@@ -8,9 +8,10 @@ import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db.models.expressions import RawSQL
 from django.http import JsonResponse, HttpResponseRedirect
@@ -25,7 +26,23 @@ from core.models import (Athlete, League, Team, AthletesList, TeamsList,
                          LeaguesList, Profile)
 from core.tasks import parse_team
 
+User = get_user_model()
 log = logging.getLogger('athletes')
+
+
+class GetUserMixin:
+    @staticmethod
+    def get_user(request, username: str):
+        """ Get user by username and check access. """
+        if not request.user.is_authenticated or (
+                not request.user.is_superuser and
+                username and username != request.user.username):
+            raise PermissionDenied
+
+        if username:
+            return get_object_or_404(User, username=username)
+
+        return request.user
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -109,11 +126,12 @@ class ParseLeagueView(View):
                       {'form': form, 'action': reverse('core:league_parse')})
 
 
-class ProfileView(View):
+class ProfileView(View, GetUserMixin):
     # noinspection PyMethodMayBeStatic
     def get(self, request, username):
         """ User profile. """
-        profile, _ = Profile.objects.get_or_create(user=request.user)
+        user = self.get_user(request, username)
+        profile, _ = Profile.objects.get_or_create(user=user)
         form = AvatarForm(data=request.POST)
 
         timezones = '['
@@ -132,7 +150,8 @@ class ProfileView(View):
     # noinspection PyMethodMayBeStatic
     def post(self, request, username=None):
         """ Update user callback. """
-        profile = get_object_or_404(Profile, user=request.user)
+        user = self.get_user(request, username)
+        profile = get_object_or_404(Profile, user=user)
         avatar = request.FILES.get('avatar', '')
         if avatar:
             form = AvatarForm(request.POST, request.FILES, instance=profile)
