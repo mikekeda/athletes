@@ -13,6 +13,7 @@ setup(
         'celery==4.2.1',
         'requests_oauthlib==1.0.0',
         'Pillow==5.3.0',
+        'pytz==2018.6',
 
         'django==2.1.2',
         'django-widget-tweaks==1.4.3',

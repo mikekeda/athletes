@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from django import forms
 from django.core.exceptions import ValidationError
 
-from core.models import League, Team, AthletesList
+from core.models import League, Team, AthletesList, Profile
 
 
 def validate_selector(selector: str):
@@ -52,3 +52,11 @@ class AthletesListForm(forms.ModelForm):
     class Meta:
         model = AthletesList
         exclude = ('user', 'athletes')
+
+
+class AvatarForm(forms.ModelForm):
+    """ Avatar form. """
+
+    class Meta:
+        model = Profile
+        fields = ('avatar',)

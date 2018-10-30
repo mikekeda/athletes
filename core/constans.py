@@ -1,3 +1,12 @@
+import datetime
+import pytz
+
+
+TIMEZONES = sorted([
+    (tz, tz + ' ' + datetime.datetime.now(pytz.timezone(tz)).strftime('%z'))
+    for tz in pytz.common_timezones
+])
+
 CATEGORIES = {
     "American Football": "American Football",
     "Australian Football": "Australian Football",

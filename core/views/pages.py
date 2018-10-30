@@ -13,12 +13,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count, Sum
 from django.db.models.expressions import RawSQL
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext
 from django.views import View
 
-from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES
-from core.forms import TeamForm, LeagueForm, AthletesListForm
+from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES, TIMEZONES
+from core.forms import TeamForm, LeagueForm, AthletesListForm, AvatarForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
                          LeaguesList, Profile)
 from core.tasks import parse_team
@@ -105,6 +107,44 @@ class ParseLeagueView(View):
 
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:league_parse')})
+
+
+class ProfileView(View):
+    # noinspection PyMethodMayBeStatic
+    def get(self, request, username):
+        """ User profile. """
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        form = AvatarForm(data=request.POST)
+
+        timezones = '['
+        for val, text in TIMEZONES:
+            timezones += '{value: "' + val + '", text: "' + text + '"},'
+        timezones += ']'
+
+        return render(request, 'profile.html', dict(
+            profile_user=request.user,
+            profile=profile,
+            is_current_user=True,
+            form=form,
+            timezones=timezones
+        ))
+
+    # noinspection PyMethodMayBeStatic
+    def post(self, request, username=None):
+        """ Update user callback. """
+        profile = get_object_or_404(Profile, user=request.user)
+        avatar = request.FILES.get('avatar', '')
+        if avatar:
+            form = AvatarForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        return JsonResponse(
+            ugettext("You can't change this field"),
+            safe=False,
+            status=403
+        )
 
 
 @login_required
