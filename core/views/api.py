@@ -4,12 +4,13 @@ import json
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.postgres.search import TrigramSimilarity
 from django.core import serializers
 from django.db.models import Q, F
 from django.http import JsonResponse, HttpResponse, Http404, QueryDict
 from django.shortcuts import get_object_or_404
 
-from core.constans import COUNTRIES
+from core.constans import COUNTRIES, CATEGORIES
 from core.forms import AthletesListForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
                          LeaguesList, Profile)
@@ -431,3 +432,48 @@ def follow_api(request, class_name, pk):
         return JsonResponse({"success": True})
 
     raise Http404
+
+
+@login_required
+def autocomplete_api(request, class_name):
+    """ Autocomplete for athlete, team, league. """
+    result = []
+
+    cls = {
+        'league': League,
+        'team': Team,
+        'athlete': Athlete
+    }.get(class_name)
+
+    if cls:
+        search = request.GET.get('q', '')
+        fields = request.GET.get('fields', '').split(',')
+        fields = [] if fields == [''] else fields
+
+        # Search for similar name in database.
+        if not fields or 'name' in fields:
+            result.extend(cls.objects.annotate(
+                similarity=TrigramSimilarity('name', search)
+            ).filter(similarity__gt=0.1).order_by('-similarity').values_list(
+                'name', flat=True
+            )[:5])
+
+        # Check categories.
+        if not fields or 'category' in fields:
+            for val in CATEGORIES.values():
+                if search.lower() in val.lower():
+                    result.append(val)
+
+        # Check countries.
+        if not fields or 'country' in fields:
+            for val in COUNTRIES.values():
+                if search.lower() in val.lower():
+                    result.append(val)
+
+        # Check genders.
+        if not fields or 'gender' in fields:
+            for val in ('male', 'female'):
+                if search.lower() in val:
+                    result.append(val)
+
+    return JsonResponse(result, safe=False)
