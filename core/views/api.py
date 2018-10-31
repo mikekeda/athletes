@@ -437,7 +437,8 @@ def follow_api(request, class_name, pk):
 @login_required
 def autocomplete_api(request, class_name):
     """ Autocomplete for athlete, team, league. """
-    result = []
+    limit = 5
+    result = set([])
 
     cls = {
         'league': League,
@@ -452,28 +453,36 @@ def autocomplete_api(request, class_name):
 
         # Search for similar name in database.
         if not fields or 'name' in fields:
-            result.extend(cls.objects.annotate(
+            result.update(cls.objects.annotate(
                 similarity=TrigramSimilarity('name', search)
             ).filter(similarity__gt=0.1).order_by('-similarity').values_list(
                 'name', flat=True
-            )[:5])
+            )[:limit])
 
         # Check categories.
         if not fields or 'category' in fields:
+            i = 0
             for val in CATEGORIES.values():
                 if search.lower() in val.lower():
-                    result.append(val)
+                    result.add(val)
+                    i += 1
+                    if i >= limit:
+                        break
 
         # Check countries.
         if not fields or 'country' in fields:
+            i = 0
             for val in COUNTRIES.values():
                 if search.lower() in val.lower():
-                    result.append(val)
+                    result.add(val)
+                    i += 1
+                    if i >= limit:
+                        break
 
         # Check genders.
         if not fields or 'gender' in fields:
             for val in ('male', 'female'):
                 if search.lower() in val:
-                    result.append(val)
+                    result.add(val)
 
-    return JsonResponse(result, safe=False)
+    return JsonResponse(list(result), safe=False)
