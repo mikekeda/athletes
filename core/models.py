@@ -218,22 +218,22 @@ class ModelMixin:
         }
 
         if len(info['twitter_stats']) > 1 and \
-                info['twitter_stats'][0][1][0] != 0:
+                info['twitter_stats'][1][1][0] != 0:
             info['twitter_trend_date'] = info['twitter_stats'][1][0]
             info['twitter_trend'] = round(
                 (info['twitter_stats'][0][1][0] -
                  info['twitter_stats'][1][1][0]) /
-                info['twitter_stats'][0][1][0] * 100,
+                info['twitter_stats'][1][1][0] * 100,
                 1
             )
 
         if len(info['youtube_stats']) > 1 and \
-                info['youtube_stats'][0][1][0] != 0:
+                info['youtube_stats'][1][1][0] != 0:
             info['youtube_trend_date'] = info['youtube_stats'][1][0]
             info['youtube_trend'] = round(
                 (info['youtube_stats'][0][1][0] -
                  info['youtube_stats'][1][1][0]) /
-                info['youtube_stats'][0][1][0] * 100,
+                info['youtube_stats'][1][1][0] * 100,
                 1
             )
 
