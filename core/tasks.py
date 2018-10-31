@@ -245,6 +245,18 @@ def weekly_twitter_update():
 
 
 @app.task
+def weekly_wiki_views_update():
+    """ Update wiki visits info for League, Team and Athlete weekly. """
+    for cls in (League, Team, Athlete):
+        ids = sorted(cls.objects.values_list('id', flat=True))
+
+        for _id in ids:
+            obj = cls.objects.get(id=_id)
+            obj.get_wiki_views_info()
+            super(cls, obj).save()
+
+
+@app.task
 def every_minute_twitter_update():
     """ Update twitter info with respect to api limitation. """
     # pattern is 'twitter_update_cls_id'

@@ -30,6 +30,7 @@ class ModelMixin:
     twitter = None
     twitter_info = {}
     youtube_info = {}
+    wiki_views_info = {}
 
     @property
     def slug(self):
@@ -42,6 +43,37 @@ class ModelMixin:
             'background-size: contain;"></div>',
             self.photo
         )
+
+    def get_wiki_views_info(self):
+        """ Get visits from Wiki. """
+        model = self.__class__.__name__
+
+        log.info(f"Get visits from Wiki for {model} {self.name}")
+
+        now = datetime.datetime.now()
+        week_ago = now - datetime.timedelta(days=6)
+
+        url = (
+            "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article"
+            "/en.wikipedia/all-access/all-agents"
+            f"/{self.slug}"
+            "/daily"
+            f"/{str(week_ago)[:10].replace('-', '')}00"
+            f"/{str(now)[:10].replace('-', '')}00"
+        )
+        res = requests.get(url)
+        if res.status_code == 200:
+            wiki_views_info = res.json()
+            if wiki_views_info and wiki_views_info['items']:
+                for item in wiki_views_info['items']:
+                    key = '-'.join([
+                        item['timestamp'][:4],
+                        item['timestamp'][4:6],
+                        item['timestamp'][6:8]
+                    ])
+                    self.wiki_views_info[key] = item['views']
+
+        return self.wiki_views_info
 
     def get_twitter_info(self):
         """ Get info from Twitter. """
@@ -262,6 +294,7 @@ class League(models.Model, ModelMixin):
     additional_info = JSONField(default=dict, blank=True)
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
+    wiki_views_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -371,6 +404,7 @@ class Team(models.Model, ModelMixin):
     additional_info = JSONField(default=dict, blank=True)
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
+    wiki_views_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -547,6 +581,7 @@ class Athlete(models.Model, ModelMixin):
     additional_info = JSONField(default=dict, blank=True)
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
+    wiki_views_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
