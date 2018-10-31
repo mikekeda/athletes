@@ -121,7 +121,7 @@ def athletes_api(request):
 
     # Form queryset.
     qs = Athlete.objects.defer('additional_info', 'twitter_info',
-                               'youtube_info')
+                               'youtube_info', 'wiki_views_info')
 
     list_id = None
     try:
@@ -280,7 +280,7 @@ def athletes_export_api(request):
     response['Content-Disposition'] = 'attachment; filename="athletes.csv"'
 
     qs = Athlete.objects.filter(pk__in=ids).defer(
-        'additional_info', 'twitter_info', 'youtube_info'
+        'additional_info', 'twitter_info', 'youtube_info', 'wiki_views_info'
     )
     content = _serialize_qs(qs)
 
