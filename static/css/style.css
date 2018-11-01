@@ -47,3 +47,19 @@
 .team-page .select2-selection--multiple {
     height: auto !important;
 }
+
+.autocomplete-suggestions {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 0;
+    overflow: auto;
+}
+
+.autocomplete-suggestions .autocomplete-suggestion {
+    cursor: pointer;
+    padding: 5px 15px;
+}
+
+.autocomplete-suggestions .autocomplete-suggestion + .autocomplete-suggestion {
+    border-top: 1px solid #ccc;
+}

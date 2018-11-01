@@ -120,6 +120,22 @@ $(document).ready( function () {
 
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
+    $('#athletes-table_filter input').autocomplete({
+        serviceUrl: '/api/athlete/autocomplete',
+        deferRequestBy: 150,
+        minChars: 3,
+        paramName: 'q',
+        dataType: 'json',
+        transformResult: function(response) {
+            return {
+                suggestions: response.reduce(function(o, val) { o.push({value: val, data: val}); return o; }, [])
+            };
+        },
+        onSelect: function (suggestion) {
+            table.search(suggestion.value).draw();
+        }
+    });
+
     $athletes_lists.change(function() {
         table.ajax.reload();
     });
