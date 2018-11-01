@@ -274,7 +274,7 @@ class ModelMixin:
 
 class League(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=True, db_index=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
         max_length=600
@@ -374,7 +374,7 @@ class League(models.Model, ModelMixin):
 
 class Team(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=True, db_index=True)
     hashtag = models.CharField(max_length=32, blank=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
@@ -519,7 +519,7 @@ class Team(models.Model, ModelMixin):
 class Athlete(models.Model, ModelMixin):
     """ Athlete model. """
     wiki = models.URLField(unique=True)
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=True, db_index=True)
     photo = models.URLField(
         default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
         max_length=600
