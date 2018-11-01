@@ -540,7 +540,8 @@ class Athlete(models.Model, ModelMixin):
         blank=True,
         choices=COUNTRIES.items(),
     )
-    team = models.CharField(max_length=255, null=True, blank=True)
+    team = models.CharField(max_length=255, null=True, blank=True,
+                            db_index=True)
     team_model = models.ForeignKey(
         Team,
         null=True,

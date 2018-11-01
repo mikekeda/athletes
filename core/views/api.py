@@ -6,7 +6,8 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core import serializers
-from django.db.models import Q, F
+from django.db.models import Q, F, Case, CharField, When
+from django.db.models.functions import Greatest
 from django.http import JsonResponse, HttpResponse, Http404, QueryDict
 from django.shortcuts import get_object_or_404
 
@@ -452,11 +453,31 @@ def autocomplete_api(request, class_name):
         fields = [] if fields == [''] else fields
 
         # Search for similar name in database.
-        if not fields or 'name' in fields:
+        if (not fields and class_name == 'athlete') or (
+                'name' in fields and 'team' in fields):
+            # Search in name and team fields (2 fields).
             result.update(cls.objects.annotate(
-                similarity=TrigramSimilarity('name', search)
+                similarity_name=TrigramSimilarity('name', search),
+                similarity_team=TrigramSimilarity('team', search),
+                similarity=Greatest(F('similarity_name'),
+                                    F('similarity_team')),
+                value=Case(
+                    When(Q(similarity_team__gt=F('similarity_name')),
+                         then=F('team')),
+                    default=F('name'),
+                    output_field=CharField(),
+                ),
             ).filter(similarity__gt=0.1).order_by('-similarity').values_list(
-                'name', flat=True
+                'value', flat=True
+            )[:limit])
+        elif 'name' in fields or 'team' in fields:
+            # Search in name or team fields (1 field).
+            field = 'name' if 'name' in fields else 'team'
+
+            result.update(cls.objects.annotate(
+                similarity=TrigramSimilarity(field, search)
+            ).filter(similarity__gt=0.1).order_by('-similarity').values_list(
+                field, flat=True
             )[:limit])
 
         # Check categories.
