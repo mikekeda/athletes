@@ -271,6 +271,31 @@ class ModelMixin:
 
         return info
 
+    @property
+    def get_wiki_stats(self):
+        """ Wiki statistic (visits). """
+        stats = []
+        if self.wiki_views_info:
+            dates = sorted(self.wiki_views_info.keys(), reverse=True)
+            for d in dates:
+                stats.append([d[:10], [int(self.wiki_views_info[d])]])
+
+        return stats
+
+    @property
+    def get_wiki_trends(self):
+        """ Wiki weekly statistic (visits). """
+        trends = []
+        if self.wiki_views_info:
+            dates = sorted(self.wiki_views_info.keys(), reverse=True)
+            for i, d in enumerate(dates[:-1]):
+                trends.append([d[:10], [
+                    int(self.wiki_views_info[d]) - int(
+                        self.wiki_views_info[dates[i + 1]]),
+                ]])
+
+        return trends
+
 
 class League(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
