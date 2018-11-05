@@ -6,6 +6,7 @@ $(document).ready( function () {
     let $athletes_list_form = $('#add-athletes-list form');
     let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
     let $teams_lists_form = $('.team-page #teams_lists_form');
+    let $search = $('#athletes-table_filter input');
     let ids;
     let e;
 
@@ -91,7 +92,7 @@ $(document).ready( function () {
         }
     });
 
-    $('#athletes-table_filter input').unbind().bind('keyup', function(e) {
+    $search.unbind().bind('keyup', function(e) {
         if (e.keyCode === 13) {
             table.search( this.value ).draw();
         }
@@ -120,7 +121,7 @@ $(document).ready( function () {
 
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
-    $('#athletes-table_filter input').autocomplete({
+    $search.autocomplete({
         serviceUrl: '/api/athlete/autocomplete',
         deferRequestBy: 150,
         minChars: 3,
@@ -153,7 +154,7 @@ $(document).ready( function () {
         $.ajax({
             url: '/athletes_list',
             type: 'PUT',
-            beforeSend: function(xhr, settings) {
+            beforeSend: function(xhr) {
                 xhr.setRequestHeader("X-CSRFToken", $add_athletes_to_list.data('csrf_token'));
             },
             data: {

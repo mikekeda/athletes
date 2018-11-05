@@ -31,7 +31,7 @@
                     subscribe: !$subscribe_link.hasClass('btn-success')
                 },
             })
-            .done(function(data) {
+            .done(function() {
                 $subscribe_link.toggleClass('btn-success', !subscribed).toggleClass('btn-light', subscribed);
                 if (subscribed) {
                     $subscribe_link.text($subscribe_link.data('unsubscribed'));

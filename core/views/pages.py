@@ -366,7 +366,7 @@ def country_page(request, code):
     for row in stats:
         row['age'] = today.year - row['birthday'].year - (
                 (today.month, today.day) < (
-            row['birthday'].month, row['birthday'].day))
+                    row['birthday'].month, row['birthday'].day))
 
     return render(request, 'country.html', {'name': name, 'stats': stats})
 
