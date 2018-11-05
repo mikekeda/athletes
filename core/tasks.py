@@ -73,34 +73,47 @@ def parse_team(cleaned_data, skip_errors=False):
     site = f'{site.scheme}://{site.hostname}'
     html = requests.get(wiki_url)
     soup = BeautifulSoup(html.content, 'html.parser')
-    title = soup.select(
-        "#Current_squad") or soup.select(
-        "#Current_roster") or soup.select(
-        "#Roster") or soup.select(
-        "#First-team_squad") or soup.select(
-        "#First_team_squad") or soup.select(
-        "#Team_squad") or soup.select(
-        "#Squad") or soup.select(
-        "#Players") or soup.select(
-        "#Current_Squad") or soup.select(
-        "#Current_roster_and_coaching_staff") or soup.select(
-        "#First_Team_Squad") or soup.select(
-        "#Current_squad[11]") or soup.select(
-        "#Current_players") or soup.select(
-        "#Current_first_team_squad") or soup.select(
-        "#Current_roster_and_Baseball_Hall_of_Fame") or soup.select(
-        "#Team_roster") or soup.select(
-        "#Team_roster_2018") or soup.select(
-        "#2018_squad") or soup.select(
-        "#Current_playing_squad") or soup.select(
-        "#Playing_squad") or soup.select(
-        "#Current_playing_list_and_coaches") or soup.select(
-        "#Current_playing_lists") or soup.select(
-        "#Team_Roster")
+    cleaned_data['name'] = soup.title.string.split(' - Wikipedia')[0]
+
+    html_ids = (
+        "#Current_squad",
+        "#Current_roster",
+        "#Roster",
+        "#First-team_squad",
+        "#First_team_squad",
+        "#Team_squad",
+        "#Squad",
+        "#Players",
+        "#Current_Squad",
+        "#Current_roster_and_coaching_staff",
+        "#First_Team_Squad",
+        "#Current_squad[11]",
+        "#Current_players",
+        "#Current_first_team_squad",
+        "#Current_roster_and_Baseball_Hall_of_Fame",
+        "#Team_roster",
+        "#Team_roster_2018",
+        "#2018_squad",
+        "#Current_playing_squad",
+        "#Playing_squad",
+        "#Current_playing_list_and_coaches",
+        "#Current_playing_lists",
+        "#Team_Roster",
+    )
+    title = None
+    table = None
+
+    for html_id in html_ids:
+        title = soup.select(html_id)
+        if not title:
+            continue
+
+        table = title[0].parent.find_next_sibling("table")
+        if not table:
+            continue
+
     if skip_errors and not title:
         return
-    cleaned_data['name'] = soup.title.string.split(' - Wikipedia')[0]
-    table = title[0].parent.find_next_sibling("table")
 
     team, _ = Team.objects.get_or_create(**cleaned_data)
     team.get_data_from_wiki(soup)
