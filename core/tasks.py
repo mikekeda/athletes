@@ -108,7 +108,14 @@ def parse_team(cleaned_data, skip_errors=False):
         if not title:
             continue
 
-        table = title[0].parent.find_next_sibling("table")
+        if cleaned_data.get('category') == "Handball":
+            # Wiki pages for Handball category have table wrapped in div.
+            table = title[0].parent.find_next_sibling("div")
+            if table:
+                table = table.select_one("table")
+        else:
+            table = title[0].parent.find_next_sibling("table")
+
         if not table:
             continue
 
@@ -171,6 +178,14 @@ def parse_team(cleaned_data, skip_errors=False):
             result[['skipped', 'parsed'][status]].append(full_link)
     elif cleaned_data.get('category') == "Cricket":
         links = table.select("tr > td:nth-of-type(2) > a")
+
+        for link in links:
+            full_link, status = validate_link_and_create_athlete(
+                link, site, cleaned_data
+            )
+            result[['skipped', 'parsed'][status]].append(full_link)
+    elif cleaned_data.get('category') == "Handball":
+        links = table.select("td > ul > li  > a")
 
         for link in links:
             full_link, status = validate_link_and_create_athlete(
