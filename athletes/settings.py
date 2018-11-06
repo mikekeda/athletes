@@ -201,7 +201,9 @@ LOGIN_URL = '/login'
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = '/static/' if DEBUG else 'https://cdn.mkeda.me/athletes/'
+STATIC_URL = 'https://storage.googleapis.com/cdn.mkeda.me/athletes/'
+if DEBUG:
+    STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     ('', os.path.join(BASE_DIR, 'static')),
