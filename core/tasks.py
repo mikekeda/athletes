@@ -116,10 +116,10 @@ def parse_team(cleaned_data, skip_errors=False):
         else:
             table = title[0].parent.find_next_sibling("table")
 
-        if not table:
-            continue
+        if table:
+            break
 
-    if skip_errors and not title:
+    if skip_errors and not table:
         return
 
     team, _ = Team.objects.get_or_create(**cleaned_data)
