@@ -22,8 +22,10 @@ CATEGORIES = {
     "Gymnastics": "Gymnastics",
     "Handball": "Handball",
     "Ice Hockey": "Ice Hockey",
+    "Motorsport": "Motorsport",
     "Rugby": "Rugby",
     "Swimming": "Swimming",
+    "Tennis": "Tennis",
 }
 REVERSED_CATEGORIES = {val: key for key, val in CATEGORIES.items()}
 WIKI_CATEGORIES = REVERSED_CATEGORIES.copy()
