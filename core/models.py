@@ -301,7 +301,7 @@ class League(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True, db_index=True)
     photo = models.URLField(
-        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        default=settings.STATIC_URL + 'img/no-avatar.png',
         max_length=600
     )
     location_market = models.CharField(
@@ -402,7 +402,7 @@ class Team(models.Model, ModelMixin):
     name = models.CharField(max_length=255, blank=True, db_index=True)
     hashtag = models.CharField(max_length=32, blank=True)
     photo = models.URLField(
-        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        default=settings.STATIC_URL + 'img/no-avatar.png',
         max_length=600
     )
     location_market = models.CharField(
@@ -546,7 +546,7 @@ class Athlete(models.Model, ModelMixin):
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True, db_index=True)
     photo = models.URLField(
-        default='https://cdn.mkeda.me/athletes/img/no-avatar.png',
+        default=settings.STATIC_URL + 'img/no-avatar.png',
         max_length=600
     )
     domestic_market = models.CharField(
