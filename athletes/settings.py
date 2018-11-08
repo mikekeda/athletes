@@ -5,6 +5,7 @@ Django settings for Athletes project.
 import os
 
 import requests
+from google.cloud import logging
 from django.utils.log import DEFAULT_LOGGING as LOGGING
 
 SITE_ENV_PREFIX = 'ATHLETES'
@@ -212,7 +213,14 @@ STATICFILES_DIRS = (
 STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
 
-LOGGING['loggers']['athletes'] = {
+if not DEBUG:
+    # StackDriver setup
+    client = logging.Client()
+    # Connects the logger to the root logging handler; by default
+    # this captures all logs at INFO level and higher
+    client.setup_logging()
+
+LOGGING['loggers']['athletes_celery'] = LOGGING['loggers']['athletes'] = {
     'handlers': ['django.server', 'mail_admins'],
     'level': 'INFO',
 }

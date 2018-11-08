@@ -21,6 +21,7 @@ setup(
         'django-import-export',  # Installed from git due the the bug
         'django-debug-toolbar==1.10.1',
         'django-redis==4.9.0',
+        'google-cloud-logging==1.8.0',
     ],
     extras_require={
         "test": [
