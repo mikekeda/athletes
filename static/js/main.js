@@ -6,7 +6,6 @@ $(document).ready( function () {
     let $athletes_list_form = $('#add-athletes-list form');
     let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
     let $teams_lists_form = $('.team-page #teams_lists_form');
-    let $search = $('#athletes-table_filter input');
     let ids;
     let e;
 
@@ -92,7 +91,7 @@ $(document).ready( function () {
         }
     });
 
-    $search.unbind().bind('keyup', function(e) {
+    $('#athletes-table_filter input').unbind().bind('keyup', function(e) {
         if (e.keyCode === 13) {
             table.search( this.value ).draw();
         }
@@ -121,7 +120,7 @@ $(document).ready( function () {
 
     $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
-    $search.autocomplete({
+    $('#athletes-table_filter input').autocomplete({
         serviceUrl: '/api/athlete/autocomplete',
         deferRequestBy: 150,
         minChars: 3,
