@@ -5,7 +5,8 @@ Django settings for Athletes project.
 import os
 
 import requests
-from google.cloud import logging
+import google.cloud.logging
+from google.cloud.logging.handlers.transports.sync import SyncTransport
 from django.utils.log import DEFAULT_LOGGING as LOGGING
 
 SITE_ENV_PREFIX = 'ATHLETES'
@@ -213,17 +214,29 @@ STATICFILES_DIRS = (
 STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
 
-if not DEBUG:
-    # StackDriver setup
-    client = logging.Client()
-    # Connects the logger to the root logging handler; by default
-    # this captures all logs at INFO level and higher
-    client.setup_logging()
-
-LOGGING['loggers']['athletes_celery'] = LOGGING['loggers']['athletes'] = {
+LOGGING['loggers']['athletes'] = {
+    'handlers': ['django.server','mail_admins'],
+    'level': 'INFO',
+}
+LOGGING['loggers']['athletes_celery'] = {
     'handlers': ['django.server', 'mail_admins'],
     'level': 'INFO',
 }
+if not DEBUG:
+    # StackDriver setup
+    client = google.cloud.logging.Client()
+    LOGGING['handlers']['stackdriver'] = {
+        'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
+        'client': client,
+    }
+    LOGGING['handlers']['sync_stackdriver'] = {
+        'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
+        'client': client,
+        'transport': SyncTransport,
+    }
+    LOGGING['loggers']['athletes']['handlers'].append('stackdriver')
+    LOGGING['loggers']['athletes_celery']['handlers'].append(
+        'sync_stackdriver')
 
 
 GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY')
