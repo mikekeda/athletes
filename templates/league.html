@@ -12,15 +12,15 @@
             <div class="col-sm-4 float-left">
                 {{ league.photo_preview }}
                 <div class=" mt-3">
-                    <a href="{% url 'core:follow_api' 'league' league.pk %}" class="subscribe-link btn {% if subscribed %}btn-success{% else %}btn-light{% endif %}" data-hover="{% trans 'Unfollow' %}" data-subscribed="{% trans 'Following' %}" data-unsubscribed="{% trans 'Follow' %}">
-                        {% if subscribed %}{% trans "Following" %}{% else %}{% trans "Follow" %}{% endif %}
+                    <a href="{% url 'core:follow_api' 'league' league.pk %}" id="subscribe-link" class="subscribe-link btn {% if league.subscribed %}btn-success{% else %}btn-light{% endif %}" data-hover="{% trans 'Unfollow' %}" data-subscribed="{% trans 'Following' %}" data-unsubscribed="{% trans 'Follow' %}">
+                        {% if league.subscribed %}{% trans "Following" %}{% else %}{% trans "Follow" %}{% endif %}
                     </a>
                     <form action="{% url 'core:leagues_list' %}" id="teams_lists_form" class="mt-3">
                         {% csrf_token %}
                         <input type="number" name="league" class="d-none" value="{{ league.id }}">
                         <label for="leagues_lists">{% trans "Is part of lists" %}:</label>
                         <select multiple name="leagues_lists" id="leagues_lists" class="form-control select2">
-                            {% for league_list in league_lists %}
+                            {% for league_list in league.user_league_lists %}
                                 <option {% if league_list.selected %}selected{% endif %} value="{{ league_list.pk }}">{{ league_list.name }}</option>
                             {% endfor %}
                         </select>

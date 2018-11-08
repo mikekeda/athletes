@@ -293,16 +293,20 @@ def compare_athletes_page(request):
 def team_page(request, pk):
     """ Team page. """
     team = get_object_or_404(Team, pk=pk)
-    athletes = Athlete.objects.filter(team_model=team).only('name', 'wiki')
+    for k, v in team.get_trend_info.items():
+        setattr(team, k, v)
 
-    teams_lists = TeamsList.objects.filter(user=request.user).only(
+    team.subscribed = Profile.objects.filter(user=request.user,
+                                             followed_teams=team).exists()
+
+    team.user_teams_lists = TeamsList.objects.filter(user=request.user).only(
         'pk', 'name')
-    subscribed = Profile.objects.filter(user=request.user,
-                                        followed_teams=team).exists()
 
     # Check if the athlete is in any list.
-    for teams_list in teams_lists:
+    for teams_list in team.user_teams_lists:
         teams_list.selected = teams_list in team.teams_lists.all()
+
+    athletes = Athlete.objects.filter(team_model=team).only('name', 'wiki')
 
     # Collect squad age statistic.
     counter = Counter()
@@ -352,11 +356,8 @@ def team_page(request, pk):
     return render(request, 'team.html', {
         'team': team,
         'athletes': athletes,
-        'teams_lists': teams_lists,
         'age_dataset': age_dataset,
         'domestic_market_dataset': domestic_market_dataset,
-        'subscribed': subscribed,
-        **team.get_trend_info
     })
 
 
@@ -364,23 +365,26 @@ def team_page(request, pk):
 def league_page(request, pk):
     """ League page. """
     league = get_object_or_404(League, pk=pk)
-    teams = Team.objects.filter(league=league).only('name', 'wiki')
+    for k, v in league.get_trend_info.items():
+        setattr(league, k, v)
 
-    league_lists = LeaguesList.objects.filter(user=request.user).only(
-        'pk', 'name')
-    subscribed = Profile.objects.filter(user=request.user,
-                                        followed_leagues=league).exists()
+    league.subscribed = Profile.objects.filter(
+        user=request.user,
+        followed_leagues=league
+    ).exists()
+
+    league.user_league_lists = LeaguesList.objects.filter(
+        user=request.user).only('pk', 'name')
 
     # Check if the athlete is in any list.
-    for league_list in league_lists:
+    for league_list in league.user_league_lists:
         league_list.selected = league_list in league.leagues_lists.all()
+
+    teams = Team.objects.filter(league=league).only('name', 'wiki')
 
     return render(request, 'league.html', {
         'league': league,
         'teams': teams,
-        'league_lists': league_lists,
-        'subscribed': subscribed,
-        **league.get_trend_info
     })
 
 
