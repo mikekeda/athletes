@@ -100,7 +100,6 @@ def parse_team(cleaned_data, skip_errors=False):
         "#Current_playing_lists",
         "#Team_Roster",
     )
-    title = None
     table = None
 
     for html_id in html_ids:

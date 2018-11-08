@@ -76,6 +76,12 @@
                 <li class="nav-item">
                     <a class="nav-link" id="twitter-stats-tab" data-toggle="tab" href="#twitter-stats" role="tab" aria-controls="twitter stats" aria-selected="false">{% trans "Twitter stats" %}</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="wiki-trends-tab" data-toggle="tab" href="#wiki-trends" role="tab" aria-controls="wiki trends" aria-selected="true">{% trans "Wikipedia trends" %}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="wiki-stats-tab" data-toggle="tab" href="#wiki-stats" role="tab" aria-controls="wiki stats" aria-selected="false">{% trans "Wikipedia stats" %}</a>
+                </li>
             </ul>
             <div class="tab-content col-sm-12" id="charts-content">
                 <div class="tab-pane fade show active" id="current-squad" role="tabpanel" aria-labelledby="current-squad-tab">
@@ -103,6 +109,12 @@
                 <div class="tab-pane fade" id="twitter-stats" role="tabpanel" aria-labelledby="twitter-stats-tab">
                     <canvas id="twitter-stats-canv" width="400" height="200"></canvas>
                 </div>
+                <div class="tab-pane fade" id="wiki-trends" role="tabpanel" aria-labelledby="wiki-trends-tab">
+                    <canvas id="wiki-trends-canv" width="400" height="200"></canvas>
+                </div>
+                <div class="tab-pane fade" id="wiki-stats" role="tabpanel" aria-labelledby="wiki-stats-tab">
+                    <canvas id="wiki-stats-canv" width="400" height="200"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -127,5 +139,6 @@
     </script>
     {% include "_youtube_charts.html" with obj=team %}
     {% include "_twitter_charts.html" with obj=team %}
+    {% include "_wiki_charts.html" with obj=team %}
     {% include "_follow.html" %}
 {% endblock %}
