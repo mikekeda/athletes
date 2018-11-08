@@ -1,9 +1,7 @@
 <script>
-    let $subscribe_link;
-    let subscribed;
-
     document.addEventListener("DOMContentLoaded", function() {
-        $subscribe_link = $('.subscribe-link');
+        let $subscribe_link = $('#subscribe-link{{ sufix }}');
+        let subscribed;
 
         $subscribe_link.hover(
             function() {

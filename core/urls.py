@@ -7,7 +7,8 @@ from core.views.api import (athletes_api, athletes_export_api,
 from core.views.pages import (crm_page, about_page, login_page, logout_page,
                               ParseTeamView, ParseLeagueView, athlete_page,
                               terms_page, map_page, team_page, league_page,
-                              country_page, ProfileView)
+                              country_page, ProfileView,
+                              compare_athletes_page)
 
 app_name = "Athletes"
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path('crm', crm_page, name='crm'),
     path('athletes_list', athletes_list_api, name='athletes_list'),
     path('athlete/<str:slug>', athlete_page, name='athlete'),
+    path('compare/athletes', compare_athletes_page, name='compare_athletes'),
     path('api/athletes_list', add_athlete_to_lists_api, name='athletes_list'),
     path('team/<int:pk>', team_page, name='team'),
     path('league/<int:pk>', league_page, name='league'),

@@ -58,8 +58,13 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="float-left btn btn-outline-secondary">
                 <a id="athletes-export-link" class="text-dark" download data-href="{% url 'core:athletes_export' %}?ids=" href="{% url 'core:athletes_export' %}?ids=">{% trans "Export athletes" %}</a>
+            </div>
+
+            <div class="float-left btn btn-outline-secondary ml-3">
+                <a id="athletes-compare-link" class="text-dark" data-href="{% url 'core:compare_athletes' %}?ids=" href="{% url 'core:compare_athletes' %}?ids=">{% trans "Compare two athletes" %}</a>
             </div>
 
             <!-- Button trigger modal -->

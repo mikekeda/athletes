@@ -14,7 +14,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db.models.expressions import RawSQL
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import (JsonResponse, HttpResponseRedirect,
+                         HttpResponseBadRequest)
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext
@@ -232,21 +233,60 @@ def athlete_page(request, slug):
         Athlete.objects.prefetch_related('athletes_lists'),
         wiki__endswith=slug
     )
-    athletes_lists = AthletesList.objects.filter(user=request.user).only(
-        'pk', 'name')
-    subscribed = Profile.objects.filter(user=request.user,
-                                        followed_athletes=athlete).exists()
+    for k, v in athlete.get_trend_info.items():
+        setattr(athlete, k, v)
+
+    athlete.subscribed = Profile.objects.filter(
+        user=request.user,
+        followed_athletes=athlete
+    ).exists()
+
+    athlete.user_athletes_lists = AthletesList.objects.filter(
+        user=request.user).only('pk', 'name')
 
     # Check if the athlete is in any list.
-    for athletes_list in athletes_lists:
+    for athletes_list in athlete.user_athletes_lists:
         athletes_list.selected = athletes_list in athlete.athletes_lists.all()
 
     return render(request, 'athlete.html', {
         'athlete': athlete,
-        'athletes_lists': athletes_lists,
-        'subscribed': subscribed,
-        **athlete.get_trend_info
     })
+
+
+@login_required
+def compare_athletes_page(request):
+    """ Compare 2 athletes page. """
+    args = {}
+
+    ids = request.GET.get('ids', '').split(',')
+    ids = [pk for pk in ids if pk.isdigit()]
+    if len(ids) != 2:
+        return HttpResponseBadRequest("Need 2 athletes to compare")
+
+    for i, _id in enumerate(ids):
+        athlete = get_object_or_404(
+            Athlete.objects.prefetch_related('athletes_lists'),
+            pk=_id
+        )
+
+        for k, v in athlete.get_trend_info.items():
+            setattr(athlete, k, v)
+
+        athlete.subscribed = Profile.objects.filter(
+            user=request.user,
+            followed_athletes=athlete
+        ).exists()
+
+        athlete.user_athletes_lists = AthletesList.objects.filter(
+            user=request.user).only('pk', 'name')
+
+        # Check if the athlete is in any list.
+        for athletes_list in athlete.user_athletes_lists:
+            athletes_list.selected = athletes_list in athlete.athletes_lists.all()
+
+        args[f'athlete{i + 1}'] = athlete
+
+    return render(request, 'compare_athletes.html', args)
 
 
 @login_required

@@ -1,12 +1,12 @@
 {% load i18n %}
 
 <script>
-    let trends_wiki = {{ obj.get_wiki_trends|safe }};
-    let stats_wiki = {{ obj.get_wiki_stats|safe }};
-    let ctx_trends_wiki = document.getElementById('wiki-trends-canv').getContext('2d');
-    let ctx_stats_wiki = document.getElementById('wiki-stats-canv').getContext('2d');
-
     document.addEventListener("DOMContentLoaded", function() {
+        let trends_wiki = {{ obj.get_wiki_trends|safe }};
+        let stats_wiki = {{ obj.get_wiki_stats|safe }};
+        let ctx_trends_wiki = document.getElementById('wiki-trends-canv{{ sufix }}').getContext('2d');
+        let ctx_stats_wiki = document.getElementById('wiki-stats-canv{{ sufix }}').getContext('2d');
+
         function chart(ctx, data, titles) {
             let i;
             let _date;

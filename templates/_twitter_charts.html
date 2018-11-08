@@ -1,12 +1,12 @@
 {% load i18n %}
 
 <script>
-    let trends_twitter = {{ obj.get_twitter_trends|safe }};
-    let stats_twitter = {{ twitter_stats|safe }};
-    let ctx_trends_twitter = document.getElementById('twitter-trends-canv').getContext('2d');
-    let ctx_stats_twitter = document.getElementById('twitter-stats-canv').getContext('2d');
-
     document.addEventListener("DOMContentLoaded", function() {
+        let trends_twitter = {{ obj.get_twitter_trends|safe }};
+        let stats_twitter = {{ obj.twitter_stats|safe }};
+        let ctx_trends_twitter = document.getElementById('twitter-trends-canv{{ sufix }}').getContext('2d');
+        let ctx_stats_twitter = document.getElementById('twitter-stats-canv{{ sufix }}').getContext('2d');
+
         function chart(ctx, data, titles) {
             let i;
             let _date;

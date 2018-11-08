@@ -3,8 +3,9 @@ $(document).ready( function () {
     let $athletes_lists = $('#athletes_lists');
     let $add_athletes_to_list = $('#add_athletes_to_list');
     let $athletes_export_link = $('a#athletes-export-link');
+    let $athletes_compare_link = $('a#athletes-compare-link');
     let $athletes_list_form = $('#add-athletes-list form');
-    let $athletes_lists_form = $('.athlete-page #athletes_lists_form');
+    let $athletes_lists_form = $('.athlete-page .athletes_lists_form');
     let $teams_lists_form = $('.team-page #teams_lists_form');
     let ids;
     let e;
@@ -177,6 +178,7 @@ $(document).ready( function () {
         ids = ids.substr(1);
 
         $athletes_export_link.attr("href", $athletes_export_link.data('href') + ids);
+        $athletes_compare_link.attr("href", $athletes_compare_link.data('href') + ids);
         $athletes_list_form.find('#id_athletes').val(ids);
     });
 
@@ -199,9 +201,9 @@ $(document).ready( function () {
         event.preventDefault();
 
         $.ajax({
-            url: $athletes_lists_form.attr('action'),
+            url: $(this).attr('action'),
             type: 'POST',
-            data: $athletes_lists_form.serialize(),
+            data: $(this).serialize(),
             dataType: 'json'
         });
     });

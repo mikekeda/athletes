@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static from staticfiles %}
+{% load i18n %}
+{% load humanize %}
+{% load core_tags %}
+
+{% block title %}{{ athlete1.name }} VS {{ athlete2.name }}{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="col-sm-6 float-left">
+            {% include "_athlete.html" with athlete=athlete1 sufix="1" %}
+        </div>
+        <div class="col-sm-6 float-right">
+            {% include "_athlete.html" with athlete=athlete2 sufix="2" %}
+        </div>
+    </div>
+{% endblock %}
