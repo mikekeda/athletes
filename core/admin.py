@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.db.models import Q
-from django.db.utils import DataError
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
@@ -48,31 +47,20 @@ def update_location(_, __, queryset):
     """ Update location for selected teams. """
     for obj in queryset:
         obj.get_location()
-        obj.save()
+        super(type(obj), obj).save()
 
 
 def update_twitter_info(_, __, queryset):
     """ Update twitter followers for selected athletes. """
     for obj in queryset:
         obj.get_twitter_info()
-        try:
-            obj.save()
-        except DataError:
-            # Remove twitter_info and try to save one more time.
-            obj.twitter_info = {}
-            super(Athlete, obj).save()
 
 
 def update_youtube_info(_, __, queryset):
     """ Update youtube info. """
     for obj in queryset:
         obj.get_youtube_info()
-        try:
-            obj.save()
-        except DataError:
-            # Remove youtube_info and try to save one more time.
-            obj.youtube_info = {}
-            super(Athlete, obj).save()
+        super(type(obj), obj).save()
 
 
 class AthleteInline(admin.TabularInline):
