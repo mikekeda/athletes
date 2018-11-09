@@ -17,7 +17,7 @@ from core.celery import app
 from core.constans import COUNTRIES
 from core.models import Athlete, League, Team, Profile
 
-log = logging.getLogger('athletes_celery')
+log = logging.getLogger('athletes')
 
 auth = OAuth1(
     settings.TWITTER_APP_KEY,

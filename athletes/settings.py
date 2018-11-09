@@ -215,28 +215,19 @@ STATIC_ROOT = '/home/voron/sites/cdn/athletes'
 
 
 LOGGING['loggers']['athletes'] = {
-    'handlers': ['django.server','mail_admins'],
-    'level': 'INFO',
-}
-LOGGING['loggers']['athletes_celery'] = {
     'handlers': ['django.server', 'mail_admins'],
     'level': 'INFO',
 }
 if not DEBUG:
-    # StackDriver setup
+    # StackDriver setup.
+    # We need to use SyncTransport otherwise logs will not work for celery.
     client = google.cloud.logging.Client()
     LOGGING['handlers']['stackdriver'] = {
-        'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
-        'client': client,
-    }
-    LOGGING['handlers']['sync_stackdriver'] = {
         'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
         'client': client,
         'transport': SyncTransport,
     }
     LOGGING['loggers']['athletes']['handlers'].append('stackdriver')
-    LOGGING['loggers']['athletes_celery']['handlers'].append(
-        'sync_stackdriver')
 
 
 GEOCODING_API_KEY = get_env_var('GEOCODING_API_KEY')
