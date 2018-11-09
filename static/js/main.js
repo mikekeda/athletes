@@ -80,6 +80,12 @@ $(document).ready( function () {
                 "render": function ( data, type, row ) {
                     return data ? data.toLocaleString() : '';
                 },
+                "targets": 11
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return data ? data.toLocaleString() : '';
+                },
                 "targets": 12
             },
         ],
