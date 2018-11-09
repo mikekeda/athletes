@@ -39,14 +39,14 @@
                         <a href="https://twitter.com/{{ team.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
                         <span class="badge">{{ team.twitter_info|get_item:'followers_count'|intcomma }}</span>
                         {% if team.twitter_trend_date %}
-                            {% if team.twitter_trend > 0 %}<spam class="text-success">↑</spam>+{% elif team.twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ team.twitter_trend_date }}">{{ team.twitter_trend }}%</span>
+                            {% if team.twitter_trend > 0 %}<spam class="text-success">↑</spam>{% elif team.twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ team.twitter_trend_date }}">{% if team.twitter_trend != 0 %}{{ team.twitter_trend|stringformat:"+.1f" }}%{% endif %}</span>
                         {% endif %}
                     {% endif %}
                     {% if team.youtube_info %}
                         <a href="https://www.youtube.com/channel/{{ team.youtube_info|get_item:'channelId' }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
                         <span class="badge">{{ team.youtube_info|get_item:'subscriberCount'|intcomma }}</span>
                         {% if team.youtube_trend_date %}
-                            {% if team.youtube_trend > 0 %}<spam class="text-success">↑</spam>+{% elif team.youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ team.youtube_trend_date }}">{{ team.youtube_trend }}%</span>
+                            {% if team.youtube_trend > 0 %}<spam class="text-success">↑</spam>{% elif team.youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ team.youtube_trend_date }}">{% if team.youtube_trend != 0 %}{{ team.youtube_trend|stringformat:"+.1f" }}%{% endif %}</span>
                         {% endif %}
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->

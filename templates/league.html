@@ -37,14 +37,14 @@
                         <a href="https://twitter.com/{{ league.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
                         <span class="badge">{{ league.twitter_info|get_item:'followers_count'|intcomma }}</span>
                         {% if league.twitter_trend_date %}
-                            {% if league.twitter_trend > 0 %}<spam class="text-success">↑</spam>+{% elif league.twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ league.twitter_trend_date }}">{{ league.twitter_trend }}%</span>
+                            {% if league.twitter_trend > 0 %}<spam class="text-success">↑</spam>{% elif league.twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ league.twitter_trend_date }}">{% if league.twitter_trend != 0 %}{{ league.twitter_trend|stringformat:"+.1f" }}%{% endif %}</span>
                         {% endif %}
                     {% endif %}
                     {% if league.youtube_info %}
                         <a href="https://www.youtube.com/channel/{{ league.youtube_info|get_item:'channelId' }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
                         <span class="badge">{{ league.youtube_info|get_item:'subscriberCount'|intcomma }}</span>
                         {% if league.youtube_trend_date %}
-                            {% if league.youtube_trend > 0 %}<spam class="text-success">↑</spam>+{% elif league.youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ league.youtube_trend_date }}">{{ league.youtube_trend }}%</span>
+                            {% if league.youtube_trend > 0 %}<spam class="text-success">↑</spam>{% elif league.youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ league.youtube_trend_date }}">{% if league.youtube_trend != 0 %}{{ league.youtube_trend|stringformat:"+.1f" }}%{% endif %}</span>
                         {% endif %}
                     {% endif %}
                     <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
