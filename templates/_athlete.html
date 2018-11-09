@@ -37,15 +37,15 @@
                 {% if athlete.twitter_info %}
                     <a href="https://twitter.com/{{ athlete.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
                     <span class="badge">{{ athlete.twitter_info|get_item:'followers_count'|intcomma }}</span>
-                    {% if twitter_trend_date %}
-                        {% if twitter_trend > 0 %}<spam class="text-success">↑</spam>+{% elif twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ twitter_trend_date }}">{{ twitter_trend }}%</span>
+                    {% if athlete.twitter_trend_date %}
+                        {% if athlete.twitter_trend > 0 %}<spam class="text-success">↑</spam>+{% elif athlete.twitter_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ athlete.twitter_trend_date }}">{{ athlete.twitter_trend }}%</span>
                     {% endif %}
                 {% endif %}
                 {% if athlete.youtube_info %}
                     <a href="https://www.youtube.com/channel/{{ athlete.youtube_info|get_item:"channelId" }}" target="_blank"><img class="icon" src="{% static 'img/youtube.svg' %}" alt="youtube"></a>
                     <span class="badge">{{ athlete.youtube_info|get_item:'subscriberCount'|intcomma }}</span>
-                    {% if youtube_trend_date %}
-                        {% if youtube_trend > 0 %}<spam class="text-success">↑</spam>+{% elif youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ youtube_trend_date }}">{{ youtube_trend }}%</span>
+                    {% if athlete.youtube_trend_date %}
+                        {% if athlete.youtube_trend > 0 %}<spam class="text-success">↑</spam>+{% elif athlete.youtube_trend < 0 %}<spam class="text-danger">↓</spam>{% endif %}<span class="badge" data-trend-date="{{ athlete.youtube_trend_date }}">{{ athlete.youtube_trend }}%</span>
                     {% endif %}
                 {% endif %}
                 <!--<a href="#" target="_blank"><img class="icon" src="{% static 'img/instagram.svg' %}" alt="instagram"></a>-->
