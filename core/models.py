@@ -51,7 +51,7 @@ class ModelMixin:
         log.info(f"Get visits from Wiki for {model} {self.name}")
 
         now = datetime.datetime.now()
-        week_ago = now - datetime.timedelta(days=6)
+        week_ago = now - datetime.timedelta(weeks=1)
 
         url = (
             "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article"
