@@ -281,8 +281,8 @@ def compare_athletes_page(request):
             user=request.user).only('pk', 'name')
 
         # Check if the athlete is in any list.
-        for athletes_list in athlete.user_athletes_lists:
-            athletes_list.selected = athletes_list in athlete.athletes_lists.all()
+        for athl_list in athlete.user_athletes_lists:
+            athl_list.selected = athl_list in athlete.athletes_lists.all()
 
         args[f'athlete{i + 1}'] = athlete
 

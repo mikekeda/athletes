@@ -77,7 +77,8 @@ class ModelMixin:
 
     def get_twitter_info(self):
         """ Get info from Twitter. """
-        cache.set(f'twitter_update_{self.__class__.__name__}_{self.pk}', '')
+        cache.set(f'twitter_update_{self.__class__.__name__}_{self.pk}', '',
+                  timeout=24*60*60)  # the key will expire in 1 day
 
     def get_youtube_info(self):
         """ Get info from Youtube. """
