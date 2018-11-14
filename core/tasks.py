@@ -346,8 +346,8 @@ def every_minute_twitter_update():
             else:
                 log.info(f"No twitter info for {cls_name} {obj.name}")
         else:
-            log.warning(f"Failed getting twitter info for {cls_name} {obj.name} "
-                        f"({res.status_code})")
+            log.warning("Failed getting twitter info for "
+                        f"{cls_name} {obj.name} ({res.status_code})")
 
         super(cls, obj).save()
 
