@@ -12,7 +12,7 @@ from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Prefetch
 from django.db.models.expressions import RawSQL
 from django.http import (JsonResponse, HttpResponseRedirect,
                          HttpResponseBadRequest)
@@ -132,7 +132,15 @@ class ProfileView(View, GetUserMixin):
     def get(self, request, username):
         """ User profile. """
         user = self.get_user(request, username)
-        profile, _ = Profile.objects.get_or_create(user=user)
+        profile = Profile.objects.prefetch_related(
+            Prefetch('followed_athletes', queryset=Athlete.objects.only(
+                'pk', 'name', 'wiki').order_by('name')),
+            Prefetch('followed_teams', queryset=Team.objects.only(
+                'pk', 'name').order_by('name')),
+            Prefetch('followed_leagues', queryset=League.objects.only(
+                'pk', 'name').order_by('name')),
+        ).get(user=user)
+
         form = AvatarForm(data=request.POST)
 
         timezones = '['
