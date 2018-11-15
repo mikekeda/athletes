@@ -44,6 +44,24 @@ class ModelMixin:
             self.photo
         )
 
+    @staticmethod
+    def geocode(address):
+        """ Geocode the address. """
+        log.info(f"Geocoding {address}")
+
+        geo_data = {'results': []}
+
+        url = (
+            "https://maps.googleapis.com/maps/api/geocode/json"
+            f"?address={address}"
+            f"&key={settings.GEOCODING_API_KEY}"
+        )
+        res = requests.get(url)
+        if res.status_code == 200:
+            geo_data = res.json()
+
+        return geo_data
+
     def get_wiki_views_info(self):
         """ Get visits from Wiki. """
         model = self.__class__.__name__
@@ -502,20 +520,13 @@ class Team(models.Model, ModelMixin):
                 'Location') or self.additional_info.get(
                 'Stadium')
             if address:
-                url = (
-                    f"https://maps.googleapis.com/maps/api/geocode/json"
-                    f"?address={address}"
-                    f"&key={settings.GEOCODING_API_KEY}"
-                    f"&components=country:{self.location_market}"
-                )
-                res = requests.get(url)
-                if res.status_code == 200:
-                    geo_data = res.json()
-                    if geo_data['results']:
-                        self.longitude = geo_data['results'][0]['geometry'][
-                            'location']['lng']
-                        self.latitude = geo_data['results'][0]['geometry'][
-                            'location']['lat']
+                geo_data = self.geocode(address)
+
+                if geo_data['results']:
+                    self.longitude = geo_data['results'][0]['geometry'][
+                        'location']['lng']
+                    self.latitude = geo_data['results'][0]['geometry'][
+                        'location']['lat']
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -725,22 +736,16 @@ class Athlete(models.Model, ModelMixin):
                 'College') or self.additional_info.get(
                 'Nationality')
             if address:
-                url = (
-                    "https://maps.googleapis.com/maps/api/geocode/json"
-                    f"?address={address}"
-                    f"&key={settings.GEOCODING_API_KEY}"
-                )
-                res = requests.get(url)
-                if res.status_code == 200:
-                    geo_data = res.json()
-                    if geo_data['results']:
-                        for component in \
-                                geo_data['results'][0]['address_components']:
-                            if 'country' in component['types'] and \
-                                    component['short_name'] in COUNTRIES:
-                                self.domestic_market = component['short_name']
-                                log.info(f"Found {self.domestic_market}")
-                                return component['short_name']
+                geo_data = self.geocode(address)
+
+                if geo_data['results']:
+                    for component in \
+                            geo_data['results'][0]['address_components']:
+                        if 'country' in component['types'] and \
+                                component['short_name'] in COUNTRIES:
+                            self.domestic_market = component['short_name']
+                            log.info(f"Found {self.domestic_market}")
+                            return component['short_name']
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
