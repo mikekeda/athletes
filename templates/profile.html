@@ -8,7 +8,28 @@
 
 {% block content %}
     <div class="profile container mt-9">
-        <div class="col-lg-8 float-right">
+        <div class="col-lg-4 col-md-6 float-left">
+            <div class="text-center">
+                {% if is_current_user %}
+                    <img src="{{ profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
+                    <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
+                    <form action="{% url 'core:user' profile_user.username %}" method="post" enctype="multipart/form-data" id="avatar-upload">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <label class="custom-file text-left" for="{{ field.auto_id }}">
+                                {{ field }}
+                            </label>
+                            {% if field.errors %}
+                                <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
+                                  {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                {% else %}
+                    <img src="{{ profile_user.profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
+                {% endif %}
+            </div>
             <div id="profile">
                 <div class="row">
                     <div class="col-md-12 mt-3">
@@ -57,26 +78,66 @@
                 <!--/row-->
             </div>
         </div>
-        <div class="col-lg-4 pull-lg-8 mt-2 text-center">
-            {% if is_current_user %}
-                <img src="{{ profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
-                <h5 class="mt-2">{% trans "Upload a different photo" %}</h5>
-                <form action="{% url 'core:user' profile_user.username %}" method="post" enctype="multipart/form-data" id="avatar-upload">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <label class="custom-file text-left" for="{{ field.auto_id }}">
-                            {{ field }}
-                        </label>
-                        {% if field.errors %}
-                            <div class="alert alert-warning col-sm-9 offset-sm-3" role="alert">
-                              {{ field.errors }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </form>
-            {% else %}
-                <img src="{{ profile_user.profile.avatar.url }}" class="m-x-auto img-fluid rounded-circle" alt="avatar">
-            {% endif %}
+
+        <div class="col-lg-8 col-md-6 float-right">
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="heading_followed_leagues">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#followed_leagues" aria-expanded="true" aria-controls="followed_leagues">
+                                {% trans "Followed leagues" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="followed_leagues" class="collapse" aria-labelledby="heading_followed_leagues" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for league in profile.followed_leagues.all %}
+                                <a href="{% url 'core:league' league.pk %}">{{ league.name }}</a>
+                                <br>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" id="heading_followed_teams">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#followed_teams" aria-expanded="true" aria-controls="followed_teams">
+                                {% trans "Followed teams" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="followed_teams" class="collapse" aria-labelledby="heading_followed_teams" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for team in profile.followed_teams.all %}
+                                <a href="{% url 'core:team' team.pk %}">{{ team.name }}</a>
+                                <br>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" id="heading_followed_athletes">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#followed_athletes" aria-expanded="true" aria-controls="followed_athletes">
+                                {% trans "Followed athletes" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="followed_athletes" class="collapse" aria-labelledby="heading_followed_athletes" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for athlete in profile.followed_athletes.all %}
+                                <a href="{% url 'core:athlete' athlete.slug %}">{{ athlete.name }}</a>
+                                <br>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock content %}
