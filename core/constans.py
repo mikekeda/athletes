@@ -213,7 +213,7 @@ _COUNTRIES = (
     ("PN", "PCN", "Pitcairn"),
     ("PL", "POL", "Poland"),
     ("PT", "POR", "Portugal"),
-    ("PR", "PRI", "Puerto Rico"),
+    ("PR", "PUR", "Puerto Rico"),
     ("QA", "QAT", "Qatar"),
     ("RE", "REU", "Réunion"),
     ("RO", "ROU", "Romania"),
