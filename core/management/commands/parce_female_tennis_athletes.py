@@ -52,10 +52,15 @@ def _parse_tennis(url: str, info: dict):
             defaults = {}
 
         try:
-            athlete, _ = Athlete.objects.get_or_create(
+            athlete, created = Athlete.objects.get_or_create(
                 wiki=wiki,
                 defaults=defaults
             )
+            if not created:
+                log.warning(
+                    f"Skip athlete {name} with wiki {wiki} (already exists)"
+                )
+                return
         except ValueError:
             log.warning(f"Failed to parse wiki info for {name}")
             return
@@ -107,7 +112,7 @@ def _parse_tennis(url: str, info: dict):
 
 class Command(BaseCommand):
     # Show this when the user types help
-    help = "Parse Tennis players."
+    help = "Parse female Tennis players."
 
     def handle(self, *args, **options):
         self.stdout.write("Started parsing Tennis players")

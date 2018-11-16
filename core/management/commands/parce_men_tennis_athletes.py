@@ -54,10 +54,15 @@ def _parse_tennis(url: str):
             defaults = {}
 
         try:
-            athlete, _ = Athlete.objects.get_or_create(
+            athlete, created = Athlete.objects.get_or_create(
                 wiki=wiki,
                 defaults=defaults
             )
+            if not created:
+                log.warning(
+                    f"Skip athlete {name} with wiki {wiki} (already exists)"
+                )
+                return
         except ValueError:
             log.warning(f"Failed to parse wiki info for {name}")
             return
@@ -97,7 +102,11 @@ def _parse_tennis(url: str):
 
 class Command(BaseCommand):
     # Show this when the user types help
-    help = "Parse Tennis players."
+    help = "Parse male Tennis players."
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('doubles', nargs='?', type=str)
 
     def handle(self, *args, **options):
         self.stdout.write("Started parsing Tennis players")
@@ -109,7 +118,9 @@ class Command(BaseCommand):
             end = start + 100
             self.stdout.write(f"Parsing Tennis players ({start}-{end})")
 
-            url = f"{site}/en/rankings/doubles/?rankRange={start}-{end}"
+            rankings_type = 'doubles' if options['doubles'] else 'singles'
+
+            url = f"{site}/en/rankings/{rankings_type}/?rankRange={start}-{end}"
 
             html = requests.get(url)
             soup = BeautifulSoup(html.content, 'html.parser')

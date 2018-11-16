@@ -38,7 +38,7 @@ _COUNTRIES = (
     ("AF", "AFG", "Afghanistan"),
     ("AX", "ALA", "Åland Islands"),
     ("AL", "ALB", "Albania"),
-    ("DZ", "DZA", "Algeria"),
+    ("DZ", "ALG", "Algeria"),
     ("AS", "ASM", "American Samoa"),
     ("AD", "AND", "Andorra"),
     ("AO", "AGO", "Angola"),
