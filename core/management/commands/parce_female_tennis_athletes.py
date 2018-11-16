@@ -121,6 +121,11 @@ class Command(BaseCommand):
             for item in data:
                 link = BeautifulSoup(item['fullname'],
                                      'html.parser').select_one('a')
-                _parse_tennis(site + link['href'], item)
+
+                if not Athlete.objects.filter(
+                        name__icontains=link.string).exists():
+                    _parse_tennis(site + link['href'], item)
+                else:
+                    log.info(f"Skip {link.string}")
 
         self.stdout.write("Finished parsing Tennis players")

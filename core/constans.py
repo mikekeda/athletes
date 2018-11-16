@@ -207,7 +207,7 @@ _COUNTRIES = (
     ("PS", "PSE", "Palestine, State of"),
     ("PA", "PAN", "Panama"),
     ("PG", "PNG", "Papua New Guinea"),
-    ("PY", "PRY", "Paraguay"),
+    ("PY", "PAR", "Paraguay"),
     ("PE", "PER", "Peru"),
     ("PH", "PHI", "Philippines"),
     ("PN", "PCN", "Pitcairn"),
