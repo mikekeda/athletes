@@ -109,7 +109,7 @@ class Command(BaseCommand):
             end = start + 100
             self.stdout.write(f"Parsing Tennis players ({start}-{end})")
 
-            url = f"{site}/en/rankings/singles/?rankRange={start}-{end}"
+            url = f"{site}/en/rankings/doubles/?rankRange={start}-{end}"
 
             html = requests.get(url)
             soup = BeautifulSoup(html.content, 'html.parser')

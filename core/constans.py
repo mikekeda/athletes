@@ -88,7 +88,7 @@ _COUNTRIES = (
     ("CD", "COD", "Congo (the Democratic Republic of the)"),
     ("CG", "COG", "Congo"),
     ("CK", "COK", "Cook Islands"),
-    ("CR", "CRI", "Costa Rica"),
+    ("CR", "CRC", "Costa Rica"),
     ("CI", "CIV", "Côte d'Ivoire"),
     ("HR", "CRO", "Croatia"),
     ("CU", "CUB", "Cuba"),
