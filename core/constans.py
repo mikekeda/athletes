@@ -201,7 +201,7 @@ _COUNTRIES = (
     ("NF", "NFK", "Norfolk Island"),
     ("MP", "NMI", "Northern Mariana Islands"),
     ("NO", "NOR", "Norway"),
-    ("OM", "OMN", "Oman"),
+    ("OM", "OMA", "Oman"),
     ("PK", "PAK", "Pakistan"),
     ("PW", "PLW", "Palau"),
     ("PS", "PSE", "Palestine, State of"),
