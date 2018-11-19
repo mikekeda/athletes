@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum, Prefetch
 from django.db.models.expressions import RawSQL
 from django.http import (JsonResponse, HttpResponseRedirect,
-                         HttpResponseBadRequest)
+                         HttpResponseBadRequest, Http404)
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext
@@ -400,6 +400,10 @@ def league_page(request, pk):
 def country_page(request, code):
     """ Country page. """
     code = code.upper()
+
+    if code not in COUNTRIES:
+        raise Http404
+
     name = COUNTRIES[code]
 
     window = RawSQL("to_timestamp(avg(extract(epoch from birthday)))", [])
