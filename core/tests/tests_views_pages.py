@@ -2,16 +2,21 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
+from core.models import Profile
+
 
 class AthletesViewTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
-        # Create usual user.
+        # Create regular user.
         test_user = User.objects.create_user(username='testuser',
                                              password='12345')
         test_user.save()
+
+        # Create user profile.
+        Profile.objects.create(user=test_user)
 
     def test_views_team_page(self):
         resp = self.client.get(reverse('core:team_parse'))
@@ -29,12 +34,20 @@ class AthletesViewTest(TestCase):
         resp = self.client.get(reverse('core:league_parse'))
         self.assertEqual(resp.status_code, 302)
 
-    def test_views_crm_page(self):
-        resp = self.client.get(reverse('core:crm'))
-        self.assertRedirects(resp, '/login?next=/crm')
+    def test_views_athletes_page(self):
+        resp = self.client.get(reverse('core:athletes'))
+        self.assertRedirects(resp, '/login?next=/athletes')
 
         self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:crm'))
+        resp = self.client.get(reverse('core:athletes'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_views_teams_page(self):
+        resp = self.client.get(reverse('core:teams'))
+        self.assertRedirects(resp, '/login?next=/teams')
+
+        self.client.login(username='testuser', password='12345')
+        resp = self.client.get(reverse('core:teams'))
         self.assertEqual(resp.status_code, 200)
 
     def test_views_home_page(self):

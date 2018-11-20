@@ -191,19 +191,30 @@ class ProfileView(View, GetUserMixin):
 
 
 @login_required
-def crm_page(request):
-    """ CRM page. """
+def athletes_page(request):
+    """ Athletes page. """
     form = AthletesListForm()
     model = Athlete._meta
     athletes_lists = AthletesList.objects.filter(user=request.user).only(
         'pk', 'name')
 
-    return render(request, 'crm.html', {
+    return render(request, 'athletes.html', {
         'form': form,
         'athletes_lists': athletes_lists,
         'gender_choices': model.get_field('gender').choices,
         'category_choices': model.get_field('category').choices,
         'optimal_campaign_choices': model.get_field('optimal_campaign').choices
+    })
+
+
+@login_required
+def teams_page(request):
+    """ Teams page. """
+    model = Team._meta
+
+    return render(request, 'teams.html', {
+        'gender_choices': model.get_field('gender').choices,
+        'category_choices': model.get_field('category').choices,
     })
 
 
@@ -453,7 +464,7 @@ def login_page(request):
             user = form.get_user()
             login(request, user)
             Profile.objects.get_or_create(user=user)
-            return redirect(reverse('core:crm'))
+            return redirect(reverse('core:athletes'))
 
     return render(request, 'login.html', {'form': form})
 

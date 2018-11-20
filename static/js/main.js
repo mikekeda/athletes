@@ -98,6 +98,69 @@ $(document).ready( function () {
         }
     });
 
+    let teams_table = $('table#teams-table').DataTable({
+        serverSide: true,
+        ajax: {
+            url: '/api/teams',
+            dataSrc: 'data',
+        },
+        columns: [
+            { "data": "pk" },
+            { "data": "name" },
+            { "data": "location_market" },
+            { "data": "gender" },
+            { "data": "league" },
+            { "data": "category" },
+            { "data": "twitter" },
+        ],
+        columnDefs: [
+            {
+                "render": function ( data, type, row ) {
+                    return '<input type="checkbox" class="team-checkbox" data-id="' + data + '">';
+                },
+                "width": "20px",
+                "targets": 0
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return '<a href="/team/' + row.pk + '">' + data + '</a>';
+                },
+                "targets": 1
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return '<a href="/country/' + row._location_market + '"><i class="flag flag-' + row._location_market.toLowerCase() + '"></i> ' + data + '</a>';
+                },
+                "targets": 2
+            },
+            {
+                "render": function ( data, type, row ) {
+                    if (row.league.pk) {
+                        return '<a href="/league/' + data.pk + '">' + data.name + '</a>';
+                    }
+                    else {
+                        return '';
+                    }
+                    return data;
+                },
+                "targets": 4
+            },
+            {
+                "render": function ( data, type, row ) {
+                    return data ? data.toLocaleString() : '';
+                },
+                "targets": 6
+            },
+        ],
+        language: {
+            "lengthMenu": "Show _MENU_ teams per page",
+            "zeroRecords": "No matching teams found",
+            "info": "Showing _START_ to _END_ of _TOTAL_ teams",
+            "infoEmpty": "No teams available",
+            "infoFiltered": "(filtered from _MAX_ total teams)"
+        }
+    });
+
     // TODO: Not needed for now.
     // $('#athletes-table_filter input').unbind().bind('keyup', function(e) {
     //     if (e.keyCode === 13) {
@@ -106,7 +169,7 @@ $(document).ready( function () {
     // });
 
     // Apply the search.
-    table.columns().every( function () {
+    let search_function = function () {
         let that = this;
 
         $('input', this.footer()).on('keyup change', function (e) {
@@ -122,7 +185,9 @@ $(document).ready( function () {
                 that.search(val).draw();
             }
         });
-    });
+    };
+    table.columns().every(search_function);
+    teams_table.columns().every(search_function);
 
     $('form select, .select2').select2();
 

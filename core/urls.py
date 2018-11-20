@@ -3,18 +3,19 @@ from django.urls import path
 from core.views.api import (athletes_api, athletes_export_api,
                             athletes_list_api, add_athlete_to_lists_api,
                             add_team_to_lists_api, add_league_to_lists_api,
-                            follow_api, autocomplete_api)
-from core.views.pages import (crm_page, about_page, login_page, logout_page,
+                            follow_api, autocomplete_api, teams_api)
+from core.views.pages import (athletes_page, about_page, login_page, logout_page,
                               ParseTeamView, ParseLeagueView, athlete_page,
                               terms_page, map_page, team_page, league_page,
                               country_page, ProfileView,
-                              compare_athletes_page)
+                              compare_athletes_page, teams_page)
 
 app_name = "Athletes"
 
 urlpatterns = [
     path('', about_page, name='home'),
-    path('crm', crm_page, name='crm'),
+    path('athletes', athletes_page, name='athletes'),
+    path('teams', teams_page, name='teams'),
     path('athletes_list', athletes_list_api, name='athletes_list'),
     path('athlete/<str:slug>', athlete_page, name='athlete'),
     path('compare/athletes', compare_athletes_page, name='compare_athletes'),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('league', ParseLeagueView.as_view(), name='league_parse'),
     path('export/athletes', athletes_export_api, name='athletes_export'),
     path('api/athletes', athletes_api, name='athletes-api'),
+    path('api/teams', teams_api, name='teams_api'),
     path('login', login_page, name='login'),
     path('logout', logout_page, name='logout'),
 ]

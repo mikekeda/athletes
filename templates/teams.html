@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block title %}{% trans "Teams" %}{% endblock title %}
+
+{% block content %}
+    <div class="mt-6">
+        <table id="teams-table" class="table table-striped" style="table-layout: fixed; width: 100%;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Location market" %}</th>
+                    <th>{% trans "Gender" %}</th>
+                    <th>{% trans "League" %}</th>
+                    <th>{% trans "Category" %}</th>
+                    <th>{% trans "Twitter" %}</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>{% trans "Name" %}<input type="text" placeholder="{% trans "Search Name" %}"/></th>
+                    <th>{% trans "Location market" %}<input type="text" placeholder="{% trans "Search Location market" %}"/></th>
+                    <th>{% trans "Gender" %}
+                        <select>
+                            <option selected value></option>
+                            {% for value, title in gender_choices %}
+                                <option value="{{ value }}">{{ title }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th>{% trans "League" %}<input type="text" placeholder="{% trans "Search League" %}"/></th>
+                    <th>{% trans "Category" %}
+                        <select multiple>
+                            <option selected value></option>
+                            {% for value, title in category_choices %}
+                                <option value="{{ value }}">{{ title }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th>{% trans "Twitter" %}
+                        <select>
+                            <option selected value></option>
+                            <option value="1000-1000000000">1,000+</option>
+                            <option value="10000-1000000000">10,000+</option>
+                            <option value="50000-1000000000">50,000+</option>
+                            <option value="100000-1000000000">100,000+</option>
+                            <option value="1000000-1000000000">1,000,000+</option>
+                        </select>
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+{% endblock content %}

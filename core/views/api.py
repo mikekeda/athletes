@@ -24,12 +24,18 @@ def _serialize_qs(qs):
 
     for obj in qs:
         props[obj.id] = {
-            'age': obj.age,
-            'market_export': obj.market_export,
-            'slug': obj.slug,
-            '_domestic_market': obj.domestic_market,
-            '_location_market': obj.location_market,
+            'age': getattr(obj, 'age', None),
+            'market_export': getattr(obj, 'market_export', None),
+            'slug': getattr(obj, 'slug', None),
+            'twitter': obj.twitter_info.get('followers_count'),
+            '_domestic_market': getattr(obj, 'domestic_market', None),
+            '_location_market': getattr(obj, 'location_market', None),
         }
+        if hasattr(obj, 'league'):
+            props[obj.id]['league'] = {
+                'pk': getattr(obj.league, 'pk', None),
+                'name': getattr(obj.league, 'name', None)
+            }
 
         for field in Athlete._meta.get_fields():
             try:
@@ -201,6 +207,100 @@ def athletes_api(request):
         filtered = qs.count()
     else:
         filtered = total  # no need to count filtered rows
+
+    qs = qs.order_by(*order)
+
+    # Pagination.
+    qs = qs[start:start + length]
+
+    return JsonResponse(
+        {
+            "draw": draw,
+            "recordsTotal": total,
+            "recordsFiltered": filtered,
+            "data": _serialize_qs(qs)
+        }
+    )
+
+
+@login_required
+def teams_api(request):
+    """ Return filtered/sorted/paginated list of teams for datatables. """
+    draw, start, length, order, search, filters = _process_datatables_params(
+        request.GET)
+
+    # Count all rows.
+    total = Team.objects.count()
+
+    # Form queryset.
+    qs = Team.objects.defer('additional_info', 'youtube_info',
+                            'wiki_views_info')
+
+    list_id = None
+    try:
+        list_id = int(request.GET.get('list_id'))
+        teams_ids = TeamsList.objects.filter(
+            user=request.user, pk=list_id).values_list(
+            'teams__id', flat=True)
+        qs = qs.filter(pk__in=teams_ids)
+    except (ValueError, TypeError):
+        pass
+
+    if filters:
+        for field, val in filters.items():
+            if field == 'twitter':
+                field = 'twitter_info'
+
+            model_field = Team._meta.get_field(field)
+
+            if field == 'twitter_info':
+                # TODO[Mike] Fix this.
+                val = val.split('-')
+                if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
+                    qs = qs.filter(
+                        twitter_info__followers_count__gte=val[0],
+                        twitter_info__followers_count__lte=val[1]
+                    )
+            elif field == 'location_market':
+                country_val = [
+                    code
+                    for code, name in COUNTRIES.items()
+                    if val.lower() in name.lower()
+                ]
+                qs = qs.filter(**{f'{field}__in': country_val})
+            elif field == 'league':
+                qs = qs.filter(**{f'{field}__name__unaccent__icontains': val})
+            elif model_field.choices:
+                qs = qs.filter(**{f'{field}__in': val.split(',')})
+            elif model_field.get_internal_type() == 'BooleanField':
+                qs = qs.filter(**{f'{field}': val == 'true'})
+            else:
+                qs = qs.filter(**{f'{field}__unaccent__icontains': val})
+
+    if search:
+        # Smart search by name, gender,
+        # location_market, league, category fields.
+        country_val = [
+            code
+            for code, name in COUNTRIES.items()
+            if search.lower() in name.lower()
+        ]
+
+        qs = qs.filter(
+            Q(name__unaccent__icontains=search) |
+            Q(gender__icontains=search) |
+            Q(location_market__in=country_val) |
+            Q(league__name__unaccent__icontains=search) |
+            Q(category__icontains=search)
+        )
+
+    # Count filtered rows.
+    if filters or search or list_id:
+        filtered = qs.count()
+    else:
+        filtered = total  # no need to count filtered rows
+
+    qs.select_related('league')
 
     qs = qs.order_by(*order)
 
