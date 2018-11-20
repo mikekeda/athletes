@@ -137,6 +137,111 @@
                        </div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-header" id="heading_leagues_lists">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#leagues_lists" aria-expanded="true" aria-controls="leagues_lists">
+                                {% trans "Leagues lists" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="leagues_lists" class="collapse" aria-labelledby="heading_leagues_lists" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for leagues_list in profile.leagues_lists %}
+                                <div class="card">
+                                    <div class="card-header" id="heading_leagues_list_{{ leagues_list.pk }}">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" data-toggle="collapse" data-target="#leagues_list_{{ leagues_list.pk }}" aria-expanded="true" aria-controls="leagues_list_{{ leagues_list.pk }}">
+                                                {{ leagues_list.name }}
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="leagues_list_{{ leagues_list.pk }}" class="collapse" aria-labelledby="heading_leagues_list_{{ leagues_list.pk }}" data-parent="#leagues_lists">
+                                        <div class="card-body">
+                                            {% for league in leagues_list.leagues.all %}
+                                                <a href="{% url 'core:league' league.pk %}">{{ league.name }}</a>
+                                                <br>
+                                            {% endfor %}
+                                       </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" id="heading_teams_lists">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#teams_lists" aria-expanded="true" aria-controls="teams_lists">
+                                {% trans "Teams lists" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="teams_lists" class="collapse" aria-labelledby="heading_teams_lists" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for teams_list in profile.teams_lists %}
+                                <div class="card">
+                                    <div class="card-header" id="heading_teams_list_{{ teams_list.pk }}">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" data-toggle="collapse" data-target="#teams_list_{{ teams_list.pk }}" aria-expanded="true" aria-controls="teams_list_{{ teams_list.pk }}">
+                                                {{ teams_list.name }}
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="teams_list_{{ teams_list.pk }}" class="collapse" aria-labelledby="heading_teams_list_{{ teams_list.pk }}" data-parent="#teams_lists">
+                                        <div class="card-body">
+                                            {% for team in teams_list.teams.all %}
+                                                <a href="{% url 'core:team' team.pk %}">{{ team.name }}</a>
+                                                <br>
+                                            {% endfor %}
+                                       </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" id="heading_athletes_lists">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#athletes_lists" aria-expanded="true" aria-controls="athletes_lists">
+                                {% trans "Athletes lists" %}
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="athletes_lists" class="collapse" aria-labelledby="heading_athletes_lists" data-parent="#accordion">
+                        <div class="card-body">
+                            {% for athletes_list in profile.athletes_lists %}
+                                <div class="card">
+                                    <div class="card-header" id="heading_athletes_list_{{ athletes_list.pk }}">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link" data-toggle="collapse" data-target="#athletes_list_{{ athletes_list.pk }}" aria-expanded="true" aria-controls="athletes_list_{{ athletes_list.pk }}">
+                                                {{ athletes_list.name }}
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="athletes_list_{{ athletes_list.pk }}" class="collapse" aria-labelledby="heading_athletes_list_{{ athletes_list.pk }}" data-parent="#athletes_lists">
+                                        <div class="card-body">
+                                            {% for athlete in athletes_list.athletes.all %}
+                                                <a href="{% url 'core:athlete' athlete.slug %}">{{ athlete.name }}</a>
+                                                <br>
+                                            {% endfor %}
+                                       </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                       </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -141,6 +141,21 @@ class ProfileView(View, GetUserMixin):
                 'pk', 'name').order_by('name')),
         ).get(user=user)
 
+        profile.leagues_lists = LeaguesList.objects.prefetch_related(
+            Prefetch('leagues', queryset=League.objects.only(
+                'pk', 'name').order_by('name')),
+        ).filter(user=user)
+
+        profile.teams_lists = TeamsList.objects.prefetch_related(
+            Prefetch('teams', queryset=Team.objects.only(
+                'pk', 'name').order_by('name')),
+        ).filter(user=user)
+
+        profile.athletes_lists = AthletesList.objects.prefetch_related(
+            Prefetch('athletes', queryset=Athlete.objects.only(
+                'pk', 'name', 'wiki').order_by('name')),
+        ).filter(user=user)
+
         form = AvatarForm(data=request.POST)
 
         timezones = '['
