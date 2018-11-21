@@ -449,6 +449,7 @@ class Team(models.Model, ModelMixin):
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
     wiki_views_info = JSONField(default=dict, blank=True)
+    stock_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -527,6 +528,29 @@ class Team(models.Model, ModelMixin):
                         'location']['lng']
                     self.latitude = geo_data['results'][0]['geometry'][
                         'location']['lat']
+
+    def get_stock_info(self):
+        """ Get stock info. """
+        model = self.__class__.__name__
+
+        log.info(f"Get stock info for {model} {self.name}")
+
+        symbol = self.stock_info.get('symbol')
+        if symbol:
+            url = (
+                "https://www.alphavantage.co/query"
+                "?function=TIME_SERIES_DAILY"
+                f"&apikey={settings.ALPHAVANTAGE_API_KEY}"
+                f"&symbol={symbol}"
+            )
+            res = requests.get(url)
+            if res.status_code == 200:
+                stock_info = res.json()
+                if stock_info and stock_info['Time Series (Daily)']:
+                    for key, val in stock_info['Time Series (Daily)'].items():
+                        self.stock_info[key] = val['4. close']
+
+        return self.stock_info
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -33,6 +33,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=0, minute=0, day_of_week=2),
         'args': ()
     },
+    'every-thursday': {
+        'task': 'core.tasks.weekly_stock_update',
+        'schedule': crontab(hour=3, minute=0, day_of_week=4),
+        'args': ()
+    },
     'every-friday': {
         'task': 'core.tasks.weekly_wiki_views_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=5),

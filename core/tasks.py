@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -281,6 +281,18 @@ def weekly_wiki_views_update():
             obj = cls.objects.get(id=_id)
             obj.get_wiki_views_info()
             super(cls, obj).save()
+
+
+@app.task
+def weekly_stock_update():
+    """ Update stock info for Teams weekly. """
+    ids = sorted(Team.objects.filter(~Q(stock_info={})).values_list(
+        'id', flat=True))
+
+    for _id in ids:
+        obj = Team.objects.get(id=_id)
+        obj.get_stock_info()
+        super(Team, obj).save()
 
 
 @app.task
