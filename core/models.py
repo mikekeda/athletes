@@ -546,7 +546,7 @@ class Team(models.Model, ModelMixin):
             res = requests.get(url)
             if res.status_code == 200:
                 stock_info = res.json()
-                if stock_info and stock_info['Time Series (Daily)']:
+                if stock_info and stock_info.get('Time Series (Daily)'):
                     for key, val in stock_info['Time Series (Daily)'].items():
                         self.stock_info[key] = val['4. close']
 
