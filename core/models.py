@@ -552,6 +552,33 @@ class Team(models.Model, ModelMixin):
 
         return self.stock_info
 
+    @property
+    def get_stock_stats(self):
+        """ Stock price. """
+        stats = []
+        self.stock_info.pop('symbol', None)
+        dates = sorted(self.stock_info.keys(), reverse=True)
+
+        for d in dates:
+            stats.append([d, [float(self.stock_info[d])]])
+
+        return stats
+
+    @property
+    def get_stock_trends(self):
+        """ Stock price trends. """
+        stats = []
+        self.stock_info.pop('symbol', None)
+
+        dates = sorted(self.stock_info.keys(), reverse=True)
+        for i, d in enumerate(dates[:-1]):
+            stats.append([d, [
+                float(self.stock_info[d]) - float(
+                    self.stock_info[dates[i + 1]]),
+            ]])
+
+        return stats
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if not self.name:
