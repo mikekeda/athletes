@@ -25,9 +25,11 @@ class TeamForm(forms.ModelForm):
 
     class Meta:
         model = Team
-        exclude = ('name', 'hashtag', 'longitude', 'latitude', 'photo',
-                   'league', 'additional_info', 'twitter_info',
-                   'youtube_info', 'wiki_views_info')
+        exclude = (
+            'name', 'hashtag', 'longitude', 'latitude', 'photo', 'league',
+            'additional_info', 'twitter_info', 'youtube_info',
+            'wiki_views_info', 'stock_info', 'site_views_info'
+        )
 
 
 class LeagueForm(forms.ModelForm):
@@ -44,7 +46,7 @@ class LeagueForm(forms.ModelForm):
     class Meta:
         model = League
         exclude = ('name', 'photo', 'additional_info', 'twitter_info',
-                   'youtube_info', 'wiki_views_info')
+                   'youtube_info', 'wiki_views_info', 'site_views_info')
 
 
 class AthletesListForm(forms.ModelForm):

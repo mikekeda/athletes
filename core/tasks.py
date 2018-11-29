@@ -296,6 +296,23 @@ def weekly_stock_update():
 
 
 @app.task
+def mouthy_similarweb_update():
+    """ Update similarweb statistic for League and related Teams mouthy. """
+    for slug in ('Premier_League', 'EFL_Championship', 'Bundesliga',
+                 'Serie_A', 'La_Liga', 'Ligue_1'):
+        league = League.objects.filter(wiki__endswith=slug).prefetch_related(
+            'teams'
+        ).first()
+        if league:
+            league.get_similarweb_info()
+            super(League, league).save()
+
+            for team in league.teams.all():
+                team.get_similarweb_info()
+                super(Team, team).save()
+
+
+@app.task
 def every_minute_twitter_update():
     """ Update twitter info with respect to api limitation. """
     # pattern is 'twitter_update_cls_id'

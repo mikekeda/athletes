@@ -1,4 +1,5 @@
 import datetime
+from dateutil.relativedelta import relativedelta
 import logging
 import urllib.parse
 
@@ -14,8 +15,10 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from core.constans import (CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
-                           WIKI_COUNTRIES, WIKI_NATIONALITIES)
+from core.constans import (
+    CATEGORIES, WIKI_CATEGORIES, COUNTRIES, COUNTRY_NUM_TO_CODE3,
+    WIKI_COUNTRIES, WIKI_NATIONALITIES
+)
 
 log = logging.getLogger('athletes')
 
@@ -28,9 +31,11 @@ class ModelMixin:
     location_market = None
     photo = None
     twitter = None
+    additional_info = {}
     twitter_info = {}
     youtube_info = {}
     wiki_views_info = {}
+    site_views_info = {}
 
     @property
     def slug(self):
@@ -168,6 +173,51 @@ class ModelMixin:
                             f"for {model} {self.name} ({res.status_code})")
 
         return self.youtube_info
+
+    def get_similarweb_info(self):
+        """ Get visits statistic from Similarweb. """
+        model = self.__class__.__name__
+
+        log.info("Get visits statistic from Similarweb for "
+                 f"{model} {self.name}")
+
+        website = self.additional_info.get('Website')
+        if not website:
+            log.info(f"{model} {self.name} doesn't have website")
+            return {}
+
+        now = datetime.datetime.now()
+        month_ago = now - relativedelta(months=1)
+        two_month_ago = now - relativedelta(months=2)
+
+        url = (
+            f"https://api.similarweb.com/v1/website/{website}"
+            "/Geo/traffic-by-country"
+            f"?api_key={settings.SIMILARWEB_API_KEY}"
+            f"&start_date={str(two_month_ago)[:7]}"
+            f"&end_date={str(month_ago)[:7]}"
+            "&main_domain_only=false"
+        )
+
+        res = requests.get(url)
+        if res.status_code == 200:
+            views_info = res.json()
+            if views_info and views_info.get('records'):
+                data = {}
+                for row in views_info['records']:
+                    country = COUNTRY_NUM_TO_CODE3[int(row['country'])]
+                    data[country] = int(row['visits'])
+
+                key = str(now)[:10]
+                self.site_views_info[key] = data
+            else:
+                log.info(f"No site visits for {model} {self.name}")
+        else:
+            log.warning(
+                f"Failed getting site visits for {model} {self.name} "
+                f"({res.status_code})")
+
+        return self.site_views_info
 
     @property
     def get_youtube_stats(self):
@@ -339,6 +389,7 @@ class League(models.Model, ModelMixin):
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
     wiki_views_info = JSONField(default=dict, blank=True)
+    site_views_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -449,6 +500,7 @@ class Team(models.Model, ModelMixin):
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
     wiki_views_info = JSONField(default=dict, blank=True)
+    site_views_info = JSONField(default=dict, blank=True)
     stock_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -671,6 +723,7 @@ class Athlete(models.Model, ModelMixin):
     twitter_info = JSONField(default=dict, blank=True)
     youtube_info = JSONField(default=dict, blank=True)
     wiki_views_info = JSONField(default=dict, blank=True)
+    site_views_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

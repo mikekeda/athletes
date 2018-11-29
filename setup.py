@@ -14,6 +14,8 @@ setup(
         'requests_oauthlib==1.0.0',
         'Pillow==5.3.0',
         'pytz==2018.7',
+        'google-cloud-logging==1.8.0',
+        'python-dateutil==2.7.5',
 
         'django==2.1.3',
         'django-widget-tweaks==1.4.3',
@@ -21,7 +23,6 @@ setup(
         'django-import-export',  # Installed from git due the the bug
         'django-debug-toolbar==1.10.1',
         'django-redis==4.9.0',
-        'google-cloud-logging==1.8.0',
     ],
     extras_require={
         "test": [
