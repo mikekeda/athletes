@@ -1,0 +1,89 @@
+{% load i18n %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let stats = {{ obj.get_similarweb_stats|safe }};
+
+        if (stats.length > 0) {
+            let ctx_stats = document.getElementById('similarweb-stats-canv').getContext('2d');
+
+            function chart(ctx, data) {
+                let i;
+                let key;
+                let _date;
+                let visits = {};
+                let lineChartData;
+                let color;
+                let colors = ['#FF4136', '#001f3f', '#0074D9', '#3D9970', '#FF851B', '#B10DC9'];
+
+                for (i in data) {
+                    _date = new Date(data[i][0]);
+
+                    for (key in data[i][1]) {
+                        if (!(key in visits)) {
+                            visits[key] = [];
+                        }
+
+                        visits[key].push({
+                            "x": _date,
+                            "y": data[i][1][key]
+                        });
+                    }
+                }
+
+                lineChartData = {
+                    datasets: []
+                };
+
+                for (key in visits) {
+                    color = colors.pop();
+
+                    lineChartData['datasets'].push(
+                        {
+                            label: key,
+                            borderColor: color,
+                            backgroundColor: color,
+                            fill: false,
+                            data: visits[key],
+                            yAxisID: 'y-axis-1'
+                        }
+                    );
+                }
+
+                Chart.Line(ctx, {
+                    data: lineChartData,
+                    options: {
+                        responsive: true,
+                        hoverMode: 'index',
+                        stacked: false,
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    parser: 'YYYY-MM-DD',
+                                    tooltipFormat: 'll',
+                                    unit: 'day'
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '{% trans "Date" %}'
+                                }
+                            }],
+                            yAxes: [{
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                ticks: {
+                                    fontColor: '333'
+                                },
+                                id: 'y-axis-1'
+                            }]
+                        }
+                    }
+                });
+            }
+
+            chart(ctx_stats, stats);
+        }
+    });
+</script>

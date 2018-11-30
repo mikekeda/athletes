@@ -90,6 +90,11 @@
                         <a class="nav-link" id="stock-stats-tab" data-toggle="tab" href="#stock-stats" role="tab" aria-controls="stock stats" aria-selected="false">{% trans "Price" %}</a>
                     </li>
                 {% endif %}
+                {% if team.get_similarweb_stats %}
+                    <li class="nav-item">
+                        <a class="nav-link" id="similarweb-stats-tab" data-toggle="tab" href="#similarweb-stats" role="tab" aria-controls="similarweb stats" aria-selected="false">{% trans "Mouthy site visits" %}</a>
+                    </li>
+                {% endif %}
             </ul>
             <div class="tab-content col-sm-12" id="charts-content">
                 <div class="tab-pane fade show active" id="current-squad" role="tabpanel" aria-labelledby="current-squad-tab">
@@ -131,6 +136,11 @@
                         <canvas id="stock-stats-canv" width="400" height="200"></canvas>
                     </div>
                 {% endif %}
+                {% if team.get_similarweb_stats %}
+                    <div class="tab-pane fade" id="similarweb-stats" role="tabpanel" aria-labelledby="similarweb-stats-tab">
+                        <canvas id="similarweb-stats-canv" width="400" height="200"></canvas>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -157,5 +167,6 @@
     {% include "_twitter_charts.html" with obj=team %}
     {% include "_wiki_charts.html" with obj=team %}
     {% include "_stock_charts.html" with obj=team %}
+    {% include "_similarweb_charts.html" with obj=team %}
     {% include "_follow.html" %}
 {% endblock %}

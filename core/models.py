@@ -1,6 +1,7 @@
 import datetime
 from dateutil.relativedelta import relativedelta
 import logging
+import operator
 import urllib.parse
 
 import requests
@@ -364,6 +365,29 @@ class ModelMixin:
                 ]])
 
         return trends
+
+    @property
+    def get_similarweb_stats(self):
+        """ Similarweb site visits. """
+        stats = []
+        if self.site_views_info:
+            dates = sorted(self.site_views_info.keys(), reverse=True)
+            top_5 = sorted(self.site_views_info[dates[-1]].items(),
+                           key=operator.itemgetter(1), reverse=True)[:5]
+            countries = [country[0] for country in top_5]
+            countries = {
+                country: COUNTRIES[country]
+                for country in countries
+            }
+
+            for d in dates:
+                _stats = {'total': sum(self.site_views_info[d].values())}
+                for code, name in countries.items():
+                    _stats[name] = self.site_views_info[d][code]
+
+                stats.append([d[:10], _stats])
+
+        return stats
 
 
 class League(models.Model, ModelMixin):
