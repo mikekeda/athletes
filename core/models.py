@@ -190,13 +190,14 @@ class ModelMixin:
         now = datetime.datetime.now()
         month_ago = now - relativedelta(months=1)
         two_month_ago = now - relativedelta(months=2)
+        three_month_ago = now - relativedelta(months=2)
 
         url = (
             f"https://api.similarweb.com/v1/website/{website}"
             "/Geo/traffic-by-country"
             f"?api_key={settings.SIMILARWEB_API_KEY}"
-            f"&start_date={str(two_month_ago)[:7]}"
-            f"&end_date={str(month_ago)[:7]}"
+            f"&start_date={str(three_month_ago)[:7]}"
+            f"&end_date={str(two_month_ago)[:7]}"
             "&main_domain_only=false"
         )
 
@@ -209,7 +210,7 @@ class ModelMixin:
                     country = COUNTRY_NUM_TO_CODE3[int(row['country'])]
                     data[country] = int(row['visits'])
 
-                key = str(now)[:10]
+                key = str(month_ago)[:10]
                 self.site_views_info[key] = data
             else:
                 log.info(f"No site visits for {model} {self.name}")
