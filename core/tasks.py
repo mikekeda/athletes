@@ -298,8 +298,8 @@ def weekly_stock_update():
 @app.task
 def mouthy_similarweb_update():
     """ Update similarweb statistic for League and related Teams mouthy. """
-    for slug in ('Premier_League', 'EFL_Championship', 'Bundesliga',
-                 'Serie_A', 'La_Liga', 'Ligue_1'):
+    for slug in ('/Premier_League', '/EFL_Championship', '/Bundesliga',
+                 '/Serie_A', '/La_Liga', '/Ligue_1'):
         league = League.objects.filter(wiki__endswith=slug).prefetch_related(
             'teams'
         ).first()
