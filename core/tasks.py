@@ -301,7 +301,7 @@ def weekly_awis_update(days_ago: int = 1):
     ids = sorted(League.objects.values_list('id', flat=True))
 
     for _id in ids:
-        league = League.objects.get(id=_id).prefetch_related('teams')
+        league = League.objects.prefetch_related('teams').get(id=_id)
         if league:
             league.get_awis_info(days_ago)
             super(League, league).save()
