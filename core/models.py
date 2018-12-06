@@ -202,6 +202,8 @@ class ModelMixin:
             log.info(f"{model} {self.name} doesn't have website")
             return {}
 
+        log.info(website)
+
         now = datetime.datetime.now()
         day_ago = now - datetime.timedelta(days=days_ago)
         datestamp = now.strftime('%Y%m%d')
@@ -269,7 +271,7 @@ class ModelMixin:
                         )
                         break
 
-                records = root['aws:RankByCountry']['aws:Country']
+                records = root['aws:RankByCountry'].get('aws:Country', [])
                 for row in records:
                     if isinstance(row, dict) and row['@Code'] in COUNTRIES:
                         data[row['@Code']] = round(

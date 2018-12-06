@@ -302,13 +302,12 @@ def weekly_awis_update(days_ago: int = 1):
 
     for _id in ids:
         league = League.objects.prefetch_related('teams').get(id=_id)
-        if league:
-            league.get_awis_info(days_ago)
-            super(League, league).save()
+        league.get_awis_info(days_ago)
+        super(League, league).save()
 
-            for team in league.teams.all():
-                team.get_awis_info(days_ago)
-                super(Team, team).save()
+        for team in league.teams.all():
+            team.get_awis_info(days_ago)
+            super(Team, team).save()
 
 
 @app.task
