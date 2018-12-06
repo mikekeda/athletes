@@ -262,7 +262,8 @@ class ModelMixin:
                 data = {'total': 0.0}
                 root = views_info['aws:UrlInfoResponse']['aws:Response'][
                     'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
-                for item in root['aws:UsageStatistics']['aws:UsageStatistic']:
+                for item in root['aws:UsageStatistics'].get(
+                        'aws:UsageStatistic', []):
                     if item['aws:TimeRange'].get('aws:Days') == '7':
                         data['total'] = round(
                             float(item['aws:PageViews']['aws:PerMillion'][
@@ -282,8 +283,9 @@ class ModelMixin:
                             1
                         )
 
-                key = str(day_ago)[:10]
-                self.site_views_info[key] = data
+                if data['total']:
+                    key = str(day_ago)[:10]
+                    self.site_views_info[key] = data
             else:
                 log.info(f"No site visits for {model} {self.name}")
         else:

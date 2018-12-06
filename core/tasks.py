@@ -297,7 +297,7 @@ def weekly_stock_update():
 
 @app.task
 def weekly_awis_update(days_ago: int = 1):
-    """ Update similarweb statistic for League and related Teams mouthy. """
+    """ Update awis statistic for League and related Teams weekly. """
     ids = sorted(League.objects.values_list('id', flat=True))
 
     for _id in ids:
