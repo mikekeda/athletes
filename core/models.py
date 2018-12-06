@@ -195,7 +195,7 @@ class ModelMixin:
 
         model = self.__class__.__name__
 
-        log.info("Get visits statistic from awis for {model} {self.name}")
+        log.info(f"Get visits statistic from awis for {model} {self.name}")
 
         website = self.additional_info.get('Website')
         if not website:
