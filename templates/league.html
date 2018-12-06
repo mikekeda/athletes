@@ -74,9 +74,9 @@
                 <li class="nav-item">
                     <a class="nav-link" id="wiki-stats-tab" data-toggle="tab" href="#wiki-stats" role="tab" aria-controls="wiki stats" aria-selected="false">{% trans "Wikipedia stats" %}</a>
                 </li>
-                {% if league.get_similarweb_stats %}
+                {% if league.get_awis_stats %}
                     <li class="nav-item">
-                        <a class="nav-link" id="similarweb-stats-tab" data-toggle="tab" href="#similarweb-stats" role="tab" aria-controls="similarweb stats" aria-selected="false">{% trans "Mouthy site visits" %}</a>
+                        <a class="nav-link" id="similarweb-stats-tab" data-toggle="tab" href="#similarweb-stats" role="tab" aria-controls="similarweb stats" aria-selected="false">{% trans "Site visits" %}</a>
                     </li>
                 {% endif %}
             </ul>
@@ -106,7 +106,7 @@
                 <div class="tab-pane fade" id="wiki-stats" role="tabpanel" aria-labelledby="wiki-stats-tab">
                     <canvas id="wiki-stats-canv" width="400" height="200"></canvas>
                 </div>
-                {% if league.get_similarweb_stats %}
+                {% if league.get_awis_stats %}
                     <div class="tab-pane fade" id="similarweb-stats" role="tabpanel" aria-labelledby="similarweb-stats-tab">
                         <canvas id="similarweb-stats-canv" width="400" height="200"></canvas>
                     </div>
@@ -120,6 +120,6 @@
     {% include "_youtube_charts.html" with obj=league %}
     {% include "_twitter_charts.html" with obj=league %}
     {% include "_wiki_charts.html" with obj=league %}
-    {% include "_similarweb_charts.html" with obj=league %}
+    {% include "_awis_charts.html" with obj=league %}
     {% include "_follow.html" %}
 {% endblock %}

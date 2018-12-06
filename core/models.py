@@ -1,8 +1,10 @@
 import datetime
-from dateutil.relativedelta import relativedelta
 import logging
 import operator
 import urllib.parse
+import hmac
+import hashlib
+import xmltodict
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,7 +19,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from core.constans import (
-    CATEGORIES, WIKI_CATEGORIES, COUNTRIES, COUNTRY_NUM_TO_CODE3,
+    CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
     WIKI_COUNTRIES, WIKI_NATIONALITIES
 )
 
@@ -175,12 +177,25 @@ class ModelMixin:
 
         return self.youtube_info
 
-    def get_similarweb_info(self):
-        """ Get visits statistic from Similarweb. """
+    def get_awis_info(self, days_ago: int = 1):
+        """ Get visits statistic from awis. """
+        # Key derivation functions. See:
+        # http://docs.aws.amazon.com/general/latest/gr
+        # /signature-v4-examples.html#signature-v4-examples-python
+        def sign(_key, msg):
+            return hmac.new(_key, msg.encode('utf-8'),
+                            hashlib.sha256).digest()
+
+        def get_signature_key(_key, date_stamp):
+            k_date = sign(('AWS4' + _key).encode('utf-8'), date_stamp)
+            k_region = sign(k_date, 'us-west-1')
+            k_service = sign(k_region, 'awis')
+            k_signing = sign(k_service, 'aws4_request')
+            return k_signing
+
         model = self.__class__.__name__
 
-        log.info("Get visits statistic from Similarweb for "
-                 f"{model} {self.name}")
+        log.info("Get visits statistic from awis for {model} {self.name}")
 
         website = self.additional_info.get('Website')
         if not website:
@@ -188,29 +203,83 @@ class ModelMixin:
             return {}
 
         now = datetime.datetime.now()
-        month_ago = now - relativedelta(months=1)
-        two_month_ago = now - relativedelta(months=2)
-        three_month_ago = now - relativedelta(months=2)
+        day_ago = now - datetime.timedelta(days=days_ago)
+        datestamp = now.strftime('%Y%m%d')
+        amzdate = now.strftime('%Y%m%dT%H%M%SZ')
 
-        url = (
-            f"https://api.similarweb.com/v1/website/{website}"
-            "/Geo/traffic-by-country"
-            f"?api_key={settings.SIMILARWEB_API_KEY}"
-            f"&start_date={str(three_month_ago)[:7]}"
-            f"&end_date={str(two_month_ago)[:7]}"
-            "&main_domain_only=false"
+        canonical_querystring = urllib.parse.urlencode([
+            ('Action', "UrlInfo"),
+            ('Range', 7),
+            ('ResponseGroup', 'UsageStats,RankByCountry'),
+            ('Start', day_ago.strftime('%Y%m%d')),
+            ('Url', website),
+        ])
+
+        url = f"https://awis.amazonaws.com/api?{canonical_querystring}"
+
+        credential_scope = f'{datestamp}/us-west-1/awis/aws4_request'
+        signing_key = get_signature_key(settings.AWS_SECRET_ACCESS_KEY,
+                                        datestamp)
+        payload_hash = hashlib.sha256(''.encode('utf8')).hexdigest()
+        canonical_request = '\n'.join([
+            'GET',
+            '/api',
+            canonical_querystring,
+            'host:awis.us-west-1.amazonaws.com',
+            f'x-amz-date:{amzdate}',
+            '',
+            'host;x-amz-date',
+            payload_hash
+        ])
+        string_to_sign = '\n'.join([
+            'AWS4-HMAC-SHA256',
+            amzdate,
+            credential_scope,
+            hashlib.sha256(canonical_request.encode('utf8')).hexdigest()
+        ])
+        signature = hmac.new(signing_key, string_to_sign.encode('utf-8'),
+                             hashlib.sha256).hexdigest()
+        authorization_header = (
+            f"AWS4-HMAC-SHA256 Credential={settings.AWS_ACCESS_ID}"
+            f"/{datestamp}/us-west-1/awis/aws4_request, SignedHeaders=host;"
+            f"x-amz-date, Signature={signature}"
         )
 
-        res = requests.get(url)
-        if res.status_code == 200:
-            views_info = res.json()
-            if views_info and views_info.get('records'):
-                data = {}
-                for row in views_info['records']:
-                    country = COUNTRY_NUM_TO_CODE3[int(row['country'])]
-                    data[country] = int(row['visits'])
+        headers = {
+            'X-Amz-Date': amzdate,
+            'Authorization': authorization_header,
+            'Content-Type': 'application/xml',
+            'Accept': 'application/xml'
+        }
 
-                key = str(month_ago)[:10]
+        res = requests.get(url, headers=headers)
+
+        if res.status_code == 200:
+            views_info = xmltodict.parse(res.content)
+            if views_info and views_info.get('aws:UrlInfoResponse'):
+                data = {'total': 0.0}
+                root = views_info['aws:UrlInfoResponse']['aws:Response'][
+                    'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
+                for item in root['aws:UsageStatistics']['aws:UsageStatistic']:
+                    if item['aws:TimeRange'].get('aws:Days') == '7':
+                        data['total'] = round(
+                            float(item['aws:PageViews']['aws:PerMillion'][
+                                      'aws:Value']),
+                            1
+                        )
+                        break
+
+                records = root['aws:RankByCountry']['aws:Country']
+                for row in records:
+                    if row['@Code'] in COUNTRIES:
+                        data[row['@Code']] = round(
+                            data['total'] / 100 * float(
+                                row['aws:Contribution']['aws:PageViews'][:-1]
+                            ),
+                            1
+                        )
+
+                key = str(day_ago)[:10]
                 self.site_views_info[key] = data
             else:
                 log.info(f"No site visits for {model} {self.name}")
@@ -368,13 +437,13 @@ class ModelMixin:
         return trends
 
     @property
-    def get_similarweb_stats(self):
-        """ Similarweb site visits. """
+    def get_awis_stats(self):
+        """ Awis site visits. """
         stats = []
         if self.site_views_info:
             dates = sorted(self.site_views_info.keys(), reverse=True)
             top_5 = sorted(self.site_views_info[dates[-1]].items(),
-                           key=operator.itemgetter(1), reverse=True)[:5]
+                           key=operator.itemgetter(1), reverse=True)[1:6]
             countries = [country[0] for country in top_5]
             countries = {
                 country: COUNTRIES[country]
@@ -382,7 +451,7 @@ class ModelMixin:
             }
 
             for d in dates:
-                _stats = {'total': sum(self.site_views_info[d].values())}
+                _stats = {'total': self.site_views_info[d]['total']}
                 for code, name in countries.items():
                     _stats[name] = self.site_views_info[d][code]
 

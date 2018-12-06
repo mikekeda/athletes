@@ -2,7 +2,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        let stats = {{ obj.get_similarweb_stats|safe }};
+        let stats = {{ obj.get_awis_stats|safe }};
 
         if (stats.length > 0) {
             let ctx_stats = document.getElementById('similarweb-stats-canv').getContext('2d');
@@ -54,6 +54,10 @@
                     data: lineChartData,
                     options: {
                         responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Visits per million requests.'
+                        },
                         hoverMode: 'index',
                         stacked: false,
                         scales: {

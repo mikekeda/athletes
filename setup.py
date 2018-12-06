@@ -16,6 +16,7 @@ setup(
         'pytz==2018.7',
         'google-cloud-logging==1.8.0',
         'python-dateutil==2.7.5',
+        'xmltodict==0.11.0',
 
         'django==2.1.3',
         'django-widget-tweaks==1.4.3',

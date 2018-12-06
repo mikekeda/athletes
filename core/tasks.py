@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import Q, Prefetch
+from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -296,7 +296,7 @@ def weekly_stock_update():
 
 
 @app.task
-def mouthy_similarweb_update():
+def weekly_awis_update(days_ago: int = 1):
     """ Update similarweb statistic for League and related Teams mouthy. """
     for slug in ('/Premier_League', '/EFL_Championship', '/Bundesliga',
                  '/Serie_A', '/La_Liga', '/Ligue_1'):
@@ -304,11 +304,11 @@ def mouthy_similarweb_update():
             'teams'
         ).first()
         if league:
-            league.get_similarweb_info()
+            league.get_awis_info(days_ago)
             super(League, league).save()
 
             for team in league.teams.all():
-                team.get_similarweb_info()
+                team.get_awis_info(days_ago)
                 super(Team, team).save()
 
 
