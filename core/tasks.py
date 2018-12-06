@@ -298,11 +298,10 @@ def weekly_stock_update():
 @app.task
 def weekly_awis_update(days_ago: int = 1):
     """ Update similarweb statistic for League and related Teams mouthy. """
-    for slug in ('/Premier_League', '/EFL_Championship', '/Bundesliga',
-                 '/Serie_A', '/La_Liga', '/Ligue_1'):
-        league = League.objects.filter(wiki__endswith=slug).prefetch_related(
-            'teams'
-        ).first()
+    ids = sorted(League.objects.values_list('id', flat=True))
+
+    for _id in ids:
+        league = League.objects.get(id=_id).prefetch_related('teams')
         if league:
             league.get_awis_info(days_ago)
             super(League, league).save()
