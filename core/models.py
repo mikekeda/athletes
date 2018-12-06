@@ -271,7 +271,7 @@ class ModelMixin:
 
                 records = root['aws:RankByCountry']['aws:Country']
                 for row in records:
-                    if row['@Code'] in COUNTRIES:
+                    if isinstance(row, dict) and row['@Code'] in COUNTRIES:
                         data[row['@Code']] = round(
                             data['total'] / 100 * float(
                                 row['aws:Contribution']['aws:PageViews'][:-1]
