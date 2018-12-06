@@ -198,7 +198,7 @@ class ModelMixin:
         log.info(f"Get visits statistic from awis for {model} {self.name}")
 
         website = self.additional_info.get('Website')
-        if not website:
+        if not website or ' ' in website:
             log.info(f"{model} {self.name} doesn't have website")
             return {}
 
@@ -262,7 +262,7 @@ class ModelMixin:
                 data = {'total': 0.0}
                 root = views_info['aws:UrlInfoResponse']['aws:Response'][
                     'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
-                for item in root['aws:UsageStatistics'].get(
+                for item in root.get('aws:UsageStatistics', {}).get(
                         'aws:UsageStatistic', []):
                     if item['aws:TimeRange'].get('aws:Days') == '7':
                         data['total'] = round(
