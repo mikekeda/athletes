@@ -266,7 +266,8 @@ class ModelMixin:
                 items = root.get('aws:UsageStatistics') or {}
                 items = items.get('aws:UsageStatistic') or []
                 for item in items:
-                    if item['aws:TimeRange'].get('aws:Days') == '7':
+                    if isinstance(item, dict) and item['aws:TimeRange'].get(
+                            'aws:Days') == '7':
                         data['total'] = round(
                             float(item['aws:PageViews']['aws:PerMillion'][
                                       'aws:Value']),
