@@ -272,8 +272,8 @@ class ModelMixin:
                         )
                         break
 
-                records = root.get('aws:RankByCountry', {}).get(
-                    'aws:Country', [])
+                records = root.get('aws:RankByCountry') or {}
+                records = records.get('aws:Country') or []
                 for row in records:
                     if isinstance(row, dict) and row['@Code'] in COUNTRIES:
                         data[row['@Code']] = round(
