@@ -296,17 +296,17 @@ def weekly_stock_update():
 
 
 @app.task
-def weekly_awis_update(days_ago: int = 1):
+def weekly_awis_update():
     """ Update awis statistic for League and related Teams weekly. """
     ids = sorted(League.objects.values_list('id', flat=True))
 
     for _id in ids:
         league = League.objects.prefetch_related('teams').get(id=_id)
-        league.get_awis_info(days_ago)
+        league.get_awis_info()
         super(League, league).save()
 
         for team in league.teams.all():
-            team.get_awis_info(days_ago)
+            team.get_awis_info()
             super(Team, team).save()
 
 

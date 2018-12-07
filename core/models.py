@@ -13,7 +13,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.core.cache import cache
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, URLValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
@@ -43,6 +44,22 @@ class ModelMixin:
     @property
     def slug(self):
         return self.wiki.split('/')[-1]
+
+    @property
+    def website(self):
+        website = self.additional_info.get('Website')
+        if website:
+            url_verification = URLValidator()
+
+            if website[:7] not in ('https:/', 'http://'):
+                website = f'http://{website}'
+
+            try:
+                url_verification(website)
+            except ValidationError:
+                website = None
+
+        return website
 
     def photo_preview(self):
         return format_html(
@@ -177,7 +194,7 @@ class ModelMixin:
 
         return self.youtube_info
 
-    def get_awis_info(self, days_ago: int = 1):
+    def get_awis_info(self):
         """ Get visits statistic from awis. """
         # Key derivation functions. See:
         # http://docs.aws.amazon.com/general/latest/gr
@@ -197,15 +214,15 @@ class ModelMixin:
 
         log.info(f"Get visits statistic from awis for {model} {self.name}")
 
-        website = self.additional_info.get('Website')
-        if not website or ' ' in website:
+        website = self.website
+        if not website:
             log.info(f"{model} {self.name} doesn't have website")
             return {}
 
         log.info(website)
 
         now = datetime.datetime.now()
-        day_ago = now - datetime.timedelta(days=days_ago)
+        day_ago = now - datetime.timedelta(days=1)
         datestamp = now.strftime('%Y%m%d')
         amzdate = now.strftime('%Y%m%dT%H%M%SZ')
 

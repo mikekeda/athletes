@@ -34,6 +34,7 @@
                 <p>{% trans "Gender" %}: {{ team.get_gender_display }}</p>
                 <p>{% trans "Location" %}: {% if team.location_market %}<a href="{% url 'core:country' team.location_market %}"><i class="flag flag-{{ team.location_market|lower }}"></i> {{ team.get_location_market_display }}</a>{% endif %}</p>
                 <p>{% trans "League" %}: {% if team.league %}<a href="{% url 'core:league' team.league.pk %}">{{ team.league }}</a>{% endif %}</p>
+                <p>{% trans "Website" %}: {% if team.website %}<a href="{{ team.website }}" target="_blank">{{ team.website }}</a>{% endif %}</p>
                 <div>
                     {% if team.twitter_info %}
                         <a href="https://twitter.com/{{ team.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>

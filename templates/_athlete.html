@@ -33,6 +33,7 @@
             <p>{% trans "Location" %}: {% if athlete.location_market %}<a href="{% url 'core:country' athlete.location_market %}"><i class="flag flag-{{ athlete.location_market|lower }}"></i> {{ athlete.get_location_market_display }}</a>{% endif %}</p>
             <p>{% trans "Marketability" %}: {{ athlete.marketability }}</p>
             <p>{% trans "International" %}: {{ athlete.international }}</p>
+            <p>{% trans "Website" %}: {% if athlete.website %}<a href="{{ athlete.website }}" target="_blank">{{ athlete.website }}</a>{% endif %}</p>
             <div>
                 {% if athlete.twitter_info %}
                     <a href="https://twitter.com/{{ athlete.twitter_info|get_item:'screen_name' }}" target="_blank"><img class="icon" src="{% static 'img/twitter.svg' %}" alt="twitter"></a>
