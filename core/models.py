@@ -464,7 +464,7 @@ class ModelMixin:
     @property
     def get_awis_stats(self):
         """ Awis site visits. """
-        _koef = 7480
+        _koef = 232_000
 
         stats = []
         if self.site_views_info:
