@@ -464,6 +464,8 @@ class ModelMixin:
     @property
     def get_awis_stats(self):
         """ Awis site visits. """
+        _koef = 7480
+
         stats = []
         if self.site_views_info:
             dates = sorted(self.site_views_info.keys(), reverse=True)
@@ -476,9 +478,9 @@ class ModelMixin:
             }
 
             for d in dates:
-                _stats = {'total': self.site_views_info[d]['total']}
+                _stats = {'total': _koef * self.site_views_info[d]['total']}
                 for code, name in countries.items():
-                    _stats[name] = self.site_views_info[d][code]
+                    _stats[name] = _koef * self.site_views_info[d][code]
 
                 stats.append([d[:10], _stats])
 
