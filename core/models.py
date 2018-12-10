@@ -561,6 +561,11 @@ class League(models.Model, ModelMixin):
                 key = str(td[0].string or td[0].text).replace('\xa0', ' ')
                 val = str(td[1].text).strip() if len(td) > 1 else ''
 
+                if key == 'Website':
+                    link = td[1].select_one('a')
+                    if link and link.get('href'):
+                        val = link['href']
+
                 info[key] = val
 
         self.additional_info = info
@@ -659,6 +664,11 @@ class Team(models.Model, ModelMixin):
             if td:
                 key = str(td[0].string or td[0].text).replace('\xa0', ' ')
                 val = str(td[1].text).strip() if len(td) > 1 else ''
+
+                if key == 'Website':
+                    link = td[1].select_one('a')
+                    if link and link.get('href'):
+                        val = link['href']
 
                 info[key] = val
 
@@ -908,6 +918,11 @@ class Athlete(models.Model, ModelMixin):
             if len(td) > 0:
                 key = str(td[0].string or td[0].text).replace('\xa0', ' ')
                 val = str(td[1].text).strip() if len(td) > 1 else ''
+
+                if key == 'Website':
+                    link = td[1].select_one('a')
+                    if link and link.get('href'):
+                        val = link['href']
 
                 self.international |= 'national team' in key.lower()
                 info[key] = val
