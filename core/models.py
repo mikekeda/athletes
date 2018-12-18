@@ -628,6 +628,7 @@ class Team(models.Model, ModelMixin):
     wiki_views_info = JSONField(default=dict, blank=True)
     site_views_info = JSONField(default=dict, blank=True)
     stock_info = JSONField(default=dict, blank=True)
+    company_info = JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

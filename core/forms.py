@@ -28,7 +28,7 @@ class TeamForm(forms.ModelForm):
         exclude = (
             'name', 'hashtag', 'longitude', 'latitude', 'photo', 'league',
             'additional_info', 'twitter_info', 'youtube_info',
-            'wiki_views_info', 'stock_info', 'site_views_info'
+            'wiki_views_info', 'stock_info', 'company_info', 'site_views_info'
         )
 
 

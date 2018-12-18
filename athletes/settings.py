@@ -243,6 +243,8 @@ ALPHAVANTAGE_API_KEY = get_env_var('ALPHAVANTAGE_API_KEY')
 AWS_ACCESS_ID = get_env_var('AWS_ACCESS_ID')
 AWS_SECRET_ACCESS_KEY = get_env_var('AWS_SECRET_ACCESS_KEY')
 
+DUEDIL_API_KEY = get_env_var('DUEDIL_API_KEY')
+
 
 # Security
 if not DEBUG:
