@@ -4,6 +4,7 @@ import operator
 import urllib.parse
 import hmac
 import hashlib
+import json
 import xmltodict
 
 import requests
@@ -485,7 +486,8 @@ class ModelMixin:
             for d in dates:
                 _stats = {'total': _koef * self.site_views_info[d]['total']}
                 for code, name in countries.items():
-                    _stats[name] = _koef * self.site_views_info[d][code]
+                    _stats[name] = _koef * self.site_views_info[d].get(code,
+                                                                       0)
 
                 stats.append([d[:10], _stats])
 
@@ -740,6 +742,41 @@ class Team(models.Model, ModelMixin):
                         self.stock_info[key] = val['4. close']
 
         return self.stock_info
+
+    def get_company_info(self):
+        """ Get company statistic from duedil. """
+        model = self.__class__.__name__
+
+        log.info(f"Get stock info for {model} {self.name}")
+
+        url = "https://duedil.io/v4//search/companies.json"
+        headers = {"X-AUTH-TOKEN": settings.DUEDIL_API_KEY}
+
+        if not self.company_info.get('companyId'):
+            log.info(f"Get companyId for {model} {self.name}")
+            data = {
+                "criteria": {
+                    "name": self.name,
+                    "countryCodes": {
+                        "values": [self.location_market]
+                    },
+                    "simplifiedStatuses": {
+                        "values": ["Active"]
+                    }
+                }
+            }
+
+            res = requests.post(url, json.dumps(data), headers=headers)
+            if res.status_code == 200:
+                company_info = res.json()
+                if company_info and company_info.get('companies'):
+                    self.company_info['companyId'] = company_info[
+                        'companies'][0]['companyId']
+
+        if self.company_info.get('companyId'):
+            pass
+
+        return self.company_info
 
     @property
     def get_stock_stats(self):

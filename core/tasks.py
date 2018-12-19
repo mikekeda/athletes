@@ -1,6 +1,5 @@
 import datetime
 import logging
-import json
 import urllib.parse
 
 import requests
@@ -314,30 +313,11 @@ def weekly_awis_update():
 @app.task
 def yearly_duedil_update():
     """ Update company info for Teams yearly. """
-    url = "https://duedil.io/v4//search/companies.json"
-    headers = {"X-AUTH-TOKEN": settings.DUEDIL_API_KEY}
     ids = sorted(Team.objects.values_list('id', flat=True))
     for _id in ids:
         team = Team.objects.get(id=_id)
-        data = {
-            "criteria": {
-                "name": team.name,
-                "countryCodes": {
-                    "values": [team.location_market]
-                },
-                "simplifiedStatuses": {
-                    "values": ["Active"]
-                }
-            }
-        }
-
-        res = requests.post(url, json.dumps(data), headers=headers)
-        if res.status_code == 200:
-            company_info = res.json()
-            if company_info and company_info.get('companies'):
-                team.company_info['companyId'] = company_info['companies'][0][
-                    'companyId']
-                super(Team, team).save()
+        team.get_company_info()
+        super(Team, team).save()
 
 
 @app.task
