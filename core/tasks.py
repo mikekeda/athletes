@@ -312,7 +312,7 @@ def weekly_awis_update():
 
 
 @app.task
-def yearly_duedil_update(_xxx):
+def yearly_duedil_update():
     """ Update company info for Teams yearly. """
     url = "https://duedil.io/v4//search/companies.json"
     headers = {"X-AUTH-TOKEN": settings.DUEDIL_API_KEY}
