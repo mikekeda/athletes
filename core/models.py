@@ -291,7 +291,7 @@ class ModelMixin:
                             'aws:Days') == '7':
                         data['total'] = round(
                             float(item['aws:PageViews']['aws:PerMillion'][
-                                      'aws:Value']),
+                                      'aws:Value'].replace(',', '.')),
                             1
                         )
                         break
