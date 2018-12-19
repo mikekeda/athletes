@@ -474,7 +474,8 @@ class ModelMixin:
         if self.site_views_info:
             dates = sorted(self.site_views_info.keys(), reverse=True)
             top_5 = sorted(self.site_views_info[dates[-1]].items(),
-                           key=operator.itemgetter(1), reverse=True)[1:6]
+                           key=operator.itemgetter(1), reverse=True)[:6]
+            top_5 = [t for t in top_5 if t[0] != 'total']  # remove total
             countries = [country[0] for country in top_5]
             countries = {
                 country: COUNTRIES[country]
