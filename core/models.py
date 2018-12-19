@@ -277,8 +277,12 @@ class ModelMixin:
             views_info = xmltodict.parse(res.content)
             if views_info and views_info.get('aws:UrlInfoResponse'):
                 data = {'total': 0.0}
-                root = views_info['aws:UrlInfoResponse']['aws:Response'][
-                    'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
+                try:
+                    root = views_info['aws:UrlInfoResponse']['aws:Response'][
+                        'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
+                except KeyError as e:
+                    log.info(f"{model} {self.name}: {repr(e)}")
+                    return self.site_views_info
 
                 items = root.get('aws:UsageStatistics') or {}
                 items = items.get('aws:UsageStatistic') or []
