@@ -772,6 +772,13 @@ class Team(models.Model, ModelMixin):
                 if company_info and company_info.get('companies'):
                     self.company_info['companyId'] = company_info[
                         'companies'][0]['companyId']
+                else:
+                    log.info(f"No companyId for {model} {self.name}")
+            else:
+                log.warning(
+                    f"Failed getting companyId for {model} {self.name} "
+                    f"({res.status_code})"
+                )
 
         if self.company_info.get('companyId'):
             pass
