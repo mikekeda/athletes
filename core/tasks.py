@@ -313,7 +313,10 @@ def weekly_awis_update():
 @app.task
 def yearly_duedil_update():
     """ Update company info for Teams yearly. """
-    ids = sorted(Team.objects.values_list('id', flat=True))
+    ids = sorted(Team.objects.filter(location_market__in=(
+        'GB', 'FR', 'DE', 'IT', 'PT', 'ES'
+    )).values_list('id', flat=True))
+
     for _id in ids:
         team = Team.objects.get(id=_id)
         team.get_company_info()
