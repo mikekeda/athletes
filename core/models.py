@@ -781,7 +781,20 @@ class Team(models.Model, ModelMixin):
                 )
 
         if self.company_info.get('companyId'):
-            pass
+            company_id = self.company_info['companyId']
+            url = (
+                "https://duedil.io/v4/company/"
+                f"{self.location_market.lower()}/{company_id}.json"
+            )
+            res = requests.get(url, headers=headers)
+            if res.status_code == 200:
+                company_info = res.json()
+                if company_info and company_info.get('financialSummary'):
+                    self.company_info['currency'] = company_info[
+                        'accounts']['currency']
+                    d = company_info['accounts']['latestAccountsDate']
+                    self.company_info[d] = company_info['financialSummary']
+                    self.company_info[d].pop('ebitda', None)
 
         return self.company_info
 
