@@ -1,0 +1,70 @@
+{% load i18n %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let stats = {{ obj.get_company_stats|safe }};
+
+        if (stats.length > 0) {
+            let ctx_stats = document.getElementById('duedil-stats-canv').getContext('2d');
+
+            function chart(ctx, data) {
+                let i;
+                let key;
+                let info = {};
+                let lineChartData;
+                let color;
+                let colors = ['#FF4136', '#001f3f', '#0074D9', '#3D9970'];
+                let labels = [];
+                let currency = data.shift();
+
+                for (i in data) {
+                    labels.push(data[i][0]);
+
+                    for (key in data[i][1]) {
+                        if (!(key in info)) {
+                            info[key] = [];
+                        }
+
+                        info[key].push(data[i][1][key]);
+                    }
+                }
+
+                lineChartData = {
+                    'labels': labels,
+                    datasets: []
+                };
+
+                for (key in info) {
+                    color = colors.pop();
+
+                    lineChartData['datasets'].push(
+                        {
+                            label: key,
+                            borderColor: color,
+                            backgroundColor: color,
+                            fill: false,
+                            data: info[key]
+                        }
+                    );
+                }
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: lineChartData,
+                    options: {
+                        responsive: true,
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: currency
+                        }
+                    }
+                });
+            }
+
+            chart(ctx_stats, stats);
+        }
+    });
+</script>

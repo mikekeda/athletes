@@ -743,6 +743,33 @@ class Team(models.Model, ModelMixin):
 
         return self.stock_info
 
+    @property
+    def get_stock_stats(self):
+        """ Stock price. """
+        stats = []
+        self.stock_info.pop('symbol', None)
+        dates = sorted(self.stock_info.keys(), reverse=True)
+
+        for d in dates:
+            stats.append([d, [float(self.stock_info[d])]])
+
+        return stats
+
+    @property
+    def get_stock_trends(self):
+        """ Stock price trends. """
+        stats = []
+        self.stock_info.pop('symbol', None)
+
+        dates = sorted(self.stock_info.keys(), reverse=True)
+        for i, d in enumerate(dates[:-1]):
+            stats.append([d, [
+                float(self.stock_info[d]) - float(
+                    self.stock_info[dates[i + 1]]),
+            ]])
+
+        return stats
+
     def get_company_info(self):
         """ Get company statistic from duedil. """
         model = self.__class__.__name__
@@ -795,33 +822,35 @@ class Team(models.Model, ModelMixin):
                     d = company_info['accounts']['latestAccountsDate']
                     self.company_info[d] = company_info['financialSummary']
                     self.company_info[d].pop('ebitda', None)
+                else:
+                    log.info(f"No financialSummary for {model} {self.name}")
+            else:
+                log.warning(
+                    f"Failed getting data for {model} {self.name} "
+                    f"({res.status_code})"
+                )
 
         return self.company_info
 
     @property
-    def get_stock_stats(self):
-        """ Stock price. """
+    def get_company_stats(self):
+        """ Company finance info. """
         stats = []
-        self.stock_info.pop('symbol', None)
-        dates = sorted(self.stock_info.keys(), reverse=True)
+        company_info = self.company_info.copy()
+        company_info.pop('companyId', None)
+        currency = company_info.pop('currency', '')
 
-        for d in dates:
-            stats.append([d, [float(self.stock_info[d])]])
+        if currency:
+            stats.append(currency)
+            dates = sorted(company_info.keys(), reverse=True)
 
-        return stats
-
-    @property
-    def get_stock_trends(self):
-        """ Stock price trends. """
-        stats = []
-        self.stock_info.pop('symbol', None)
-
-        dates = sorted(self.stock_info.keys(), reverse=True)
-        for i, d in enumerate(dates[:-1]):
-            stats.append([d, [
-                float(self.stock_info[d]) - float(
-                    self.stock_info[dates[i + 1]]),
-            ]])
+            for d in dates:
+                stats.append([d, {
+                    'turnover': float(company_info[d]['turnover']),
+                    'postTaxProfit': float(company_info[d]['postTaxProfit']),
+                    'totalAssets': float(company_info[d]['totalAssets']),
+                    'netAssets': float(company_info[d]['netAssets']),
+                }])
 
         return stats
 
