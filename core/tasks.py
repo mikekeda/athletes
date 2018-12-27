@@ -396,6 +396,7 @@ def daily_update_notifications():
     """ Send email to users about recent updates. """
     day_ago = timezone.now() - timezone.timedelta(days=1)
     subject = "Your followed Athletes, Teams, Leagues were recently updated"
+    today = datetime.datetime.today()
 
     ids = Profile.objects.exclude(
         followed_athletes=None,
@@ -405,6 +406,13 @@ def daily_update_notifications():
 
     for pk in ids:
         profile = Profile.objects.get(pk=pk)
+
+        if any((
+            profile.notification_frequency == 'never',
+            profile.notification_frequency == 'monthly' and today.day != 1,
+            profile.notification_frequency == 'weekly' and today.weekday() != 1
+        )):
+            continue
 
         updates = {
             'athletes': profile.followed_athletes.filter(updated__gte=day_ago),

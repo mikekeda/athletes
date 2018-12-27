@@ -774,7 +774,7 @@ class Team(models.Model, ModelMixin):
         """ Get company statistic from duedil. """
         model = self.__class__.__name__
 
-        log.info(f"Get stock info for {model} {self.name}")
+        log.info(f"Get company info for {model} {self.name}")
 
         url = "https://duedil.io/v4//search/companies.json"
         headers = {"X-AUTH-TOKEN": settings.DUEDIL_API_KEY}
@@ -1184,6 +1184,12 @@ class Profile(models.Model):
         League,
         related_name='followers',
         blank=True
+    )
+    notification_frequency = models.CharField(
+        max_length=8,
+        choices=(("daily", _("Daily")), ("weekly", _("Weekly")),
+                 ("monthly", _("Monthly")), ("never", _("Never"))),
+        default='daily'
     )
 
     @property
