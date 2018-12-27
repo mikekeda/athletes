@@ -75,10 +75,10 @@ background-color: #f6f6f6;
                                             Twitter trends Athletes:
                                         </td>
                                     </tr>
-                                    {% for new_followerrs, athlete in trends %}
+                                    {% for athlete in athletes %}
                                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                             <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 10px;" valign="top">
-                                                <a href="http://athletes.mkeda.me/athlete/{{ athlete.slug }}">{{ athlete.name }}</a> {{ new_followerrs }} new followers
+                                                <a href="http://athletes.mkeda.me/athlete/{{ athlete.slug }}">{{ athlete.name }}</a> {{ athlete.new_followers }} new followers
                                             </td>
                                         </tr>
                                     {% endfor %}

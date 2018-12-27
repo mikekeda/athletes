@@ -278,6 +278,7 @@ def weekly_twitter_trends_notifications():
                 if len(trends) >= 20:
                     trends.pop(min(trends.keys()))
 
+                athlete.new_followers = diff  # added new followers
                 trends[diff] = athlete
 
     # Sort athletes by new followers.
@@ -289,7 +290,7 @@ def weekly_twitter_trends_notifications():
     for profile in profiles:
         html_content = render_to_string('_twitter-trends-email.html', {
             'subject': subject,
-            'trends': trends,
+            'athletes': trends.values(),
         })
 
         msg = EmailMultiAlternatives(
