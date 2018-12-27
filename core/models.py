@@ -846,10 +846,12 @@ class Team(models.Model, ModelMixin):
 
             for d in dates:
                 stats.append([d, {
-                    'turnover': float(company_info[d]['turnover']),
-                    'postTaxProfit': float(company_info[d]['postTaxProfit']),
-                    'totalAssets': float(company_info[d]['totalAssets']),
-                    'netAssets': float(company_info[d]['netAssets']),
+                    'Turnover': float(company_info[d].get('turnover', 0)),
+                    'Post Tax Profit': float(company_info[d].get(
+                        'postTaxProfit', 0)),
+                    'Total Assets': float(company_info[d].get(
+                        'totalAssets', 0)),
+                    'Net Assets': float(company_info[d].get('netAssets', 0)),
                 }])
 
         return stats
