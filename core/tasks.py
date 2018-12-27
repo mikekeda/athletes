@@ -5,6 +5,7 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -17,6 +18,7 @@ from core.celery import app
 from core.constans import COUNTRIES
 from core.models import Athlete, League, Team, Profile
 
+User = get_user_model()
 log = logging.getLogger('athletes')
 
 auth = OAuth1(
@@ -258,6 +260,46 @@ def weekly_athletes_twitter_update():
     for _id in ids:
         athlete = Athlete.objects.get(id=_id)
         athlete.get_twitter_info()
+
+
+@app.task
+def weekly_twitter_trends_notifications():
+    """ Send email to admins with twitter trends. """
+    subject = "Twitter weekly trends athletes"
+
+    ids = sorted(Athlete.objects.values_list('id', flat=True))
+    trends = {}
+
+    for _id in ids:
+        athlete = Athlete.objects.get(id=_id)
+        if athlete.twitter_info and athlete.twitter_info.get('history'):
+            diff = athlete.get_twitter_trends[0][1][0]
+            if len(trends) < 20 or diff > min(trends.keys()):
+                if len(trends) >= 20:
+                    trends.pop(min(trends.keys()))
+
+                trends[diff] = athlete
+
+    # Sort athletes by new followers.
+    trends = {k: trends[k] for k in sorted(trends.keys(), reverse=True)}
+
+    # Send notification to staff users.
+    profiles = Profile.objects.filter(user__is_staff=True)
+
+    for profile in profiles:
+        html_content = render_to_string('_twitter-trends-email.html', {
+            'subject': subject,
+            'trends': trends,
+        })
+
+        msg = EmailMultiAlternatives(
+            subject,
+            "Visit our site to check the updates",
+            f"Athletes <notify@{settings.MAILGUN_SERVER_NAME}>",
+            [f"{profile.name} <{profile.user.email}>"],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
 
 @app.task

@@ -38,6 +38,11 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=0, day_of_week=3),
         'args': ()
     },
+    'every-wednesday-2': {
+        'task': 'core.tasks.weekly_twitter_trends_notifications',
+        'schedule': crontab(hour=8, minute=0, day_of_week=3),
+        'args': ()
+    },
     'every-thursday': {
         'task': 'core.tasks.weekly_stock_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=4),
