@@ -23,9 +23,19 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=0, day_of_week=0),
         'args': ()
     },
-    'every-monday': {
+    'every-monday-1': {
         'task': 'core.tasks.weekly_athletes_youtube_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=1),
+        'args': ()
+    },
+    'every-monday-2': {
+        'task': 'core.tasks.weekly_trends_notifications',
+        'schedule': crontab(hour=8, minute=0, day_of_week=1),
+        'args': (True,)
+    },
+    'every-monday-3': {
+        'task': 'core.tasks.weekly_trends_notifications',
+        'schedule': crontab(hour=8, minute=30, day_of_week=1),
         'args': ()
     },
     'every-tuesday': {  # long time update
@@ -36,11 +46,6 @@ app.conf.beat_schedule = {
     'every-wednesday': {
         'task': 'core.tasks.weekly_awis_update',
         'schedule': crontab(hour=3, minute=0, day_of_week=3),
-        'args': ()
-    },
-    'every-wednesday-2': {
-        'task': 'core.tasks.weekly_athletes_trends_notifications',
-        'schedule': crontab(hour=8, minute=0, day_of_week=3),
         'args': ()
     },
     'every-thursday': {

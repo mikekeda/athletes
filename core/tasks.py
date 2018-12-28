@@ -263,61 +263,72 @@ def weekly_athletes_twitter_update():
 
 
 @app.task
-def weekly_athletes_trends_notifications():
-    """ Send email to admins with twitter trends. """
-    subject = "Weekly trends athletes"
-    lim = 10
+def weekly_trends_notifications(teams=False):
+    """ Send email to admins with twitter and youtube trends. """
+    lim = 10  # top 10
 
-    ids = sorted(Athlete.objects.values_list('id', flat=True))
+    if teams:
+        subject = "Weekly trends teams"
+    else:
+        subject = "Weekly trends athletes"
+
+    if teams:
+        ids = sorted(Team.objects.values_list('id', flat=True))
+    else:
+        ids = sorted(Athlete.objects.values_list('id', flat=True))
+
     twitter_trends = {}
     youtube_subscribers_trends = {}
     youtube_views_trends = {}
 
     for _id in ids:
-        athlete = Athlete.objects.get(id=_id)
+        if teams:
+            obj = Team.objects.get(id=_id)
+        else:
+            obj = Athlete.objects.get(id=_id)
 
-        if athlete.twitter_info and athlete.twitter_info.get('history'):
-            diff = athlete.get_twitter_trends[0][1][0]
+        if obj.twitter_info and obj.twitter_info.get('history'):
+            diff = obj.get_twitter_trends[0][1][0]
             if len(twitter_trends) < lim or diff > min(twitter_trends.keys()):
                 if len(twitter_trends) >= lim:
                     twitter_trends.pop(min(twitter_trends.keys()))
 
-                athlete.new_followers = diff  # added new followers
-                twitter_trends[diff] = athlete
+                obj.new_followers = diff  # added new followers
+                twitter_trends[diff] = obj
 
-        if athlete.youtube_info and athlete.youtube_info.get('history'):
-            diff = athlete.get_youtube_trends[0][1][0]
+        if obj.youtube_info and obj.youtube_info.get('history'):
+            diff = obj.get_youtube_trends[0][1][0]
             if len(youtube_subscribers_trends) < lim or diff > min(
                     youtube_subscribers_trends.keys()):
                 if len(youtube_subscribers_trends) >= lim:
                     youtube_subscribers_trends.pop(min(
                         youtube_subscribers_trends.keys()))
 
-                athlete.new_subscribers = diff  # added new subscribers
-                youtube_subscribers_trends[diff] = athlete
+                obj.new_subscribers = diff  # added new subscribers
+                youtube_subscribers_trends[diff] = obj
 
-            diff = athlete.get_youtube_trends[0][1][1]
+            diff = obj.get_youtube_trends[0][1][1]
             if len(youtube_views_trends) < lim or diff > min(
                     youtube_views_trends.keys()):
                 if len(youtube_views_trends) >= lim:
                     youtube_views_trends.pop(min(youtube_views_trends.keys()))
 
-                athlete.new_views = diff  # added new views
-                youtube_views_trends[diff] = athlete
+                obj.new_views = diff  # added new views
+                youtube_views_trends[diff] = obj
 
-    # Sort athletes by new followers.
+    # Sort items by new followers.
     twitter_trends = {
         k: twitter_trends[k]
         for k in sorted(twitter_trends.keys(), reverse=True)
     }
 
-    # Sort athletes by new subscribers.
+    # Sort items by new subscribers.
     youtube_subscribers_trends = {
         k: youtube_subscribers_trends[k]
         for k in sorted(youtube_subscribers_trends.keys(), reverse=True)
     }
 
-    # Sort athletes by new views.
+    # Sort items by new views.
     youtube_views_trends = {
         k: youtube_views_trends[k]
         for k in sorted(youtube_views_trends.keys(), reverse=True)
@@ -327,7 +338,12 @@ def weekly_athletes_trends_notifications():
     profiles = Profile.objects.filter(user__is_staff=True)
 
     for profile in profiles:
-        html_content = render_to_string('_trends-email.html', {
+        if teams:
+            template = '_trends-teams-email.html'
+        else:
+            template = '_trends-athletes-email.html'
+
+        html_content = render_to_string(template, {
             'subject': subject,
             'twitter_trends': twitter_trends.values(),
             'youtube_subscribers_trends': youtube_subscribers_trends.values(),
