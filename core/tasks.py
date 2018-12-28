@@ -265,32 +265,73 @@ def weekly_athletes_twitter_update():
 @app.task
 def weekly_twitter_trends_notifications():
     """ Send email to admins with twitter trends. """
-    subject = "Twitter weekly trends athletes"
+    subject = "Weekly trends athletes"
+    lim = 20
 
     ids = sorted(Athlete.objects.values_list('id', flat=True))
-    trends = {}
+    twitter_trends = {}
+    youtube_subscribers_trends = {}
+    youtube_views_trends = {}
 
     for _id in ids:
         athlete = Athlete.objects.get(id=_id)
+
         if athlete.twitter_info and athlete.twitter_info.get('history'):
             diff = athlete.get_twitter_trends[0][1][0]
-            if len(trends) < 20 or diff > min(trends.keys()):
-                if len(trends) >= 20:
-                    trends.pop(min(trends.keys()))
+            if len(twitter_trends) < lim or diff > min(twitter_trends.keys()):
+                if len(twitter_trends) >= lim:
+                    twitter_trends.pop(min(twitter_trends.keys()))
 
                 athlete.new_followers = diff  # added new followers
-                trends[diff] = athlete
+                twitter_trends[diff] = athlete
+
+        if athlete.youtube_info and athlete.youtube_info.get('history'):
+            diff = athlete.get_youtube_trends[0][1][0]
+            if len(youtube_subscribers_trends) < lim or diff > min(
+                    youtube_subscribers_trends.keys()):
+                if len(youtube_subscribers_trends) >= lim:
+                    youtube_subscribers_trends.pop(min(
+                        youtube_subscribers_trends.keys()))
+
+                athlete.new_subscribers = diff  # added new subscribers
+                youtube_subscribers_trends[diff] = athlete
+
+            diff = athlete.get_youtube_trends[0][1][1]
+            if len(youtube_views_trends) < lim or diff > min(
+                    youtube_views_trends.keys()):
+                if len(youtube_views_trends) >= lim:
+                    youtube_views_trends.pop(min(youtube_views_trends.keys()))
+
+                athlete.new_views = diff  # added new views
+                youtube_views_trends[diff] = athlete
 
     # Sort athletes by new followers.
-    trends = {k: trends[k] for k in sorted(trends.keys(), reverse=True)}
+    twitter_trends = {
+        k: twitter_trends[k]
+        for k in sorted(twitter_trends.keys(), reverse=True)
+    }
+
+    # Sort athletes by new subscribers.
+    youtube_subscribers_trends = {
+        k: youtube_subscribers_trends[k]
+        for k in sorted(youtube_subscribers_trends.keys(), reverse=True)
+    }
+
+    # Sort athletes by new views.
+    youtube_views_trends = {
+        k: youtube_views_trends[k]
+        for k in sorted(youtube_views_trends.keys(), reverse=True)
+    }
 
     # Send notification to staff users.
     profiles = Profile.objects.filter(user__is_staff=True)
 
     for profile in profiles:
-        html_content = render_to_string('_twitter-trends-email.html', {
+        html_content = render_to_string('_trends-email.html', {
             'subject': subject,
-            'athletes': trends.values(),
+            'twitter_trends': twitter_trends.values(),
+            'youtube_subscribers_trends': youtube_subscribers_trends.values(),
+            'youtube_views_trends': youtube_views_trends.values(),
         })
 
         msg = EmailMultiAlternatives(

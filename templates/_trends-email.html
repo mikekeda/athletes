@@ -70,16 +70,44 @@ background-color: #f6f6f6;
 					<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
 						<td class="content-wrap" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;" valign="top">
 							<table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
-                                {% if athletes %}
+                                {% if twitter_trends %}
                                      <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px 0 10px;" valign="top">
-                                            Twitter trends Athletes:
+                                            Athletes with most Twitter followers:
                                         </td>
                                     </tr>
-                                    {% for athlete in athletes %}
+                                    {% for athlete in twitter_trends %}
                                         <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                             <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 10px;" valign="top">
                                                 <a href="http://athletes.mkeda.me/athlete/{{ athlete.slug }}">{{ athlete.name }}</a> {{ athlete.new_followers|intcomma  }} new followers
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if youtube_subscribers_trends %}
+                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                        <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px 0 10px;" valign="top">
+                                            Athletes with most YouTube subscribers:
+                                        </td>
+                                    </tr>
+                                    {% for athlete in youtube_subscribers_trends %}
+                                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                            <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 10px;" valign="top">
+                                                <a href="http://athletes.mkeda.me/athlete/{{ athlete.slug }}">{{ athlete.name }}</a> {{ athlete.new_subscribers|intcomma  }} new subscribers
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if youtube_views_trends %}
+                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                        <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px 0 10px;" valign="top">
+                                            Athletes with most YouTube views:
+                                        </td>
+                                    </tr>
+                                    {% for athlete in youtube_views_trends %}
+                                        <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                            <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 10px;" valign="top">
+                                                <a href="http://athletes.mkeda.me/athlete/{{ athlete.slug }}">{{ athlete.name }}</a> {{ athlete.new_views|intcomma  }} new views
                                             </td>
                                         </tr>
                                     {% endfor %}
