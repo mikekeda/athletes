@@ -263,10 +263,10 @@ def weekly_athletes_twitter_update():
 
 
 @app.task
-def weekly_twitter_trends_notifications():
+def weekly_athletes_trends_notifications():
     """ Send email to admins with twitter trends. """
     subject = "Weekly trends athletes"
-    lim = 20
+    lim = 10
 
     ids = sorted(Athlete.objects.values_list('id', flat=True))
     twitter_trends = {}

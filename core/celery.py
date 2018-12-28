@@ -39,7 +39,7 @@ app.conf.beat_schedule = {
         'args': ()
     },
     'every-wednesday-2': {
-        'task': 'core.tasks.weekly_twitter_trends_notifications',
+        'task': 'core.tasks.weekly_athletes_trends_notifications',
         'schedule': crontab(hour=8, minute=0, day_of_week=3),
         'args': ()
     },
