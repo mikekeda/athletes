@@ -34,8 +34,8 @@ urlpatterns = [
     path('team', ParseTeamView.as_view(), name='team_parse'),
     path('league', ParseLeagueView.as_view(), name='league_parse'),
     path('export/athletes', athletes_export_api, name='athletes_export'),
-    path('api/athletes', athletes_api, name='athletes-api'),
-    path('api/teams', teams_api, name='teams_api'),
+    # path('api/athletes', athletes_api, name='athletes-api'),
+    # path('api/teams', teams_api, name='teams_api'),
     path('login', login_page, name='login'),
     path('logout', logout_page, name='logout'),
 ]

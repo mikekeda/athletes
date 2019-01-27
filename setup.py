@@ -24,6 +24,8 @@ setup(
         'django-import-export',  # Installed from git due the the bug
         'django-debug-toolbar==1.11',
         'django-redis==4.10.0',
+        'djangorestframework==3.9.1',
+        'djangorestframework_simplejwt==3.3',
     ],
     extras_require={
         "test": [

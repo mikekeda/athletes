@@ -7,9 +7,13 @@ from django.contrib import admin
 from django.urls import path
 from django.utils.translation import ugettext_lazy as _
 
+from api.urls import router
+
 
 urlpatterns = [
     path('', include('core.urls', namespace='core')),
+    path('api/', include('api.urls', namespace='api')),
+    path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
 

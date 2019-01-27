@@ -117,8 +117,7 @@ def _process_datatables_params(querydict: dict) -> tuple:
     return draw, start, length, order, search, filters
 
 
-@login_required
-def athletes_api(request):
+def _athletes_api(request):
     """ Return filtered/sorted/paginated list of athletes for datatables. """
     draw, start, length, order, search, filters = _process_datatables_params(
         request.GET)
@@ -215,18 +214,20 @@ def athletes_api(request):
     # Pagination.
     qs = qs[start:start + length]
 
-    return JsonResponse(
-        {
-            "draw": draw,
-            "recordsTotal": total,
-            "recordsFiltered": filtered,
-            "data": _serialize_qs(qs)
-        }
-    )
+    return {
+        "draw": draw,
+        "recordsTotal": total,
+        "recordsFiltered": filtered,
+        "data": _serialize_qs(qs)
+    }
 
 
 @login_required
-def teams_api(request):
+def athletes_api(request):
+    return JsonResponse(_athletes_api(request))
+
+
+def _teams_api(request):
     """ Return filtered/sorted/paginated list of teams for datatables. """
     draw, start, length, order, search, filters = _process_datatables_params(
         request.GET)
@@ -309,14 +310,17 @@ def teams_api(request):
     # Pagination.
     qs = qs[start:start + length]
 
-    return JsonResponse(
-        {
-            "draw": draw,
-            "recordsTotal": total,
-            "recordsFiltered": filtered,
-            "data": _serialize_qs(qs)
-        }
-    )
+    return {
+        "draw": draw,
+        "recordsTotal": total,
+        "recordsFiltered": filtered,
+        "data": _serialize_qs(qs)
+    }
+
+
+@login_required
+def teams_api(request):
+    return JsonResponse(_teams_api(teams_api))
 
 
 @login_required

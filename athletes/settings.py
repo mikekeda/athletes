@@ -4,6 +4,7 @@ Django settings for Athletes project.
 
 import os
 
+from datetime import timedelta
 import requests
 import google.cloud.logging
 from google.cloud.logging.handlers.transports.sync import SyncTransport
@@ -69,12 +70,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
 
+    'rest_framework',
     'django.contrib.humanize',
     'widget_tweaks',
     'easy_select2',
     'import_export',
 
     'core',
+    'api',
 ]
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
@@ -167,6 +170,22 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',  # TODO: remove latter
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
 
 
 EMAIL_HOST = 'smtp.mailgun.org'
