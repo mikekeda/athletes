@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'easy_select2',
     'import_export',
     'rest_framework',
+    'corsheaders',
     'djstripe',
 
     'core',
@@ -86,6 +87,7 @@ if DEBUG:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -187,6 +189,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 EMAIL_HOST = 'smtp.mailgun.org'

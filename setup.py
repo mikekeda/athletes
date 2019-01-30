@@ -26,6 +26,7 @@ setup(
         'django-redis==4.10.0',
         'djangorestframework==3.9.1',
         'djangorestframework_simplejwt==3.3',
+        'django-cors-headers==2.4.0'
         'dj-stripe==1.2.3'
     ],
     extras_require={
