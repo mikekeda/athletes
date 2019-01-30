@@ -70,11 +70,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
 
-    'rest_framework',
     'django.contrib.humanize',
     'widget_tweaks',
     'easy_select2',
     'import_export',
+    'rest_framework',
+    'djstripe',
 
     'core',
     'api',
@@ -196,6 +197,12 @@ EMAIL_USE_TLS = True
 MAILGUN_SERVER_NAME = 'info.mkeda.me'
 EMAIL_SUBJECT_PREFIX = '[Athletes]'
 SERVER_EMAIL = 'admin@info.mkeda.me'
+
+STRIPE_LIVE_PUBLIC_KEY = get_env_var('STRIPE_LIVE_PUBLIC_KEY')
+STRIPE_LIVE_SECRET_KEY = get_env_var('STRIPE_LIVE_SECRET_KEY')
+STRIPE_TEST_PUBLIC_KEY = get_env_var('STRIPE_TEST_PUBLIC_KEY')
+STRIPE_TEST_SECRET_KEY = get_env_var('STRIPE_TEST_SECRET_KEY')
+STRIPE_LIVE_MODE = False  # Change to True in production
 
 
 # Internationalization

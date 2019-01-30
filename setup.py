@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='athletes',
-    version='0.0.6',
+    version='0.0.7',
     packages=find_packages(),
     install_requires=[
         'requests==2.21.0',
@@ -26,6 +26,7 @@ setup(
         'django-redis==4.10.0',
         'djangorestframework==3.9.1',
         'djangorestframework_simplejwt==3.3',
+        'dj-stripe==1.2.3'
     ],
     extras_require={
         "test": [

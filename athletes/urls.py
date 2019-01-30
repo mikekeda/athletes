@@ -14,6 +14,7 @@ urlpatterns = [
     path('', include('core.urls', namespace='core')),
     path('api/', include('api.urls', namespace='api')),
     path('api/', include(router.urls)),
+    path('stripe/', include('djstripe.urls', namespace='djstripe')),
     path('admin/', admin.site.urls),
 ]
 
