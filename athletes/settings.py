@@ -75,7 +75,6 @@ INSTALLED_APPS = [
     'easy_select2',
     'import_export',
     'rest_framework',
-    'corsheaders',
     'djstripe',
 
     'core',
