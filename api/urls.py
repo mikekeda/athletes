@@ -24,6 +24,13 @@ class ApiTokenObtainPairView(TokenObtainPairView):
     """
     serializer_class = ApiTokenObtainPairSerializer
 
+    def options(self, request, *args, **kwargs):
+        response = super().options(request, *args, **kwargs)
+
+        response['Access-Control-Allow-Origin'] = '*'
+
+        return response
+
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         response['Access-Control-Allow-Origin'] = '*'
