@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
     'djstripe',
+    'corsheaders',
 
     'core',
     'api',
@@ -86,6 +87,7 @@ if DEBUG:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -188,6 +190,11 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
 }
 
+CORS_ORIGIN_WHITELIST = (
+    'a.mkeda.me',
+    'localhost:4200',
+    '127.0.0.1:4200',
+)
 
 EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 2525
