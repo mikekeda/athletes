@@ -1201,3 +1201,18 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TeamArticle(models.Model):
+    """ Team Article model. """
+    team = models.ForeignKey(Team, related_name='news', on_delete=models.CASCADE)
+    source = models.URLField()
+    author = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    url = models.URLField()
+    urlToImage = models.URLField()
+    publishedAt = models.DateTimeField()
+    content = models.TextField()
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)

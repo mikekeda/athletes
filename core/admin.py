@@ -4,12 +4,13 @@ from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList, Profile)
+                         LeaguesList, Profile, TeamArticle)
 
 AthleteForm = select2_modelform(Athlete)
 LeagueForm = select2_modelform(League)
 TeamForm = select2_modelform(Team)
 ProfileForm = select2_modelform(Profile)
+TeamArticleForm = select2_modelform(TeamArticle)
 
 
 class DomesticMarketListFilter(admin.SimpleListFilter):
@@ -141,6 +142,11 @@ class ProfileAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                            'followed_leagues')
 
 
+class TeamArticleAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
+    model = TeamArticle
+    form = TeamArticleForm
+
+
 admin.site.register(Athlete, AthleteAdmin)
 admin.site.register(League, LeagueAdmin)
 admin.site.register(Team, TeamAdmin)
@@ -148,3 +154,4 @@ admin.site.register(AthletesList, AthletesListAdmin)
 admin.site.register(TeamsList, TeamsListAdmin)
 admin.site.register(LeaguesList, LeaguesListAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(TeamArticle, TeamArticleAdmin)
