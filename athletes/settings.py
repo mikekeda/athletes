@@ -286,3 +286,7 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
+
+
+if DEBUG:
+    SILENCED_SYSTEM_CHECKS = ['djstripe.C001', 'djstripe.C006']
