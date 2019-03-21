@@ -1216,3 +1216,21 @@ class TeamArticle(models.Model):
     content = models.TextField()
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def get_articles(cls, team):
+        url = (
+            f"https://newsapi.org/v2/top-headlines?category=sports"
+            f"&q={team.name}&apiKey={settings.NEWSAPI_API_KEY}"
+        )
+        res = requests.get(url)
+        if res.status_code == 200:
+            data = res.json()
+            for article in data.get('articles', []):
+                article['source'] = article.get('source', {}).get('name')
+                article['team'] = team
+                article_obj = TeamArticle(**article)
+                article_obj.save()

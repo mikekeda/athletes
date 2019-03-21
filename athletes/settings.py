@@ -281,6 +281,8 @@ AWS_SECRET_ACCESS_KEY = get_env_var('AWS_SECRET_ACCESS_KEY')
 
 DUEDIL_API_KEY = get_env_var('DUEDIL_API_KEY')
 
+NEWSAPI_API_KEY = get_env_var('NEWSAPI_API_KEY')
+
 
 # Security
 if not DEBUG:

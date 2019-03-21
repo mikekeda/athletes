@@ -64,6 +64,12 @@ def update_youtube_info(_, __, queryset):
         super(type(obj), obj).save()
 
 
+def gew_news(_, __, queryset):
+    """ Get news for specified teams. """
+    for obj in queryset:
+        TeamArticle.get_articles(obj)
+
+
 class AthleteInline(admin.TabularInline):
     model = Athlete
     form = AthleteForm
@@ -104,7 +110,7 @@ class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     search_fields = ('name',)
     form = TeamForm
     actions = [update_data_from_wiki, update_location, update_twitter_info,
-               update_youtube_info]
+               update_youtube_info, gew_news]
     inlines = [AthleteInline]
 
 
