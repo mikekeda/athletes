@@ -1234,3 +1234,8 @@ class TeamArticle(models.Model):
                 article['team'] = team
                 article_obj = TeamArticle(**article)
                 article_obj.save()
+        else:
+            log.warning(
+                f"Failed getting news for {team.name} team "
+                f"({res.status_code})"
+            )
