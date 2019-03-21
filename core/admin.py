@@ -151,6 +151,8 @@ class ProfileAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 class TeamArticleAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = TeamArticle
     form = TeamArticleForm
+    search_fields = ('title', 'team__name')
+    list_filter = ('publishedAt', 'team__category')
 
 
 admin.site.register(Athlete, AthleteAdmin)

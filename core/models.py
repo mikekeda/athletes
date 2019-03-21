@@ -1207,9 +1207,9 @@ class TeamArticle(models.Model):
     """ Team Article model. """
     team = models.ForeignKey(Team, related_name='news', on_delete=models.CASCADE)
     source = models.URLField()
-    author = models.CharField(max_length=255)
+    author = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=512)
     url = models.URLField()
     urlToImage = models.URLField()
     publishedAt = models.DateTimeField()
@@ -1217,14 +1217,25 @@ class TeamArticle(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('title', 'publishedAt',)
+
     def __str__(self):
-        return self.title
+        return f"{str(self.publishedAt)[:16]} {self.title}"
 
     @classmethod
     def get_articles(cls, team):
+        """ Get news for specified team. """
+        log.info(f"Getting news for {team.name} team")
+
+        team_name = team.name
+        if len(team.name.split(' ')[0]) > 5:
+            # Prioritize short team name.
+            team_name = team.name.split(' ')[0]
+
         url = (
             f"https://newsapi.org/v2/top-headlines?category=sports"
-            f"&q={team.name}&apiKey={settings.NEWSAPI_API_KEY}"
+            f"&q={team_name}&apiKey={settings.NEWSAPI_API_KEY}"
         )
         res = requests.get(url)
         if res.status_code == 200:
@@ -1232,8 +1243,8 @@ class TeamArticle(models.Model):
             for article in data.get('articles', []):
                 article['source'] = article.get('source', {}).get('name')
                 article['team'] = team
-                article_obj = TeamArticle(**article)
-                article_obj.save()
+                article['content'] = article['content'] or article['description']
+                cls.objects.get_or_create(**article)
         else:
             log.warning(
                 f"Failed getting news for {team.name} team "
