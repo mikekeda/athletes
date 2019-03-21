@@ -1244,7 +1244,12 @@ class TeamArticle(models.Model):
                 article['source'] = article.get('source', {}).get('name')
                 article['team'] = team
                 article['content'] = article['content'] or article['description']
-                cls.objects.get_or_create(**article)
+                article['urlToImage'] = (article['urlToImage'] or
+                                         settings.NO_AVATAR_IMAGE)
+                cls.objects.get_or_create(
+                    title=article['title'], publishedAt=article['publishedAt'],
+                    defaults=article
+                )
         else:
             log.warning(
                 f"Failed getting news for {team.name} team "
