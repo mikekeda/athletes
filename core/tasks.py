@@ -16,7 +16,7 @@ from requests_oauthlib import OAuth1
 
 from core.celery import app
 from core.constans import COUNTRIES
-from core.models import Athlete, League, Team, Profile
+from core.models import Athlete, League, Team, Profile, TeamArticle
 
 User = get_user_model()
 log = logging.getLogger('athletes')
@@ -420,6 +420,19 @@ def yearly_duedil_update():
         team = Team.objects.get(id=_id)
         team.get_company_info()
         super(Team, team).save()
+
+
+@app.task
+def daily_teams_news_update():
+    """ Get articles related to specific teams. """
+    # Get famous teams (with website and twitter, we have 876 teams on prod).
+    ids = sorted(Team.objects.exclude(
+        additional_info__Website__isnull=True
+    ).filter(~Q(twitter_info={})).values_list('id', flat=True))
+
+    for _id in ids:
+        team = Team.objects.get(id=_id)
+        TeamArticle.get_articles(team)
 
 
 @app.task

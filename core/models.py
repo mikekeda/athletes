@@ -1241,9 +1241,12 @@ class TeamArticle(models.Model):
         if res.status_code == 200:
             data = res.json()
             for article in data.get('articles', []):
+                article['content'] = article['content'] or article['description']
+                if not article['content']:
+                    continue  # skip news without content
+
                 article['source'] = article.get('source', {}).get('name')
                 article['team'] = team
-                article['content'] = article['content'] or article['description']
                 article['urlToImage'] = (article['urlToImage'] or
                                          settings.NO_AVATAR_IMAGE)
                 cls.objects.get_or_create(

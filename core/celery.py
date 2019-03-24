@@ -63,9 +63,14 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour=3, minute=0, day_of_week=6),
         'args': ()
     },
-    'every-day': {
+    'every-day-1': {
         'task': 'core.tasks.daily_update_notifications',
         'schedule': crontab(hour=9, minute=0),
+        'args': ()
+    },
+    'every-day-2': {
+        'task': 'core.tasks.daily_teams_news_update',
+        'schedule': crontab(hour=11, minute=0),
         'args': ()
     },
     'every-minute': {
