@@ -24,7 +24,7 @@ from django.views import View
 from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES, TIMEZONES
 from core.forms import TeamForm, LeagueForm, AthletesListForm, AvatarForm
 from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList, Profile)
+                         LeaguesList, Profile, TeamArticle)
 from core.tasks import parse_team
 
 User = get_user_model()
@@ -387,11 +387,14 @@ def team_page(request, pk):
         ]
     }
 
+    news = TeamArticle.objects.filter(team=team).order_by('-publishedAt')[:10]
+
     return render(request, 'team.html', {
         'team': team,
         'athletes': athletes,
         'age_dataset': age_dataset,
         'domestic_market_dataset': domestic_market_dataset,
+        'news': news,
     })
 
 
