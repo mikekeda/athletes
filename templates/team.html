@@ -162,12 +162,14 @@
                         {% for new in news %}
                             <div class="mt-3">
                                 <div class="float-left col-lg-2">
-                                    <img style="width: 100%;" src="{{ new.urlToImage }}" alt="{{ new.title }}">
+                                    <a href="{{ new.url }}" target="_blank">
+                                        <img style="width: 100%;" src="{{ new.urlToImage }}" alt="{{ new.title }}">
+                                    </a>
                                 </div>
                                 <div class="float-left col-lg-10">
-                                    <h4><a href="{{ new.url }}">{{ new.title }}</a></h4>
+                                    <h4><a href="{{ new.url }}" target="_blank">{{ new.title }}</a></h4>
                                     <div class="text-secondary">
-                                        <span>{{ new.source }}</span>
+                                        <span><a href="{{ new.source }}" target="_blank">{{ new.source }}</a></span>
                                         <time>{{ new.publishedAt }}</time>
                                     </div>
                                     <div>

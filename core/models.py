@@ -1220,6 +1220,25 @@ class TeamArticle(models.Model):
     class Meta:
         unique_together = ('title', 'publishedAt',)
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        url_verification = URLValidator()
+
+        # Improve source.
+        _source = self.source.lower()
+
+        if _source[:7] not in ('https:/', 'http://'):
+            _source = f'http://{_source}'
+
+        try:
+            url_verification(_source)
+            self.source = _source
+        except ValidationError:
+            pass
+
+        super().save(force_insert=force_insert, force_update=force_update,
+                     using=using, update_fields=update_fields)
+
     def __str__(self):
         return f"{str(self.publishedAt)[:16]} {self.title}"
 
