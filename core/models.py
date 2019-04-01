@@ -1211,7 +1211,7 @@ class TeamArticle(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=512)
     url = models.URLField()
-    urlToImage = models.URLField()
+    urlToImage = models.URLField(max_length=512)
     publishedAt = models.DateTimeField()
     content = models.TextField()
     added = models.DateTimeField(auto_now_add=True)
