@@ -30,8 +30,8 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
             return queryset.filter(**{f'{self._field}__isnull': False})\
                 .exclude(**{f'{self._field}': ''})
         elif self.value() == 'empty':
-            return queryset.filter(Q(**{f'{self._field}__isnull': True})
-                                   | Q(**{f'{self._field}__exact': ''}))
+            return queryset.filter(Q(**{f'{self._field}__isnull': True}) |
+                                   Q(**{f'{self._field}__exact': ''}))
 
 
 def update_data_from_wiki(_, __, queryset):

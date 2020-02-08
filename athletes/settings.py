@@ -10,6 +10,22 @@ import google.cloud.logging
 from google.cloud.logging.handlers.transports.sync import SyncTransport
 from django.utils.log import DEFAULT_LOGGING as LOGGING
 
+
+from django_jenkins.tasks import run_pylint
+
+
+class Lint:
+    """
+    Monkey patch to fix
+    TypeError: __init__() got an unexpected keyword argument 'exit'.
+    """
+    class Run(run_pylint.lint.Run):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, do_exit=kwargs.pop("exit"), **kwargs)
+
+
+run_pylint.lint = Lint
+
 SITE_ENV_PREFIX = 'ATHLETES'
 
 
@@ -82,7 +98,7 @@ INSTALLED_APPS = [
     'api',
 ]
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
+    INSTALLED_APPS += ['debug_toolbar', 'django_jenkins']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -293,3 +309,12 @@ if not DEBUG:
 
 if DEBUG:
     SILENCED_SYSTEM_CHECKS = ['djstripe.C001', 'djstripe.C006']
+
+
+JENKINS_TASKS = ('django_jenkins.tasks.run_pylint',
+                 'django_jenkins.tasks.run_pep8',
+                 'django_jenkins.tasks.run_pyflakes',)
+
+PROJECT_APPS = ['core', 'athletes']
+
+PYLINT_LOAD_PLUGIN = ['pylint_django']

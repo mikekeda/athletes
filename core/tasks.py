@@ -160,9 +160,8 @@ def parse_team(cleaned_data, skip_errors=False):
             )
             result[['skipped', 'parsed'][status]].append(full_link)
     elif cleaned_data.get('category') == "Rugby":
-        links = table.select(
-            "tr > td span.fn > a") or table.select(
-            "tr > td ul > li a")
+        links = table.select("tr > td span.fn > a"
+                             ) or table.select("tr > td ul > li a")
 
         for link in links:
             full_link, status = validate_link_and_create_athlete(
@@ -210,10 +209,8 @@ def parse_team(cleaned_data, skip_errors=False):
                     if not link:
                         link = td[i].select_one("span.vcard a")
 
-                    if link and link.string in [
-                        "United States", "South Korea", "North Korea",
-                        "Ivory Coast"
-                    ] + list(COUNTRIES.values()):
+                    if link and link.string in ["United States", "South Korea", "North Korea", "Ivory Coast"
+                                                ] + list(COUNTRIES.values()):
                         continue  # it's not a athlete
 
                     full_link, status = validate_link_and_create_athlete(
@@ -521,9 +518,9 @@ def daily_update_notifications():
         profile = Profile.objects.get(pk=pk)
 
         if any((
-            profile.notification_frequency == 'never',
-            profile.notification_frequency == 'monthly' and today.day != 1,
-            profile.notification_frequency == 'weekly' and today.weekday() != 1
+                profile.notification_frequency == 'never',
+                profile.notification_frequency == 'monthly' and today.day != 1,
+                profile.notification_frequency == 'weekly' and today.weekday() != 1
         )):
             continue
 
