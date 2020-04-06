@@ -19,18 +19,15 @@ def _parse_tennis(url: str):
     last_name = card.select_one('.last-name').string
     name = f'{first_name} {last_name}'
 
-    log.info(f"Parsing {name} ({url})")
+    log.info("Parsing %s (%s)", name, url)
 
-    wiki_url = (
-        "https://en.wikipedia.org/w/api.php?action=opensearch"
-        f"&search={name}"
-    )
+    wiki_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={name}"
     res = requests.get(wiki_url)
     if res.status_code == 200:
         data = res.json()
 
         if not data[3]:
-            log.warning(f"Failed getting wiki page for {name}")
+            log.warning("Failed getting wiki page for %s", name)
             return
 
         wiki = data[3][0]
@@ -59,12 +56,10 @@ def _parse_tennis(url: str):
                 defaults=defaults
             )
             if not created:
-                log.warning(
-                    f"Skip athlete {name} with wiki {wiki} (already exists)"
-                )
+                log.warning("Skip athlete %s with wiki %s (already exists)", name, wiki)
                 return
         except ValueError:
-            log.warning(f"Failed to parse wiki info for {name}")
+            log.warning("Failed to parse wiki info for %s", name)
             return
 
         athlete.name = name
@@ -97,7 +92,7 @@ def _parse_tennis(url: str):
 
         athlete.save()
     else:
-        log.warning(f"Failed getting wiki info for {name}")
+        log.warning("Failed getting wiki info for %s", name)
 
 
 class Command(BaseCommand):
@@ -132,7 +127,7 @@ class Command(BaseCommand):
                             name__icontains=link.string).exists():
                         _parse_tennis(site + link['href'])
                     else:
-                        log.info(f"Skip {link.string}")
+                        log.info("Skip %s", link.string)
             else:
                 break
 

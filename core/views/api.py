@@ -119,8 +119,7 @@ def _process_datatables_params(querydict: dict) -> tuple:
 
 def _athletes_api(request):
     """ Return filtered/sorted/paginated list of athletes for datatables. """
-    draw, start, length, order, search, filters = _process_datatables_params(
-        request.GET)
+    draw, start, length, order, search, filters = _process_datatables_params(request.GET)
 
     # Count all rows.
     total = Athlete.objects.count()
@@ -135,8 +134,7 @@ def _athletes_api(request):
     try:
         list_id = int(request.GET.get('list_id'))
         athletes_ids = AthletesList.objects.filter(
-            user=request.user, pk=list_id).values_list(
-            'athletes__id', flat=True)
+            user=request.user, pk=list_id).values_list('athletes__id', flat=True)
         qs = qs.filter(pk__in=athletes_ids)
     except (ValueError, TypeError):
         pass
@@ -151,7 +149,7 @@ def _athletes_api(request):
                     qs = qs.filter(domestic_market=F('location_market'))
                 continue
 
-            elif field == 'age':
+            if field == 'age':
                 val = val.split('-')
 
                 if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
@@ -242,9 +240,7 @@ def _teams_api(request):
     list_id = None
     try:
         list_id = int(request.GET.get('list_id'))
-        teams_ids = TeamsList.objects.filter(
-            user=request.user, pk=list_id).values_list(
-            'teams__id', flat=True)
+        teams_ids = TeamsList.objects.filter(user=request.user, pk=list_id).values_list('teams__id', flat=True)
         qs = qs.filter(pk__in=teams_ids)
     except (ValueError, TypeError):
         pass
@@ -417,17 +413,17 @@ def add_athlete_to_lists_api(request):
 
         new_lists_ids = request.POST.getlist('athletes_lists')
         # Only int values are allowed.
-        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+        new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
         athlete = get_object_or_404(
             Athlete.objects.prefetch_related('athletes_lists'),
             pk=athlete_id
         )
-        old_lists_ids = set([
+        old_lists_ids = {
             athletes_list.pk
             for athletes_list in athlete.athletes_lists.all()
             if athletes_list.user == request.user  # filter by current user
-        ])
+        }
 
         athletes_lists = AthletesList.objects.filter(
             pk__in=new_lists_ids ^ old_lists_ids,
@@ -455,17 +451,17 @@ def add_team_to_lists_api(request):
 
         new_lists_ids = request.POST.getlist('teams_lists')
         # Only int values are allowed.
-        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+        new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
         team = get_object_or_404(
             Team.objects.prefetch_related('teams_lists'),
             pk=team_id
         )
-        old_lists_ids = set([
+        old_lists_ids = {
             teams_list.pk
             for teams_list in team.teams_lists.all()
             if teams_list.user == request.user  # filter by current user
-        ])
+        }
 
         teams_lists = TeamsList.objects.filter(
             pk__in=new_lists_ids ^ old_lists_ids,
@@ -493,17 +489,17 @@ def add_league_to_lists_api(request):
 
         new_lists_ids = request.POST.getlist('leagues_lists')
         # Only int values are allowed.
-        new_lists_ids = set([int(v) for v in new_lists_ids if v.isdigit()])
+        new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
         league = get_object_or_404(
             League.objects.prefetch_related('leagues_lists'),
             pk=league_id
         )
-        old_lists_ids = set([
+        old_lists_ids = {
             leagues_list.pk
             for leagues_list in league.leagues_lists.all()
             if leagues_list.user == request.user  # filter by current user
-        ])
+        }
 
         leagues_lists = LeaguesList.objects.filter(
             pk__in=new_lists_ids ^ old_lists_ids,

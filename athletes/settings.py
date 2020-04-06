@@ -3,12 +3,12 @@ Django settings for Athletes project.
 """
 
 import os
-
 from datetime import timedelta
 import requests
+
+from django.utils.log import DEFAULT_LOGGING as LOGGING
 import google.cloud.logging
 from google.cloud.logging.handlers.transports.sync import SyncTransport
-from django.utils.log import DEFAULT_LOGGING as LOGGING
 
 
 try:
@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djstripe',
     'corsheaders',
+    'djcelery',
 
     'core',
     'api',

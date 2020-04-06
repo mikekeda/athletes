@@ -73,7 +73,7 @@ class ModelMixin:
     @staticmethod
     def geocode(address):
         """ Geocode the address. """
-        log.info(f"Geocoding {address}")
+        log.info("Geocoding %s", address)
 
         geo_data = {'results': []}
 
@@ -92,7 +92,7 @@ class ModelMixin:
         """ Get visits from Wiki. """
         model = self.__class__.__name__
 
-        log.info(f"Get visits from Wiki for {model} {self.name}")
+        log.info("Get visits from Wiki for %s %s", model, self.name)
 
         now = datetime.datetime.now()
         week_ago = now - datetime.timedelta(weeks=1)
@@ -128,7 +128,7 @@ class ModelMixin:
         """ Get info from Youtube. """
         model = self.__class__.__name__
 
-        log.info(f"Get info from Youtube for {model} {self.name}")
+        log.info("Get info from Youtube for %s %s", model, self.name)
         historical_keys = ('commentCount', 'subscriberCount', 'videoCount',
                            'viewCount')
 
@@ -162,11 +162,9 @@ class ModelMixin:
                         youtube_info['items'][0]['id'].get('channelId'):
                     channel_id = youtube_info['items'][0]['id']['channelId']
                 else:
-                    log.info(f"No youtube info for {model} {self.name}")
+                    log.info("No youtube info for %s %s", model, self.name)
             else:
-                log.warning(
-                    f"Failed getting youtube info for {model} {self.name} "
-                    f"({res.status_code})")
+                log.warning("Failed getting youtube info for %s %s (%s)", model, self.name, res.status_code)
 
         if channel_id:
             url = (
@@ -180,18 +178,14 @@ class ModelMixin:
                 youtube_info = res.json()
                 if youtube_info and youtube_info['items']:
                     self.youtube_info = {'channelId': channel_id}
-                    self.youtube_info.update(youtube_info['items'][0][
-                                                 'statistics'])
-                    self.youtube_info.update(youtube_info['items'][0][
-                                                 'snippet'])
+                    self.youtube_info.update(youtube_info['items'][0]['statistics'])
+                    self.youtube_info.update(youtube_info['items'][0]['snippet'])
                     self.youtube_info['updated'] = str(now)
                     self.youtube_info['history'] = history
                 else:
-                    log.info("Updating youtube info: no data "
-                             f"for {model} {self.name}")
+                    log.info("Updating youtube info: no data for %s %s", model, self.name)
             else:
-                log.warning(f"Failed updating youtube info "
-                            f"for {model} {self.name} ({res.status_code})")
+                log.warning("Failed updating youtube info for %s %s (%s)", model, self.name, res.status_code)
 
         return self.youtube_info
 
@@ -213,11 +207,11 @@ class ModelMixin:
 
         model = self.__class__.__name__
 
-        log.info(f"Get visits statistic from awis for {model} {self.name}")
+        log.info("Get visits statistic from awis for %s %s", model, self.name)
 
         website = self.website
         if not website:
-            log.info(f"{model} {self.name} doesn't have website")
+            log.info("%s %s doesn't have website", model, self.name)
             return {}
 
         log.info(website)
@@ -282,7 +276,7 @@ class ModelMixin:
                     root = views_info['aws:UrlInfoResponse']['aws:Response'][
                         'aws:UrlInfoResult']['aws:Alexa']['aws:TrafficData']
                 except KeyError as e:
-                    log.info(f"{model} {self.name}: {repr(e)}")
+                    log.info("%s %s: %s", model, self.name, repr(e))
                     return self.site_views_info
 
                 items = root.get('aws:UsageStatistics') or {}
@@ -291,8 +285,7 @@ class ModelMixin:
                     if isinstance(item, dict) and item['aws:TimeRange'].get(
                             'aws:Days') == '7':
                         data['total'] = round(
-                            float(item['aws:PageViews']['aws:PerMillion'][
-                                      'aws:Value'].replace(',', '.')),
+                            float(item['aws:PageViews']['aws:PerMillion']['aws:Value'].replace(',', '.')),
                             1
                         )
                         break
@@ -312,11 +305,9 @@ class ModelMixin:
                     key = str(day_ago)[:10]
                     self.site_views_info[key] = data
             else:
-                log.info(f"No site visits for {model} {self.name}")
+                log.info("No site visits for %s %s", model, self.name)
         else:
-            log.warning(
-                f"Failed getting site visits for {model} {self.name} "
-                f"({res.status_code})")
+            log.warning("Failed getting site visits for %s %s (%s)", model, self.name, res.status_code)
 
         return self.site_views_info
 
@@ -328,8 +319,7 @@ class ModelMixin:
             history = self.youtube_info.get('history', {})
             last_update = self.youtube_info['updated']
             history[last_update] = {
-                'subscriberCount': self.youtube_info.get('subscriberCount',
-                                                         '0'),
+                'subscriberCount': self.youtube_info.get('subscriberCount', '0'),
                 'viewCount': self.youtube_info.get('viewCount', '0'),
             }
 
@@ -350,8 +340,7 @@ class ModelMixin:
             history = self.youtube_info['history']
             last_update = self.youtube_info['updated']
             history[last_update] = {
-                'subscriberCount': self.youtube_info.get('subscriberCount',
-                                                         '0'),
+                'subscriberCount': self.youtube_info.get('subscriberCount', '0'),
                 'viewCount': self.youtube_info.get('viewCount', '0'),
             }
 
@@ -523,15 +512,13 @@ class League(models.Model, ModelMixin):
 
     def get_data_from_wiki(self, soup=None):
         """ Get information about league from Wiki. """
-        log.info(f"Parsing League {self.wiki}")
+        log.info("Parsing League %s", self.wiki)
 
         if not soup:
             html = requests.get(self.wiki)
             if html.status_code != 200:
                 # League page doesn't exist.
-                log.warning(
-                    f"Skipping League {self.wiki} ({html.status_code})"
-                )
+                log.warning("Skipping League %s (%s)", self.wiki, html.status_code)
                 return
 
             soup = BeautifulSoup(html.content, 'html.parser')
@@ -541,7 +528,7 @@ class League(models.Model, ModelMixin):
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # League page doesn't have person card - skip.
-            log.warning(f"Skipping League {self.wiki} (no person card)")
+            log.warning("Skipping League %s (no person card)", self.wiki)
             return
 
         # Get name.
@@ -555,7 +542,7 @@ class League(models.Model, ModelMixin):
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # League page doesn't have person card - skip.
-            log.warning(f"Skipping League {self.wiki} (no person card)")
+            log.warning("Skipping League %s (no person card)", self.wiki)
             return
 
         img = card.select_one('img')
@@ -641,13 +628,13 @@ class Team(models.Model, ModelMixin):
 
     def get_data_from_wiki(self, soup=None):
         """ Get information about team from Wiki. """
-        log.info(f"Parsing Team {self.wiki}")
+        log.info("Parsing Team %s", self.wiki)
 
         if not soup:
             html = requests.get(self.wiki)
             if html.status_code != 200:
                 # Team page doesn't exist.
-                log.warning(f"Skipping Team {self.wiki} ({html.status_code})")
+                log.warning("Skipping Team %s (%s)", self.wiki, html.status_code)
                 return
 
             soup = BeautifulSoup(html.content, 'html.parser')
@@ -660,7 +647,7 @@ class Team(models.Model, ModelMixin):
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # Team page doesn't have person card - skip.
-            log.warning(f"Skipping Team {self.wiki} (no person card)")
+            log.warning("Skipping Team %s (no person card)", self.wiki)
             return
 
         img = card.select_one('a.image > img') or card.select_one('img')
@@ -688,7 +675,7 @@ class Team(models.Model, ModelMixin):
                     if link['href'][:4] != 'http':
                         link['href'] = site + link['href']
 
-                    league, created = League.objects.get_or_create(
+                    league, _ = League.objects.get_or_create(
                         wiki=link['href'],
                         defaults={
                             'location_market': self.location_market,
@@ -704,7 +691,7 @@ class Team(models.Model, ModelMixin):
 
     def get_location(self):
         """ Get team location (latitude and longitude). """
-        log.info(f"Geocoding Team {self.name}")
+        log.info("Geocoding Team %s", self.name)
 
         if self.additional_info:
             address = self.additional_info.get(
@@ -724,7 +711,7 @@ class Team(models.Model, ModelMixin):
         """ Get stock info. """
         model = self.__class__.__name__
 
-        log.info(f"Get stock info for {model} {self.name}")
+        log.info("Get stock info for %s %s", model, self.name)
 
         symbol = self.stock_info.get('symbol')
         if symbol:
@@ -774,13 +761,13 @@ class Team(models.Model, ModelMixin):
         """ Get company statistic from duedil. """
         model = self.__class__.__name__
 
-        log.info(f"Get company info for {model} {self.name}")
+        log.info("Get company info for %s %s", model, self.name)
 
         url = "https://duedil.io/v4//search/companies.json"
         headers = {"X-AUTH-TOKEN": settings.DUEDIL_API_KEY}
 
         if not self.company_info.get('companyId'):
-            log.info(f"Get companyId for {model} {self.name}")
+            log.info("Get companyId for %s %s", model, self.name)
             data = {
                 "criteria": {
                     "name": self.name,
@@ -800,19 +787,13 @@ class Team(models.Model, ModelMixin):
                     self.company_info['companyId'] = company_info[
                         'companies'][0]['companyId']
                 else:
-                    log.info(f"No companyId for {model} {self.name}")
+                    log.info("No companyId for %s %s", model, self.name)
             else:
-                log.warning(
-                    f"Failed getting companyId for {model} {self.name} "
-                    f"({res.status_code})"
-                )
+                log.warning("Failed getting companyId for %s %s (%s)", model, self.name, res.status_code)
 
         if self.company_info.get('companyId'):
             company_id = self.company_info['companyId']
-            url = (
-                "https://duedil.io/v4/company/"
-                f"{self.location_market.lower()}/{company_id}.json"
-            )
+            url = f"https://duedil.io/v4/company/{self.location_market.lower()}/{company_id}.json"
             res = requests.get(url, headers=headers)
             if res.status_code == 200:
                 company_info = res.json()
@@ -823,12 +804,9 @@ class Team(models.Model, ModelMixin):
                     self.company_info[d] = company_info['financialSummary']
                     self.company_info[d].pop('ebitda', None)
                 else:
-                    log.info(f"No financialSummary for {model} {self.name}")
+                    log.info("No financialSummary for %s %s", model, self.name)
             else:
-                log.warning(
-                    f"Failed getting data for {model} {self.name} "
-                    f"({res.status_code})"
-                )
+                log.warning("Failed getting data for %s %s (%s)", model, self.name, res.status_code)
 
         return self.company_info
 
@@ -965,11 +943,11 @@ class Athlete(models.Model, ModelMixin):
 
     def get_data_from_wiki(self):
         """ Get information about athlete from Wiki. """
-        log.info(f"Parsing Athlete {self.wiki}")
+        log.info("Parsing Athlete %s", self.wiki)
         html = requests.get(self.wiki)
         if html.status_code != 200:
             # Athlete page doesn't exist.
-            log.warning(f"Skipping Athlete {self.wiki} ({html.status_code})")
+            log.warning("Skipping Athlete %s (%s)", self.wiki, html.status_code)
             return
 
         soup = BeautifulSoup(html.content, 'html.parser')
@@ -978,7 +956,7 @@ class Athlete(models.Model, ModelMixin):
 
         if not card or card.parent.attrs.get('role') == "navigation":
             # Athlete page doesn't have person card - skip.
-            log.warning(f"Skipping Athlete {self.wiki} (no person card)")
+            log.warning("Skipping Athlete %s (no person card)", self.wiki)
             return
 
         # Get name.
@@ -994,12 +972,12 @@ class Athlete(models.Model, ModelMixin):
         bday = card.find("span", {"class": "bday"})
         if not bday:
             # Athlete page doesn't have person card - skip.
-            log.warning(f"Skipping Athlete {self.wiki} (no birthday)")
+            log.warning("Skipping Athlete %s (no birthday)", self.wiki)
             return
 
         self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
         if self.age > 45:
-            log.warning(f"Skipping Athlete {self.wiki} (too old)")
+            log.warning("Skipping Athlete %s (too old)", self.wiki)
             return
 
         self.international = False
@@ -1058,7 +1036,7 @@ class Athlete(models.Model, ModelMixin):
 
     def get_location(self):
         """ Get athlete domestic_market with geocoding. """
-        log.info(f"Geocoding Athlete {self.name}")
+        log.info("Geocoding Athlete %s", self.name)
 
         if not self.additional_info:
             self.get_data_from_wiki()
@@ -1079,7 +1057,7 @@ class Athlete(models.Model, ModelMixin):
                         if 'country' in component['types'] and \
                                 component['short_name'] in COUNTRIES:
                             self.domestic_market = component['short_name']
-                            log.info(f"Found {self.domestic_market}")
+                            log.info("Found %s", self.domestic_market)
                             return component['short_name']
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -1245,7 +1223,7 @@ class TeamArticle(models.Model):
     @classmethod
     def get_articles(cls, team):
         """ Get news for specified team. """
-        log.info(f"Getting news for {team.name} team")
+        log.info("Getting news for %s team", team.name)
 
         team_name = team.name
         if len(team.name.split(' ')[0]) > 5:
@@ -1273,7 +1251,4 @@ class TeamArticle(models.Model):
                     defaults=article
                 )
         else:
-            log.warning(
-                f"Failed getting news for {team.name} team "
-                f"({res.status_code})"
-            )
+            log.warning("Failed getting news for %s team (%s)", team.name, res.status_code)

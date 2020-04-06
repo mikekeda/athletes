@@ -22,14 +22,14 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (
             ('not_empty', 'Not empty'),
-            ('empty',  'Empty'),
+            ('empty', 'Empty'),
         )
 
     def queryset(self, request, queryset):
         if self.value() == 'not_empty':
             return queryset.filter(**{f'{self._field}__isnull': False})\
                 .exclude(**{f'{self._field}': ''})
-        elif self.value() == 'empty':
+        if self.value() == 'empty':
             return queryset.filter(Q(**{f'{self._field}__isnull': True}) |
                                    Q(**{f'{self._field}__exact': ''}))
 

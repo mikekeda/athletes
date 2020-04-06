@@ -40,8 +40,8 @@ def validate_link_and_create_athlete(link, site, data):
         # Asynchronously add an athlete.
         if create_athlete_task(full_link, data):
             return full_link, True
-        else:
-            return full_link, False
+
+        return full_link, False
 
     return None, False
 
@@ -63,14 +63,14 @@ def create_athlete_task(wiki, data):
             athlete.save()
         return True
     except IntegrityError as e:
-        log.warning(f"{repr(e)}: Skip athlete for {wiki}")
+        log.warning("%s: Skip athlete for %s", repr(e), wiki)
         return False
 
 
 @app.task
 def parse_team(cleaned_data, skip_errors=False):
     wiki_url = cleaned_data.get('wiki', '')
-    log.info(f"parsing team {wiki_url}")
+    log.info("parsing team %s", wiki_url)
     site = urllib.parse.urlparse(wiki_url)
     site = f'{site.scheme}://{site.hostname}'
     html = requests.get(wiki_url)
@@ -240,8 +240,7 @@ def weekly_athletes_youtube_update():
 def weekly_youtube_update():
     """ Update youtube info for League and Team weekly. """
     for cls in (League, Team):
-        ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list(
-            'id', flat=True))
+        ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list('id', flat=True))
 
         for _id in ids:
             obj = cls.objects.get(id=_id)
@@ -463,16 +462,13 @@ def every_minute_twitter_update():
                 history[last_update][field] = obj.twitter_info.get(field, 0)
 
         if obj.twitter_info.get('screen_name'):
-            log.info(f"Update info from Twitter for {cls_name} {obj.name}")
+            log.info("Update info from Twitter for %s %s", cls_name, obj.name)
             screen_name = obj.twitter_info['screen_name']
 
-            url = (
-                "https://api.twitter.com/1.1/users/show.json"
-                f"?screen_name={screen_name}"
-            )
+            url = f"https://api.twitter.com/1.1/users/show.json?screen_name={screen_name}"
 
         else:
-            log.info(f"Get info from Twitter for {cls_name} {obj.name}")
+            log.info("Get info from Twitter for %s %s", cls_name, obj.name)
             urlencoded_name = urllib.parse.quote_plus(obj.name)
 
             url = (
@@ -493,10 +489,9 @@ def every_minute_twitter_update():
                 obj.twitter_info['updated'] = str(now)
                 obj.twitter_info['history'] = history
             else:
-                log.info(f"No twitter info for {cls_name} {obj.name}")
+                log.info("No twitter info for %s %s", cls_name, obj.name)
         else:
-            log.warning("Failed getting twitter info for "
-                        f"{cls_name} {obj.name} ({res.status_code})")
+            log.warning("Failed getting twitter info for %s %s (%s)", cls_name, obj.name, res.status_code)
 
         super(cls, obj).save()
 

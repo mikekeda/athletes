@@ -14,8 +14,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum, Prefetch
 from django.db.models.expressions import RawSQL
-from django.http import (JsonResponse, HttpResponseRedirect,
-                         HttpResponseBadRequest, Http404)
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext
@@ -23,8 +22,7 @@ from django.views import View
 
 from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES, TIMEZONES
 from core.forms import TeamForm, LeagueForm, AthletesListForm, AvatarForm
-from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList, Profile, TeamArticle)
+from core.models import Athlete, League, Team, AthletesList, TeamsList, LeaguesList, Profile, TeamArticle
 from core.tasks import parse_team
 
 User = get_user_model()
@@ -99,7 +97,7 @@ class ParseLeagueView(View):
             wiki_url = form.cleaned_data.get('wiki')
             site = urlparse(wiki_url)
             site = f'{site.scheme}://{site.hostname}'
-            log.info(f"parsing teams {wiki_url}")
+            log.info("parsing teams %s", wiki_url)
             html = requests.get(wiki_url)
             soup = BeautifulSoup(html.content, 'html.parser')
             links = soup.select(selector)
@@ -450,8 +448,8 @@ def country_page(request, code):
     today = datetime.date.today()
     for row in stats:
         row['age'] = today.year - row['birthday'].year - (
-                (today.month, today.day) < (
-                    row['birthday'].month, row['birthday'].day))
+            (today.month, today.day) < (row['birthday'].month, row['birthday'].day)
+        )
 
     return render(request, 'country.html', {'name': name, 'stats': stats})
 
