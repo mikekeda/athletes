@@ -263,9 +263,10 @@ LOGIN_URL = '/login'
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = 'https://storage.googleapis.com/cdn.mkeda.me/athletes/'
-NO_AVATAR_IMAGE = STATIC_URL + 'img/no-avatar.png'
 if DEBUG:
     STATIC_URL = '/static/'
+
+NO_AVATAR_IMAGE = STATIC_URL + 'img/no-avatar.png'
 
 STATICFILES_DIRS = (
     ('', os.path.join(BASE_DIR, 'static')),

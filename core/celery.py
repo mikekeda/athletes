@@ -79,5 +79,3 @@ app.conf.beat_schedule = {
         'args': ()
     },
 }
-
-app.conf.timezone = 'UTC'

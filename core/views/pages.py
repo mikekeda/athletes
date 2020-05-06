@@ -131,27 +131,21 @@ class ProfileView(View, GetUserMixin):
         """ User profile. """
         user = self.get_user(request, username)
         profile = Profile.objects.prefetch_related(
-            Prefetch('followed_athletes', queryset=Athlete.objects.only(
-                'pk', 'name', 'wiki').order_by('name')),
-            Prefetch('followed_teams', queryset=Team.objects.only(
-                'pk', 'name').order_by('name')),
-            Prefetch('followed_leagues', queryset=League.objects.only(
-                'pk', 'name').order_by('name')),
+            Prefetch('followed_athletes', queryset=Athlete.objects.only('pk', 'name', 'wiki').order_by('name')),
+            Prefetch('followed_teams', queryset=Team.objects.only('pk', 'name').order_by('name')),
+            Prefetch('followed_leagues', queryset=League.objects.only('pk', 'name').order_by('name')),
         ).get(user=user)
 
         profile.leagues_lists = LeaguesList.objects.prefetch_related(
-            Prefetch('leagues', queryset=League.objects.only(
-                'pk', 'name').order_by('name')),
+            Prefetch('leagues', queryset=League.objects.only('pk', 'name').order_by('name')),
         ).filter(user=user)
 
         profile.teams_lists = TeamsList.objects.prefetch_related(
-            Prefetch('teams', queryset=Team.objects.only(
-                'pk', 'name').order_by('name')),
+            Prefetch('teams', queryset=Team.objects.only('pk', 'name').order_by('name')),
         ).filter(user=user)
 
         profile.athletes_lists = AthletesList.objects.prefetch_related(
-            Prefetch('athletes', queryset=Athlete.objects.only(
-                'pk', 'name', 'wiki').order_by('name')),
+            Prefetch('athletes', queryset=Athlete.objects.only('pk', 'name', 'wiki').order_by('name')),
         ).filter(user=user)
 
         form = AvatarForm(data=request.POST)
@@ -193,8 +187,7 @@ def athletes_page(request):
     """ Athletes page. """
     form = AthletesListForm()
     model = Athlete._meta
-    athletes_lists = AthletesList.objects.filter(user=request.user).only(
-        'pk', 'name')
+    athletes_lists = AthletesList.objects.filter(user=request.user).only('pk', 'name')
 
     return render(request, 'athletes.html', {
         'form': form,
@@ -273,8 +266,7 @@ def athlete_page(request, slug):
         followed_athletes=athlete
     ).exists()
 
-    athlete.user_athletes_lists = AthletesList.objects.filter(
-        user=request.user).only('pk', 'name')
+    athlete.user_athletes_lists = AthletesList.objects.filter(user=request.user).only('pk', 'name')
 
     # Check if the athlete is in any list.
     for athletes_list in athlete.user_athletes_lists:
