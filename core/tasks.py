@@ -121,7 +121,7 @@ def parse_team(cleaned_data, skip_errors=False):
             break
 
     if skip_errors and not table:
-        return
+        return None
 
     team, _ = Team.objects.get_or_create(**cleaned_data)
     team.get_data_from_wiki(soup)

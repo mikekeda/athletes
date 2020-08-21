@@ -33,6 +33,8 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
             return queryset.filter(Q(**{f'{self._field}__isnull': True}) |
                                    Q(**{f'{self._field}__exact': ''}))
 
+        return None
+
 
 def update_data_from_wiki(_, __, queryset):
     """ Update information for selected athletes with data from Wikipedia. """

@@ -9,7 +9,7 @@ def validate_selector(selector: str):
     soup = BeautifulSoup('', 'html.parser')
     try:
         soup.select(selector)
-        return
+        return None
     except ValueError:
         pass
 
@@ -21,7 +21,6 @@ class TeamForm(forms.ModelForm):
 
     def validate_unique(self):
         """ Skip validate_unique to use custom get or create logic. """
-        pass
 
     class Meta:
         model = Team
@@ -41,7 +40,6 @@ class LeagueForm(forms.ModelForm):
 
     def validate_unique(self):
         """ Skip validate_unique to use custom get or create logic. """
-        pass
 
     class Meta:
         model = League

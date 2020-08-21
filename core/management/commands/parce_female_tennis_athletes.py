@@ -28,7 +28,7 @@ def _parse_tennis(url: str, info: dict):
 
         if not data[3]:
             log.warning("Failed getting wiki page for %s", name)
-            return
+            return None
 
         wiki = data[3][0]
 
@@ -55,10 +55,10 @@ def _parse_tennis(url: str, info: dict):
             )
             if not created:
                 log.warning("Skip athlete %s with wiki %s (already exists)", name, wiki)
-                return
+                return None
         except ValueError:
             log.warning("Failed to parse wiki info for %s", name)
-            return
+            return None
 
         athlete.name = name
 

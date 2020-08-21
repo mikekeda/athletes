@@ -519,7 +519,7 @@ class League(models.Model, ModelMixin):
             if html.status_code != 200:
                 # League page doesn't exist.
                 log.warning("Skipping League %s (%s)", self.wiki, html.status_code)
-                return
+                return None
 
             soup = BeautifulSoup(html.content, 'html.parser')
 
@@ -529,7 +529,7 @@ class League(models.Model, ModelMixin):
         if not card or card.parent.attrs.get('role') == "navigation":
             # League page doesn't have person card - skip.
             log.warning("Skipping League %s (no person card)", self.wiki)
-            return
+            return None
 
         # Get name.
         name = card.select(".fn") or soup.find_all("caption")
@@ -543,7 +543,7 @@ class League(models.Model, ModelMixin):
         if not card or card.parent.attrs.get('role') == "navigation":
             # League page doesn't have person card - skip.
             log.warning("Skipping League %s (no person card)", self.wiki)
-            return
+            return None
 
         img = card.select_one('img')
         if img and img.get('src'):
@@ -635,7 +635,7 @@ class Team(models.Model, ModelMixin):
             if html.status_code != 200:
                 # Team page doesn't exist.
                 log.warning("Skipping Team %s (%s)", self.wiki, html.status_code)
-                return
+                return None
 
             soup = BeautifulSoup(html.content, 'html.parser')
 
@@ -648,7 +648,7 @@ class Team(models.Model, ModelMixin):
         if not card or card.parent.attrs.get('role') == "navigation":
             # Team page doesn't have person card - skip.
             log.warning("Skipping Team %s (no person card)", self.wiki)
-            return
+            return None
 
         img = card.select_one('a.image > img') or card.select_one('img')
         if img and img.get('src'):
@@ -694,10 +694,8 @@ class Team(models.Model, ModelMixin):
         log.info("Geocoding Team %s", self.name)
 
         if self.additional_info:
-            address = self.additional_info.get(
-                'Ground') or self.additional_info.get(
-                'Location') or self.additional_info.get(
-                'Stadium')
+            address = self.additional_info.get('Ground') or self.additional_info.get(
+                'Location') or self.additional_info.get('Stadium')
             if address:
                 geo_data = self.geocode(address)
 
@@ -948,7 +946,7 @@ class Athlete(models.Model, ModelMixin):
         if html.status_code != 200:
             # Athlete page doesn't exist.
             log.warning("Skipping Athlete %s (%s)", self.wiki, html.status_code)
-            return
+            return None
 
         soup = BeautifulSoup(html.content, 'html.parser')
         card = soup.find("table", {"class": "vcard"})
@@ -957,7 +955,7 @@ class Athlete(models.Model, ModelMixin):
         if not card or card.parent.attrs.get('role') == "navigation":
             # Athlete page doesn't have person card - skip.
             log.warning("Skipping Athlete %s (no person card)", self.wiki)
-            return
+            return None
 
         # Get name.
         name = card.select(".fn") or soup.find_all("caption")
@@ -973,12 +971,12 @@ class Athlete(models.Model, ModelMixin):
         if not bday:
             # Athlete page doesn't have person card - skip.
             log.warning("Skipping Athlete %s (no birthday)", self.wiki)
-            return
+            return None
 
         self.birthday = datetime.datetime.strptime(bday.string, "%Y-%m-%d")
         if self.age > 45:
             log.warning("Skipping Athlete %s (too old)", self.wiki)
-            return
+            return None
 
         self.international = False
 
@@ -1044,10 +1042,10 @@ class Athlete(models.Model, ModelMixin):
         if self.additional_info and isinstance(self.additional_info, dict):
             address = self.additional_info.get(
                 'Place of birth') or self.additional_info.get(
-                'Born') or self.additional_info.get(
-                'High school') or self.additional_info.get(
-                'College') or self.additional_info.get(
-                'Nationality')
+                    'Born') or self.additional_info.get(
+                    'High school') or self.additional_info.get(
+                    'College') or self.additional_info.get(
+                    'Nationality')
             if address:
                 geo_data = self.geocode(address)
 
@@ -1059,6 +1057,8 @@ class Athlete(models.Model, ModelMixin):
                             self.domestic_market = component['short_name']
                             log.info("Found %s", self.domestic_market)
                             return component['short_name']
+
+        return None
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
