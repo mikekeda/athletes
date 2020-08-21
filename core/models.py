@@ -11,8 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, URLValidator
 from django.core.exceptions import ValidationError
@@ -24,6 +23,8 @@ from core.constans import (
     CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
     WIKI_COUNTRIES, WIKI_NATIONALITIES
 )
+
+User = get_user_model()
 
 log = logging.getLogger('athletes')
 
@@ -502,11 +503,11 @@ class League(models.Model, ModelMixin):
     )
     category = models.CharField(max_length=255, blank=True,
                                 choices=CATEGORIES.items())
-    additional_info = JSONField(default=dict, blank=True)
-    twitter_info = JSONField(default=dict, blank=True)
-    youtube_info = JSONField(default=dict, blank=True)
-    wiki_views_info = JSONField(default=dict, blank=True)
-    site_views_info = JSONField(default=dict, blank=True)
+    additional_info = models.JSONField(default=dict, blank=True)
+    twitter_info = models.JSONField(default=dict, blank=True)
+    youtube_info = models.JSONField(default=dict, blank=True)
+    wiki_views_info = models.JSONField(default=dict, blank=True)
+    site_views_info = models.JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -616,13 +617,13 @@ class Team(models.Model, ModelMixin):
                                 choices=CATEGORIES.items())
     longitude = models.FloatField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
-    additional_info = JSONField(default=dict, blank=True)
-    twitter_info = JSONField(default=dict, blank=True)
-    youtube_info = JSONField(default=dict, blank=True)
-    wiki_views_info = JSONField(default=dict, blank=True)
-    site_views_info = JSONField(default=dict, blank=True)
-    stock_info = JSONField(default=dict, blank=True)
-    company_info = JSONField(default=dict, blank=True)
+    additional_info =models.JSONField(default=dict, blank=True)
+    twitter_info =models.JSONField(default=dict, blank=True)
+    youtube_info =models.JSONField(default=dict, blank=True)
+    wiki_views_info =models.JSONField(default=dict, blank=True)
+    site_views_info =models.JSONField(default=dict, blank=True)
+    stock_info =models.JSONField(default=dict, blank=True)
+    company_info =models.JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -921,11 +922,11 @@ class Athlete(models.Model, ModelMixin):
     international = models.BooleanField(default=False)
     instagram = models.PositiveIntegerField(null=True, blank=True)
     twitter = models.PositiveIntegerField(null=True, blank=True)
-    additional_info = JSONField(default=dict, blank=True)
-    twitter_info = JSONField(default=dict, blank=True)
-    youtube_info = JSONField(default=dict, blank=True)
-    wiki_views_info = JSONField(default=dict, blank=True)
-    site_views_info = JSONField(default=dict, blank=True)
+    additional_info =models.JSONField(default=dict, blank=True)
+    twitter_info =models.JSONField(default=dict, blank=True)
+    youtube_info =models.JSONField(default=dict, blank=True)
+    wiki_views_info =models.JSONField(default=dict, blank=True)
+    site_views_info =models.JSONField(default=dict, blank=True)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

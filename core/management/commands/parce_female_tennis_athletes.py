@@ -104,6 +104,8 @@ def _parse_tennis(url: str, info: dict):
     else:
         log.warning("Failed getting wiki info for %s", name)
 
+    return None
+
 
 class Command(BaseCommand):
     # Show this when the user types help
