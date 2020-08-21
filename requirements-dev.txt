@@ -2,6 +2,6 @@ coverage==4.5.4
 django-debug-toolbar==2.2
 django-jenkins==0.110.0
 pep8==1.7.1
-pyflakes==2.1.1
-pylint==2.4.3
-pylint-django==2.0.11
+pyflakes==2.2.0
+pylint==2.6.0
+pylint-django==2.3.0
