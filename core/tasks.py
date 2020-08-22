@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DataError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from requests_oauthlib import OAuth1
@@ -428,7 +428,10 @@ def daily_teams_news_update():
 
     for _id in ids:
         team = Team.objects.get(id=_id)
-        TeamArticle.get_articles(team)
+        try:
+            TeamArticle.get_articles(team)
+        except DataError as e:
+            log.exception(e)  # handle value too long for type character varying(200)
 
 
 @app.task

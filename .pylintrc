@@ -1,6 +1,6 @@
 [MASTER]
 persistent=yes
-ignore=south_migrations,migrations
+ignore=migrations,constans.py
 cache-size=500
 
 [MESSAGES CONTROL]
@@ -54,7 +54,7 @@ init-import=no
 dummy-variables-rgx=_|dummy
 
 [SIMILARITIES]
-min-similarity-lines=6
+min-similarity-lines=30
 ignore-comments=yes
 ignore-docstrings=yes
 
@@ -64,7 +64,7 @@ notes=FIXME,XXX,TODO
 
 
 [FORMAT]
-max-line-length=160
+max-line-length=120
 max-module-lines=500
 indent-string='    '
 
