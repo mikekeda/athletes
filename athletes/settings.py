@@ -99,7 +99,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'djstripe',
     'corsheaders',
-    'djcelery',
 
     'core',
     'api',

@@ -1189,7 +1189,7 @@ class TeamArticle(models.Model):
     author = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=512)
-    url = models.URLField()
+    url = models.URLField(max_length=512)
     urlToImage = models.URLField(max_length=512)
     publishedAt = models.DateTimeField()
     content = models.TextField()
