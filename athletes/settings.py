@@ -7,8 +7,8 @@ from datetime import timedelta
 import requests
 
 from django.utils.log import DEFAULT_LOGGING as LOGGING
-import google.cloud.logging
-from google.cloud.logging.handlers.transports.sync import SyncTransport
+import google.cloud.logging_v2
+from google.cloud.logging_v2.handlers.transports.sync import SyncTransport
 
 
 try:
@@ -281,7 +281,7 @@ LOGGING['loggers']['athletes'] = {
 if not DEBUG:
     # StackDriver setup.
     # We need to use SyncTransport otherwise logs will not work for celery.
-    client = google.cloud.logging.Client()
+    client = google.cloud.logging_v2.Client()
     LOGGING['handlers']['stackdriver'] = {
         'class': 'google.cloud.logging.handlers.CloudLoggingHandler',
         'client': client,
@@ -305,6 +305,9 @@ AWS_SECRET_ACCESS_KEY = get_env_var('AWS_SECRET_ACCESS_KEY')
 DUEDIL_API_KEY = get_env_var('DUEDIL_API_KEY')
 
 NEWSAPI_API_KEY = get_env_var('NEWSAPI_API_KEY')
+
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'djstripe_id'
+DJSTRIPE_USE_NATIVE_JSONFIELD = True
 
 
 # Security
