@@ -10,28 +10,6 @@ from django.utils.log import DEFAULT_LOGGING as LOGGING
 import google.cloud.logging_v2
 from google.cloud.logging_v2.handlers.transports.sync import SyncTransport
 
-
-try:
-    from django_jenkins.tasks import run_pylint
-
-
-    class Lint:
-        """
-        Monkey patch to fix
-        TypeError: __init__() got an unexpected keyword argument 'exit'.
-        """
-
-        class Run(run_pylint.lint.Run):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, do_exit=kwargs.pop("exit"), **kwargs)
-
-
-    run_pylint.lint = Lint
-
-except ModuleNotFoundError:
-    pass
-
-
 SITE_ENV_PREFIX = 'ATHLETES'
 
 
