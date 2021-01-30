@@ -14,7 +14,7 @@ TeamArticleForm = select2_modelform(TeamArticle)
 
 
 class DomesticMarketListFilter(admin.SimpleListFilter):
-    """ Filter by emptiness. """
+    """Filter by emptiness."""
     _field = 'domestic_market'
     title = _field.replace('_', ' ')
     parameter_name = f'has_{_field}'
@@ -37,7 +37,7 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
 
 
 def update_data_from_wiki(_, __, queryset):
-    """ Update information for selected athletes with data from Wikipedia. """
+    """Update information for selected athletes with data from Wikipedia."""
     for obj in queryset:
         obj.get_data_from_wiki()
         obj.save()
@@ -47,27 +47,27 @@ update_data_from_wiki.short_description = "Update data from Wikipedia"
 
 
 def update_location(_, __, queryset):
-    """ Update location for selected teams. """
+    """Update location for selected teams."""
     for obj in queryset:
         obj.get_location()
         super(type(obj), obj).save()
 
 
 def update_twitter_info(_, __, queryset):
-    """ Update twitter followers for selected athletes. """
+    """Update twitter followers for selected athletes."""
     for obj in queryset:
         obj.get_twitter_info()
 
 
 def update_youtube_info(_, __, queryset):
-    """ Update youtube info. """
+    """Update youtube info."""
     for obj in queryset:
         obj.get_youtube_info()
         super(type(obj), obj).save()
 
 
 def gew_news(_, __, queryset):
-    """ Get news for specified teams. """
+    """Get news for specified teams."""
     for obj in queryset:
         TeamArticle.get_articles(obj)
 

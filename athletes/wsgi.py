@@ -1,6 +1,4 @@
-"""
-WSGI config for Athletes project.
-"""
+"""WSGI config for Athletes project."""
 
 import os
 

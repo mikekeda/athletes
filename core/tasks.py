@@ -30,7 +30,7 @@ auth = OAuth1(
 
 
 def validate_link_and_create_athlete(link, site, data):
-    """ Validate the link and create an athlete. """
+    """Validate the link and create an athlete."""
     # If link has a space - it's player name.
     if link and link.string and len(link.string.split()) > 1:
         if link['href'][:4] != 'http':
@@ -47,7 +47,7 @@ def validate_link_and_create_athlete(link, site, data):
 
 
 def create_athlete_task(wiki, data):
-    """ Task to crawl athletes from wiki team page. """
+    """Task to crawl athletes from wiki team page."""
     athlete = Athlete.objects.filter(wiki=wiki).first()
     data = {key: val for key, val in data.items() if val}  # remove empty vals
 
@@ -226,7 +226,7 @@ def parse_team(cleaned_data, skip_errors=False):
 
 @app.task
 def weekly_athletes_youtube_update():
-    """ Update youtube info for Athlete weekly. """
+    """Update youtube info for Athlete weekly."""
     aids = sorted(Athlete.objects.filter(~Q(youtube_info={})).values_list(
         'id', flat=True))
 
@@ -238,7 +238,7 @@ def weekly_athletes_youtube_update():
 
 @app.task
 def weekly_youtube_update():
-    """ Update youtube info for League and Team weekly. """
+    """Update youtube info for League and Team weekly."""
     for cls in (League, Team):
         ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list('id', flat=True))
 
@@ -250,7 +250,7 @@ def weekly_youtube_update():
 
 @app.task
 def weekly_athletes_twitter_update():
-    """ Update twitter info for Athlete weekly. """
+    """Update twitter info for Athlete weekly."""
     ids = sorted(Athlete.objects.values_list('id', flat=True))
 
     for _id in ids:
@@ -260,7 +260,7 @@ def weekly_athletes_twitter_update():
 
 @app.task
 def weekly_trends_notifications(teams=False):
-    """ Send email to admins with twitter and youtube trends. """
+    """Send email to admins with twitter and youtube trends."""
     lim = 10  # top 10
 
     if teams:
@@ -358,7 +358,7 @@ def weekly_trends_notifications(teams=False):
 
 @app.task
 def weekly_twitter_update():
-    """ Update twitter info for League and Team weekly. """
+    """Update twitter info for League and Team weekly."""
     for cls in (League, Team):
         ids = sorted(cls.objects.values_list('id', flat=True))
 
@@ -369,7 +369,7 @@ def weekly_twitter_update():
 
 @app.task
 def weekly_wiki_views_update():
-    """ Update wiki visits info for League, Team and Athlete weekly. """
+    """Update wiki visits info for League, Team and Athlete weekly."""
     for cls in (League, Team, Athlete):
         ids = sorted(cls.objects.values_list('id', flat=True))
 
@@ -381,7 +381,7 @@ def weekly_wiki_views_update():
 
 @app.task
 def weekly_stock_update():
-    """ Update stock info for Teams weekly. """
+    """Update stock info for Teams weekly."""
     ids = sorted(Team.objects.filter(~Q(stock_info={})).values_list(
         'id', flat=True))
 
@@ -393,7 +393,7 @@ def weekly_stock_update():
 
 @app.task
 def weekly_awis_update():
-    """ Update awis statistic for League and related Teams weekly. """
+    """Update awis statistic for League and related Teams weekly."""
     ids = sorted(League.objects.values_list('id', flat=True))
 
     for _id in ids:
@@ -408,7 +408,7 @@ def weekly_awis_update():
 
 @app.task
 def yearly_duedil_update():
-    """ Update company info for Teams yearly. """
+    """Update company info for Teams yearly."""
     ids = sorted(Team.objects.filter(~Q(company_info={})).values_list(
         'id', flat=True))
 
@@ -420,7 +420,7 @@ def yearly_duedil_update():
 
 @app.task
 def daily_teams_news_update():
-    """ Get articles related to specific teams. """
+    """Get articles related to specific teams."""
     # Get famous teams (with website and twitter, we have 876 teams on prod).
     ids = sorted(Team.objects.exclude(
         additional_info__Website__isnull=True
@@ -436,7 +436,7 @@ def daily_teams_news_update():
 
 @app.task
 def every_minute_twitter_update():
-    """ Update twitter info with respect to api limitation. """
+    """Update twitter info with respect to api limitation."""
     # pattern is 'twitter_update_cls_id'
     # due to twitter limits we can send only 60 requests per minute
     keys = cache.keys('twitter_update_*')[:60]
@@ -501,7 +501,7 @@ def every_minute_twitter_update():
 
 @app.task
 def daily_update_notifications():
-    """ Send email to users about recent updates. """
+    """Send email to users about recent updates."""
     day_ago = timezone.now() - timezone.timedelta(days=1)
     subject = "Your followed Athletes, Teams, Leagues were recently updated"
     today = datetime.datetime.today()

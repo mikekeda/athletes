@@ -17,10 +17,10 @@ def validate_selector(selector: str):
 
 
 class TeamForm(forms.ModelForm):
-    """ Team form. """
+    """Team form."""
 
     def validate_unique(self):
-        """ Skip validate_unique to use custom get or create logic. """
+        """Skip validate_unique to use custom get or create logic."""
 
     class Meta:
         model = Team
@@ -32,14 +32,14 @@ class TeamForm(forms.ModelForm):
 
 
 class LeagueForm(forms.ModelForm):
-    """ League form. """
+    """League form."""
     selector = forms.CharField(
         initial="table tr > td:nth-of-type(1) > a",
         validators=[validate_selector],
     )
 
     def validate_unique(self):
-        """ Skip validate_unique to use custom get or create logic. """
+        """Skip validate_unique to use custom get or create logic."""
 
     class Meta:
         model = League
@@ -48,7 +48,7 @@ class LeagueForm(forms.ModelForm):
 
 
 class AthletesListForm(forms.ModelForm):
-    """ AthletesList form. """
+    """AthletesList form."""
 
     class Meta:
         model = AthletesList
@@ -56,7 +56,7 @@ class AthletesListForm(forms.ModelForm):
 
 
 class AvatarForm(forms.ModelForm):
-    """ Avatar form. """
+    """Avatar form."""
 
     class Meta:
         model = Profile

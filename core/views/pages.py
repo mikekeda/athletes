@@ -2,27 +2,29 @@ import datetime
 import logging
 import random
 from collections import Counter
-from urllib.parse import urlparse, quote_plus
+from urllib.parse import quote_plus, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login, logout, get_user_model
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Sum, Prefetch
+from django.db.models import Count, Prefetch, Sum
 from django.db.models.expressions import RawSQL
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponseBadRequest, Http404
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.http import (Http404, HttpResponseBadRequest, HttpResponseRedirect,
+                         JsonResponse)
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext
 from django.views import View
 
-from core.constans import CATEGORIES, MAP_COUNTRIES, COUNTRIES, TIMEZONES
-from core.forms import TeamForm, LeagueForm, AthletesListForm, AvatarForm
-from core.models import Athlete, League, Team, AthletesList, TeamsList, LeaguesList, Profile, TeamArticle
+from core.constans import CATEGORIES, COUNTRIES, MAP_COUNTRIES, TIMEZONES
+from core.forms import AthletesListForm, AvatarForm, LeagueForm, TeamForm
+from core.models import (Athlete, AthletesList, League, LeaguesList, Profile,
+                         Team, TeamArticle, TeamsList)
 from core.tasks import parse_team
 
 User = get_user_model()
@@ -32,7 +34,7 @@ log = logging.getLogger('athletes')
 class GetUserMixin:
     @staticmethod
     def get_user(request, username: str):
-        """ Get user by username and check access. """
+        """Get user by username and check access."""
         if not request.user.is_authenticated or (
                 not request.user.is_superuser and
                 username and username != request.user.username):
@@ -46,18 +48,18 @@ class GetUserMixin:
 
 @method_decorator(staff_member_required, name='dispatch')
 class ParseTeamView(View):
-    """ Crawling athletes from team wiki page. """
+    """Crawling athletes from team wiki page."""
 
     # noinspection PyMethodMayBeStatic
     def get(self, request):
-        """ Get form. """
+        """Get form."""
         form = TeamForm()
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:team_parse')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
-        """ Form submit. """
+        """Form submit."""
         form = TeamForm(data=request.POST)
         if form.is_valid():
             result = parse_team(form.cleaned_data)
@@ -75,18 +77,18 @@ class ParseTeamView(View):
 
 @method_decorator(staff_member_required, name='dispatch')
 class ParseLeagueView(View):
-    """ Crawling athletes from team list wiki page. """
+    """Crawling athletes from team list wiki page."""
 
     # noinspection PyMethodMayBeStatic
     def get(self, request):
-        """ Get form. """
+        """Get form."""
         form = LeagueForm()
         return render(request, 'wiki-team-form.html',
                       {'form': form, 'action': reverse('core:league_parse')})
 
     # noinspection PyMethodMayBeStatic
     def post(self, request):
-        """ Form submit. """
+        """Form submit."""
         form = LeagueForm(data=request.POST)
 
         if form.is_valid():
@@ -128,7 +130,7 @@ class ParseLeagueView(View):
 class ProfileView(View, GetUserMixin):
     # noinspection PyMethodMayBeStatic
     def get(self, request, username):
-        """ User profile. """
+        """User profile."""
         user = self.get_user(request, username)
         profile = Profile.objects.prefetch_related(
             Prefetch('followed_athletes', queryset=Athlete.objects.only('pk', 'name', 'wiki').order_by('name')),
@@ -165,7 +167,7 @@ class ProfileView(View, GetUserMixin):
 
     # noinspection PyMethodMayBeStatic
     def post(self, request, username=None):
-        """ Update user callback. """
+        """Update user callback."""
         user = self.get_user(request, username)
         profile = get_object_or_404(Profile, user=user)
         avatar = request.FILES.get('avatar', '')
@@ -184,7 +186,7 @@ class ProfileView(View, GetUserMixin):
 
 @login_required
 def athletes_page(request):
-    """ Athletes page. """
+    """Athletes page."""
     form = AthletesListForm()
     model = Athlete._meta
     athletes_lists = AthletesList.objects.filter(user=request.user).only('pk', 'name')
@@ -200,7 +202,7 @@ def athletes_page(request):
 
 @login_required
 def teams_page(request):
-    """ Teams page. """
+    """Teams page."""
     model = Team._meta
 
     return render(request, 'teams.html', {
@@ -210,13 +212,13 @@ def teams_page(request):
 
 
 def about_page(request):
-    """ About page. """
+    """About page."""
     return render(request, 'about.html')
 
 
 @login_required
 def map_page(request):
-    """ Map page. """
+    """Map page."""
     category = request.GET.get('category', '').title()
     gender = request.GET.get('gender')
 
@@ -246,13 +248,13 @@ def map_page(request):
 
 
 def terms_page(request):
-    """ Terms of service page. """
+    """Terms of service page."""
     return render(request, 'terms.html')
 
 
 @login_required
 def athlete_page(request, slug):
-    """ Athlete page. """
+    """Athlete page."""
     slug = '/' + quote_plus(slug, safe='(,)')
     athlete = get_object_or_404(
         Athlete.objects.prefetch_related('athletes_lists'),
@@ -279,7 +281,7 @@ def athlete_page(request, slug):
 
 @login_required
 def compare_athletes_page(request):
-    """ Compare 2 athletes page. """
+    """Compare 2 athletes page."""
     args = {}
 
     ids = request.GET.get('ids', '').split(',')
@@ -315,7 +317,7 @@ def compare_athletes_page(request):
 
 @login_required
 def team_page(request, pk):
-    """ Team page. """
+    """Team page."""
     team = get_object_or_404(Team, pk=pk)
     for k, v in team.get_trend_info.items():
         setattr(team, k, v)
@@ -390,7 +392,7 @@ def team_page(request, pk):
 
 @login_required
 def league_page(request, pk):
-    """ League page. """
+    """League page."""
     league = get_object_or_404(League, pk=pk)
     for k, v in league.get_trend_info.items():
         setattr(league, k, v)
@@ -417,7 +419,7 @@ def league_page(request, pk):
 
 @login_required
 def country_page(request, code):
-    """ Country page. """
+    """Country page."""
     code = code.upper()
 
     if code not in COUNTRIES:
@@ -447,7 +449,7 @@ def country_page(request, code):
 
 
 def login_page(request):
-    """ User login page. """
+    """User login page."""
     if request.user.is_authenticated:
         return redirect(settings.LOGIN_REDIRECT_URL)
     form = AuthenticationForm()
@@ -464,6 +466,6 @@ def login_page(request):
 
 @login_required
 def logout_page(request):
-    """ User logout callback. """
+    """User logout callback."""
     logout(request)
     return redirect(reverse('core:login'))

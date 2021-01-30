@@ -1,28 +1,26 @@
 import datetime
+import hashlib
+import hmac
+import json
 import logging
 import operator
 import urllib.parse
-import hmac
-import hashlib
-import json
-import xmltodict
 
 import requests
+import xmltodict
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.validators import MaxValueValidator, URLValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, URLValidator
 from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
-from core.constans import (
-    CATEGORIES, WIKI_CATEGORIES, COUNTRIES,
-    WIKI_COUNTRIES, WIKI_NATIONALITIES
-)
+from core.constans import (CATEGORIES, COUNTRIES, WIKI_CATEGORIES,
+                           WIKI_COUNTRIES, WIKI_NATIONALITIES)
 
 User = get_user_model()
 
@@ -30,7 +28,7 @@ log = logging.getLogger('athletes')
 
 
 class ModelMixin:
-    """ Mixin class that has common methods. """
+    """Mixin class that has common methods."""
     wiki = None
     name = None
     category = None
@@ -73,7 +71,7 @@ class ModelMixin:
 
     @staticmethod
     def geocode(address):
-        """ Geocode the address. """
+        """Geocode the address."""
         log.info("Geocoding %s", address)
 
         geo_data = {'results': []}
@@ -90,7 +88,7 @@ class ModelMixin:
         return geo_data
 
     def get_wiki_views_info(self):
-        """ Get visits from Wiki. """
+        """Get visits from Wiki."""
         model = self.__class__.__name__
 
         log.info("Get visits from Wiki for %s %s", model, self.name)
@@ -121,12 +119,12 @@ class ModelMixin:
         return self.wiki_views_info
 
     def get_twitter_info(self):
-        """ Get info from Twitter. """
+        """Get info from Twitter."""
         cache.set(f'twitter_update_{self.__class__.__name__}_{self.pk}', '',
                   timeout=24*60*60)  # the key will expire in 1 day
 
     def get_youtube_info(self):
-        """ Get info from Youtube. """
+        """Get info from Youtube."""
         model = self.__class__.__name__
 
         log.info("Get info from Youtube for %s %s", model, self.name)
@@ -191,7 +189,7 @@ class ModelMixin:
         return self.youtube_info
 
     def get_awis_info(self):
-        """ Get visits statistic from awis. """
+        """Get visits statistic from awis."""
         # Key derivation functions. See:
         # http://docs.aws.amazon.com/general/latest/gr
         # /signature-v4-examples.html#signature-v4-examples-python
@@ -314,7 +312,7 @@ class ModelMixin:
 
     @property
     def get_youtube_stats(self):
-        """ Youtube statistic (subscriberCount, viewCount). """
+        """Youtube statistic (subscriberCount, viewCount)."""
         stats = []
         if self.youtube_info.get('updated'):
             history = self.youtube_info.get('history', {})
@@ -335,7 +333,7 @@ class ModelMixin:
 
     @property
     def get_youtube_trends(self):
-        """ Youtube weekly statistic (subscriberCount, viewCount). """
+        """Youtube weekly statistic (subscriberCount, viewCount)."""
         stats = []
         if self.youtube_info.get('history'):
             history = self.youtube_info['history']
@@ -358,7 +356,7 @@ class ModelMixin:
 
     @property
     def get_twitter_stats(self):
-        """ Twitter statistic (followers_count). """
+        """Twitter statistic (followers_count)."""
         stats = []
         if self.twitter_info.get('updated'):
             history = self.twitter_info.get('history', {})
@@ -378,7 +376,7 @@ class ModelMixin:
 
     @property
     def get_twitter_trends(self):
-        """ Twitter weekly statistic (followers_count). """
+        """Twitter weekly statistic (followers_count)."""
         stats = []
         if self.twitter_info.get('history'):
             history = self.twitter_info['history']
@@ -399,7 +397,7 @@ class ModelMixin:
 
     @property
     def get_trend_info(self):
-        """ Get Youtube and Twitter trend info. """
+        """Get Youtube and Twitter trend info."""
         info = {
             'twitter_stats': self.get_twitter_stats,
             'twitter_trend': 0,
@@ -433,7 +431,7 @@ class ModelMixin:
 
     @property
     def get_wiki_stats(self):
-        """ Wiki statistic (visits). """
+        """Wiki statistic (visits)."""
         stats = []
         if self.wiki_views_info:
             dates = sorted(self.wiki_views_info.keys(), reverse=True)
@@ -444,7 +442,7 @@ class ModelMixin:
 
     @property
     def get_wiki_trends(self):
-        """ Wiki weekly statistic (visits). """
+        """Wiki weekly statistic (visits)."""
         trends = []
         if self.wiki_views_info:
             dates = sorted(self.wiki_views_info.keys(), reverse=True)
@@ -458,7 +456,7 @@ class ModelMixin:
 
     @property
     def get_awis_stats(self):
-        """ Awis site visits. """
+        """Awis site visits."""
         _koef = 232_000
 
         stats = []
@@ -512,7 +510,7 @@ class League(models.Model, ModelMixin):
     updated = models.DateTimeField(auto_now=True)
 
     def get_data_from_wiki(self, soup=None):
-        """ Get information about league from Wiki. """
+        """Get information about league from Wiki."""
         log.info("Parsing League %s", self.wiki)
 
         if not soup:
@@ -628,7 +626,7 @@ class Team(models.Model, ModelMixin):
     updated = models.DateTimeField(auto_now=True)
 
     def get_data_from_wiki(self, soup=None):
-        """ Get information about team from Wiki. """
+        """Get information about team from Wiki."""
         log.info("Parsing Team %s", self.wiki)
 
         if not soup:
@@ -691,7 +689,7 @@ class Team(models.Model, ModelMixin):
         return self.additional_info
 
     def get_location(self):
-        """ Get team location (latitude and longitude). """
+        """Get team location (latitude and longitude)."""
         log.info("Geocoding Team %s", self.name)
 
         if self.additional_info:
@@ -707,7 +705,7 @@ class Team(models.Model, ModelMixin):
                         'location']['lat']
 
     def get_stock_info(self):
-        """ Get stock info. """
+        """Get stock info."""
         model = self.__class__.__name__
 
         log.info("Get stock info for %s %s", model, self.name)
@@ -731,7 +729,7 @@ class Team(models.Model, ModelMixin):
 
     @property
     def get_stock_stats(self):
-        """ Stock price. """
+        """Stock price."""
         stats = []
         self.stock_info.pop('symbol', None)
         dates = sorted(self.stock_info.keys(), reverse=True)
@@ -743,7 +741,7 @@ class Team(models.Model, ModelMixin):
 
     @property
     def get_stock_trends(self):
-        """ Stock price trends. """
+        """Stock price trends."""
         stats = []
         self.stock_info.pop('symbol', None)
 
@@ -757,7 +755,7 @@ class Team(models.Model, ModelMixin):
         return stats
 
     def get_company_info(self):
-        """ Get company statistic from duedil. """
+        """Get company statistic from duedil."""
         model = self.__class__.__name__
 
         log.info("Get company info for %s %s", model, self.name)
@@ -811,7 +809,7 @@ class Team(models.Model, ModelMixin):
 
     @property
     def get_company_stats(self):
-        """ Company finance info. """
+        """Company finance info."""
         stats = []
         company_info = self.company_info.copy()
         company_info.pop('companyId', None)
@@ -860,7 +858,7 @@ class Team(models.Model, ModelMixin):
 
 
 class Athlete(models.Model, ModelMixin):
-    """ Athlete model. """
+    """Athlete model."""
     wiki = models.URLField(unique=True)
     name = models.CharField(max_length=255, blank=True, db_index=True)
     photo = models.URLField(
@@ -941,7 +939,7 @@ class Athlete(models.Model, ModelMixin):
         return self.domestic_market != self.location_market
 
     def get_data_from_wiki(self):
-        """ Get information about athlete from Wiki. """
+        """Get information about athlete from Wiki."""
         log.info("Parsing Athlete %s", self.wiki)
         html = requests.get(self.wiki)
         if html.status_code != 200:
@@ -1034,7 +1032,7 @@ class Athlete(models.Model, ModelMixin):
         return self.additional_info
 
     def get_location(self):
-        """ Get athlete domestic_market with geocoding. """
+        """Get athlete domestic_market with geocoding."""
         log.info("Geocoding Athlete %s", self.name)
 
         if not self.additional_info:
@@ -1135,7 +1133,7 @@ class LeaguesList(models.Model):
 
 
 class Profile(models.Model):
-    """ Profile model. """
+    """Profile model."""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         related_name='profile',
@@ -1183,7 +1181,7 @@ class Profile(models.Model):
 
 
 class TeamArticle(models.Model):
-    """ Team Article model. """
+    """Team Article model."""
     team = models.ForeignKey(Team, related_name='news', on_delete=models.CASCADE)
     source = models.URLField()
     author = models.CharField(max_length=255, null=True)
@@ -1223,7 +1221,7 @@ class TeamArticle(models.Model):
 
     @classmethod
     def get_articles(cls, team):
-        """ Get news for specified team. """
+        """Get news for specified team."""
         log.info("Getting news for %s team", team.name)
 
         team_name = team.name

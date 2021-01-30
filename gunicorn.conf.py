@@ -1,6 +1,4 @@
-"""
-Gunicorn config.
-"""
+"""Gunicorn config."""
 bind = 'unix:/uwsgi/athletes.sock'
 workers = 2
 timeout = 300

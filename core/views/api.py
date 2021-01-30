@@ -6,15 +6,15 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core import serializers
-from django.db.models import Q, F, Case, CharField, When
+from django.db.models import Case, CharField, F, Q, When
 from django.db.models.functions import Greatest
-from django.http import JsonResponse, HttpResponse, Http404, QueryDict
+from django.http import Http404, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404
 
-from core.constans import COUNTRIES, CATEGORIES
+from core.constans import CATEGORIES, COUNTRIES
 from core.forms import AthletesListForm
-from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList, Profile)
+from core.models import (Athlete, AthletesList, League, LeaguesList, Profile,
+                         Team, TeamsList)
 
 log = logging.getLogger('athletes')
 
@@ -54,7 +54,7 @@ def _serialize_qs(qs):
 
 
 def _process_datatables_params(querydict: dict) -> tuple:
-    """ Process datatables params. """
+    """Process datatables params."""
     search = querydict.get('search[value]', '')
 
     try:
@@ -118,7 +118,7 @@ def _process_datatables_params(querydict: dict) -> tuple:
 
 
 def _athletes_api(request):
-    """ Return filtered/sorted/paginated list of athletes for datatables. """
+    """Return filtered/sorted/paginated list of athletes for datatables."""
     draw, start, length, order, search, filters = _process_datatables_params(request.GET)
 
     # Count all rows.
@@ -226,7 +226,7 @@ def athletes_api(request):
 
 
 def _teams_api(request):
-    """ Return filtered/sorted/paginated list of teams for datatables. """
+    """Return filtered/sorted/paginated list of teams for datatables."""
     draw, start, length, order, search, filters = _process_datatables_params(
         request.GET)
 
@@ -321,7 +321,7 @@ def teams_api(request):
 
 @login_required
 def athletes_list_api(request):
-    """ Create or Update Athletes_list. """
+    """Create or Update Athletes_list."""
     if request.is_ajax():
         if request.method == "POST":
             # Create Athletes_list.
@@ -374,7 +374,7 @@ def athletes_list_api(request):
 
 @login_required
 def athletes_export_api(request):
-    """ Export athletes to csv file. """
+    """Export athletes to csv file."""
     ids = request.GET.get('ids', '').split(',')
     ids = [pk for pk in ids if pk.isdigit()]
     ids = ids or [-1]  # not existing id
@@ -405,7 +405,7 @@ def athletes_export_api(request):
 
 @login_required
 def add_athlete_to_lists_api(request):
-    """ Add an athlete to the lists. """
+    """Add an athlete to the lists."""
     if request.is_ajax():
         athlete_id = request.POST.get('athlete')
         # Only int values are allowed.
@@ -443,7 +443,7 @@ def add_athlete_to_lists_api(request):
 
 @login_required
 def add_team_to_lists_api(request):
-    """ Add an team to the lists. """
+    """Add an team to the lists."""
     if request.is_ajax():
         team_id = request.POST.get('team')
         # Only int values are allowed.
@@ -481,7 +481,7 @@ def add_team_to_lists_api(request):
 
 @login_required
 def add_league_to_lists_api(request):
-    """ Add an league to the lists. """
+    """Add an league to the lists."""
     if request.is_ajax():
         league_id = request.POST.get('league')
         # Only int values are allowed.
@@ -519,7 +519,7 @@ def add_league_to_lists_api(request):
 
 @login_required
 def follow_api(request, class_name, pk):
-    """ Follow/Unfollow athlete, team, league. """
+    """Follow/Unfollow athlete, team, league."""
     if request.is_ajax():
         subscribe = request.POST.get('subscribe') == 'true'
         profile, _ = Profile.objects.get_or_create(user=request.user)
@@ -540,7 +540,7 @@ def follow_api(request, class_name, pk):
 
 @login_required
 def autocomplete_api(request, class_name):
-    """ Autocomplete for athlete, team, league. """
+    """Autocomplete for athlete, team, league."""
     limit = 5
     result = set([])
 
