@@ -6,14 +6,14 @@ from core.models import League, Team, AthletesList, Profile
 
 
 def validate_selector(selector: str):
-    soup = BeautifulSoup('', 'html.parser')
+    soup = BeautifulSoup("", "html.parser")
     try:
         soup.select(selector)
         return None
     except ValueError:
         pass
 
-    raise ValidationError('Not valid selector')
+    raise ValidationError("Not valid selector")
 
 
 class TeamForm(forms.ModelForm):
@@ -25,14 +25,25 @@ class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
         exclude = (
-            'name', 'hashtag', 'longitude', 'latitude', 'photo', 'league',
-            'additional_info', 'twitter_info', 'youtube_info',
-            'wiki_views_info', 'stock_info', 'company_info', 'site_views_info'
+            "name",
+            "hashtag",
+            "longitude",
+            "latitude",
+            "photo",
+            "league",
+            "additional_info",
+            "twitter_info",
+            "youtube_info",
+            "wiki_views_info",
+            "stock_info",
+            "company_info",
+            "site_views_info",
         )
 
 
 class LeagueForm(forms.ModelForm):
     """League form."""
+
     selector = forms.CharField(
         initial="table tr > td:nth-of-type(1) > a",
         validators=[validate_selector],
@@ -43,8 +54,15 @@ class LeagueForm(forms.ModelForm):
 
     class Meta:
         model = League
-        exclude = ('name', 'photo', 'additional_info', 'twitter_info',
-                   'youtube_info', 'wiki_views_info', 'site_views_info')
+        exclude = (
+            "name",
+            "photo",
+            "additional_info",
+            "twitter_info",
+            "youtube_info",
+            "wiki_views_info",
+            "site_views_info",
+        )
 
 
 class AthletesListForm(forms.ModelForm):
@@ -52,7 +70,7 @@ class AthletesListForm(forms.ModelForm):
 
     class Meta:
         model = AthletesList
-        exclude = ('user', 'athletes')
+        exclude = ("user", "athletes")
 
 
 class AvatarForm(forms.ModelForm):
@@ -60,4 +78,4 @@ class AvatarForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('avatar',)
+        fields = ("avatar",)

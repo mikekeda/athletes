@@ -13,79 +13,78 @@ class AthletesViewTest(TestCase):
         super().setUpClass()
 
         # Create regular user.
-        test_user = User.objects.create_user(username='testuser',
-                                             password='12345')
+        test_user = User.objects.create_user(username="testuser", password="12345")
         test_user.save()
 
         # Create user profile.
         Profile.objects.create(user=test_user)
 
     def test_views_team_page(self):
-        resp = self.client.get(reverse('core:team_parse'))
-        self.assertRedirects(resp, '/admin/login/?next=/team')
+        resp = self.client.get(reverse("core:team_parse"))
+        self.assertRedirects(resp, "/admin/login/?next=/team")
 
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:team_parse'))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:team_parse"))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_league_page(self):
-        resp = self.client.get(reverse('core:league_parse'))
-        self.assertRedirects(resp, '/admin/login/?next=/league')
+        resp = self.client.get(reverse("core:league_parse"))
+        self.assertRedirects(resp, "/admin/login/?next=/league")
 
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:league_parse'))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:league_parse"))
         self.assertEqual(resp.status_code, 302)
 
     def test_views_athletes_page(self):
-        resp = self.client.get(reverse('core:athletes'))
-        self.assertRedirects(resp, '/login?next=/athletes')
+        resp = self.client.get(reverse("core:athletes"))
+        self.assertRedirects(resp, "/login?next=/athletes")
 
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:athletes'))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:athletes"))
         self.assertEqual(resp.status_code, 200)
 
     def test_views_teams_page(self):
-        resp = self.client.get(reverse('core:teams'))
-        self.assertRedirects(resp, '/login?next=/teams')
+        resp = self.client.get(reverse("core:teams"))
+        self.assertRedirects(resp, "/login?next=/teams")
 
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:teams'))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:teams"))
         self.assertEqual(resp.status_code, 200)
 
     def test_views_home_page(self):
-        resp = self.client.get(reverse('core:home'))
+        resp = self.client.get(reverse("core:home"))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'about.html')
+        self.assertTemplateUsed(resp, "about.html")
 
     def test_views_map_page(self):
-        resp = self.client.get(reverse('core:map'))
-        self.assertRedirects(resp, '/login?next=/map')
+        resp = self.client.get(reverse("core:map"))
+        self.assertRedirects(resp, "/login?next=/map")
 
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:map'))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:map"))
         self.assertEqual(resp.status_code, 200)
 
     def test_views_terms_page(self):
-        resp = self.client.get(reverse('core:terms'))
+        resp = self.client.get(reverse("core:terms"))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'terms.html')
+        self.assertTemplateUsed(resp, "terms.html")
 
     def test_views_profile_page(self):
-        resp = self.client.get(reverse('core:user', args=['testuser']))
+        resp = self.client.get(reverse("core:user", args=["testuser"]))
         self.assertEqual(resp.status_code, 403)
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:user', args=['testuser']))
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:user", args=["testuser"]))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'profile.html')
+        self.assertTemplateUsed(resp, "profile.html")
 
     def test_views_login_page(self):
-        resp = self.client.get(reverse('core:login'))
+        resp = self.client.get(reverse("core:login"))
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'login.html')
+        self.assertTemplateUsed(resp, "login.html")
 
     def test_views_logout_page(self):
-        resp = self.client.get(reverse('core:logout'))
-        self.assertRedirects(resp, '/login?next=/logout')
-        self.client.login(username='testuser', password='12345')
-        resp = self.client.get(reverse('core:logout'))
-        self.assertRedirects(resp, reverse('core:login'))
+        resp = self.client.get(reverse("core:logout"))
+        self.assertRedirects(resp, "/login?next=/logout")
+        self.client.login(username="testuser", password="12345")
+        resp = self.client.get(reverse("core:logout"))
+        self.assertRedirects(resp, reverse("core:login"))

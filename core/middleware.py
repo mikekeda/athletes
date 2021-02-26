@@ -9,8 +9,9 @@ class RemoteAddrMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if not request.META.get("REMOTE_ADDR") and \
-                request.META.get("HTTP_X_FORWARDED_FOR"):
+        if not request.META.get("REMOTE_ADDR") and request.META.get(
+            "HTTP_X_FORWARDED_FOR"
+        ):
             request.META["REMOTE_ADDR"] = request.META["HTTP_X_FORWARDED_FOR"]
 
         response = self.get_response(request)

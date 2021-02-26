@@ -3,8 +3,16 @@ from django.db.models import Q
 from easy_select2 import select2_modelform
 from import_export.admin import ImportExportActionModelAdmin
 
-from core.models import (Athlete, League, Team, AthletesList, TeamsList,
-                         LeaguesList, Profile, TeamArticle)
+from core.models import (
+    Athlete,
+    League,
+    Team,
+    AthletesList,
+    TeamsList,
+    LeaguesList,
+    Profile,
+    TeamArticle,
+)
 
 AthleteForm = select2_modelform(Athlete)
 LeagueForm = select2_modelform(League)
@@ -15,23 +23,27 @@ TeamArticleForm = select2_modelform(TeamArticle)
 
 class DomesticMarketListFilter(admin.SimpleListFilter):
     """Filter by emptiness."""
-    _field = 'domestic_market'
-    title = _field.replace('_', ' ')
-    parameter_name = f'has_{_field}'
+
+    _field = "domestic_market"
+    title = _field.replace("_", " ")
+    parameter_name = f"has_{_field}"
 
     def lookups(self, request, model_admin):
         return (
-            ('not_empty', 'Not empty'),
-            ('empty', 'Empty'),
+            ("not_empty", "Not empty"),
+            ("empty", "Empty"),
         )
 
     def queryset(self, request, queryset):
-        if self.value() == 'not_empty':
-            return queryset.filter(**{f'{self._field}__isnull': False})\
-                .exclude(**{f'{self._field}': ''})
-        if self.value() == 'empty':
-            return queryset.filter(Q(**{f'{self._field}__isnull': True}) |
-                                   Q(**{f'{self._field}__exact': ''}))
+        if self.value() == "not_empty":
+            return queryset.filter(**{f"{self._field}__isnull": False}).exclude(
+                **{f"{self._field}": ""}
+            )
+        if self.value() == "empty":
+            return queryset.filter(
+                Q(**{f"{self._field}__isnull": True})
+                | Q(**{f"{self._field}__exact": ""})
+            )
 
         return None
 
@@ -85,76 +97,83 @@ class TeamInline(admin.TabularInline):
 
 
 class AthleteAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('photo_preview', 'added', 'updated')
-    list_filter = ('gender', 'category', DomesticMarketListFilter)
-    list_display = ('name',)
-    search_fields = ('name',)
+    readonly_fields = ("photo_preview", "added", "updated")
+    list_filter = ("gender", "category", DomesticMarketListFilter)
+    list_display = ("name",)
+    search_fields = ("name",)
     form = AthleteForm
-    actions = [update_data_from_wiki, update_location, update_twitter_info,
-               update_youtube_info]
+    actions = [
+        update_data_from_wiki,
+        update_location,
+        update_twitter_info,
+        update_youtube_info,
+    ]
 
 
 class LeagueAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('photo_preview', 'added', 'updated')
-    list_filter = ('gender', 'category')
-    list_display = ('name',)
-    search_fields = ('name',)
+    readonly_fields = ("photo_preview", "added", "updated")
+    list_filter = ("gender", "category")
+    list_display = ("name",)
+    search_fields = ("name",)
     form = LeagueForm
-    actions = [update_data_from_wiki, update_twitter_info,
-               update_youtube_info]
+    actions = [update_data_from_wiki, update_twitter_info, update_youtube_info]
     inlines = [TeamInline]
 
 
 class TeamAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('photo_preview', 'added', 'updated')
-    list_filter = ('gender', 'category')
-    list_display = ('name',)
-    search_fields = ('name',)
+    readonly_fields = ("photo_preview", "added", "updated")
+    list_filter = ("gender", "category")
+    list_display = ("name",)
+    search_fields = ("name",)
     form = TeamForm
-    actions = [update_data_from_wiki, update_location, update_twitter_info,
-               update_youtube_info, gew_news]
+    actions = [
+        update_data_from_wiki,
+        update_location,
+        update_twitter_info,
+        update_youtube_info,
+        gew_news,
+    ]
     inlines = [AthleteInline]
 
 
 class AthletesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('added', 'updated')
-    list_filter = ('user__username',)
-    list_display = ('name',)
-    search_fields = ('name',)
-    autocomplete_fields = ('athletes',)
+    readonly_fields = ("added", "updated")
+    list_filter = ("user__username",)
+    list_display = ("name",)
+    search_fields = ("name",)
+    autocomplete_fields = ("athletes",)
     model = AthletesList
 
 
 class TeamsListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('added', 'updated')
-    list_filter = ('user__username',)
-    list_display = ('name',)
-    search_fields = ('name',)
-    autocomplete_fields = ('teams',)
+    readonly_fields = ("added", "updated")
+    list_filter = ("user__username",)
+    list_display = ("name",)
+    search_fields = ("name",)
+    autocomplete_fields = ("teams",)
     model = TeamsList
 
 
 class LeaguesListAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
-    readonly_fields = ('added', 'updated')
-    list_filter = ('user__username',)
-    list_display = ('name',)
-    search_fields = ('name',)
-    autocomplete_fields = ('leagues',)
+    readonly_fields = ("added", "updated")
+    list_filter = ("user__username",)
+    list_display = ("name",)
+    search_fields = ("name",)
+    autocomplete_fields = ("leagues",)
     model = LeaguesList
 
 
 class ProfileAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = Profile
     form = ProfileForm
-    autocomplete_fields = ('followed_athletes', 'followed_teams',
-                           'followed_leagues')
+    autocomplete_fields = ("followed_athletes", "followed_teams", "followed_leagues")
 
 
 class TeamArticleAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     model = TeamArticle
     form = TeamArticleForm
-    search_fields = ('title', 'team__name')
-    list_filter = ('publishedAt', 'team__category')
+    search_fields = ("title", "team__name")
+    list_filter = ("publishedAt", "team__category")
 
 
 admin.site.register(Athlete, AthleteAdmin)

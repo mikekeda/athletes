@@ -11,80 +11,80 @@ class ToolAdminTest(TestCase):
 
         # Create admin user.
         cls.test_admin = User.objects.create_superuser(
-            username='testadmin',
-            email='myemail@test.com',
-            password='12345',
-            first_name='Bob',
-            last_name='Smit'
+            username="testadmin",
+            email="myemail@test.com",
+            password="12345",
+            first_name="Bob",
+            last_name="Smit",
         )
         cls.test_admin.save()
 
     def test_admin_league(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/league/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/league/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/league/add/')
+        resp = self.client.get("/admin/core/league/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_team(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/team/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/team/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/team/add/')
+        resp = self.client.get("/admin/core/team/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_athlete(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/athlete/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/athlete/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/athlete/add/')
+        resp = self.client.get("/admin/core/athlete/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_athletelist(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/athleteslist/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/athleteslist/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/athleteslist/add/')
+        resp = self.client.get("/admin/core/athleteslist/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_teamslist(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/teamslist/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/teamslist/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/teamslist/add/')
+        resp = self.client.get("/admin/core/teamslist/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_leagueslist(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/leagueslist/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/leagueslist/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/leagueslist/add/')
+        resp = self.client.get("/admin/core/leagueslist/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_profile(self):
-        self.client.login(username='testadmin', password='12345')
-        resp = self.client.get('/admin/core/profile/')
+        self.client.login(username="testadmin", password="12345")
+        resp = self.client.get("/admin/core/profile/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/base.html')
+        self.assertTemplateUsed(resp, "admin/base.html")
 
-        resp = self.client.get('/admin/core/profile/add/')
+        resp = self.client.get("/admin/core/profile/add/")
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'admin/change_form.html')
+        self.assertTemplateUsed(resp, "admin/change_form.html")
