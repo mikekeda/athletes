@@ -15,7 +15,7 @@
                     {% csrf_token %}
                     <input type="number" name="athlete" class="d-none" value="{{ athlete.id }}">
                     <label for="athletes_lists">{% trans "Is part of lists" %}:</label>
-                    <select multiple name="athletes_lists" name="athletes_lists" id="athletes_lists" class="form-control select2">
+                    <select multiple name="athletes_lists" id="athletes_lists" class="form-control select2">
                         {% for athletes_list in athlete.user_athletes_lists %}
                             <option {% if athletes_list.selected %}selected{% endif %} value="{{ athletes_list.pk }}">{{ athletes_list.name }}</option>
                         {% endfor %}

@@ -138,10 +138,7 @@ $(document).ready( function () {
                     if (row.league.pk) {
                         return '<a href="/league/' + data.pk + '">' + data.name + '</a>';
                     }
-                    else {
-                        return '';
-                    }
-                    return data;
+                    return '';
                 },
                 "targets": 4
             },

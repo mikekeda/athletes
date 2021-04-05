@@ -10,17 +10,18 @@ class ToolAdminTest(TestCase):
         super().setUpClass()
 
         # Create admin user.
+        cls.password = User.objects.make_random_password()
         cls.test_admin = User.objects.create_superuser(
             username="testadmin",
             email="myemail@test.com",
-            password="12345",
+            password=cls.password,
             first_name="Bob",
             last_name="Smit",
         )
         cls.test_admin.save()
 
     def test_admin_league(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/league/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -30,7 +31,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_team(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/team/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -40,7 +41,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_athlete(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/athlete/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -50,7 +51,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_athletelist(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/athleteslist/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -60,7 +61,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_teamslist(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/teamslist/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -70,7 +71,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_leagueslist(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/leagueslist/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
@@ -80,7 +81,7 @@ class ToolAdminTest(TestCase):
         self.assertTemplateUsed(resp, "admin/change_form.html")
 
     def test_admin_profile(self):
-        self.client.login(username="testadmin", password="12345")
+        self.client.login(username="testadmin", password=self.password)
         resp = self.client.get("/admin/core/profile/")
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, "admin/base.html")
