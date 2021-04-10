@@ -19,7 +19,10 @@ class AthleteViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(_athletes_api(request._request))
         except (FieldError, TypeError) as e:
             log.warning("AthleteViewSet: Failed processing api request %s", repr(e))
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "AthleteViewSet: Failed processing api request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class TeamViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,4 +33,7 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(_teams_api(request._request))
         except (FieldError, TypeError) as e:
             log.warning("TeamViewSet: Failed processing api request %s", repr(e))
-            return Response({{"error": str(e)}}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {{"error": "TeamViewSet: Failed processing api request"}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
