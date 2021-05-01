@@ -241,6 +241,7 @@ STATICFILES_DIRS = (("", os.path.join(BASE_DIR, "static")),)
 
 STATIC_ROOT = "/home/voron/sites/cdn/athletes"
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 LOGGING["loggers"]["athletes"] = {
     "handlers": ["django.server", "mail_admins"],

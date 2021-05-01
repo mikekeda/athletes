@@ -227,7 +227,7 @@ class ProfileView(View, GetUserMixin):
             form = AvatarForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return HttpResponseRedirect(request.path)
 
         return JsonResponse(
             ugettext("You can't change this field"), safe=False, status=403
