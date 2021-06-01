@@ -13,7 +13,7 @@ django==3.2.3
 django-widget-tweaks==1.4.8
 django-easy-select2==1.5.7
 django-import-export==2.5.0
-django-redis==4.12.1
+django-redis==5.0.0
 djangorestframework==3.12.4
 djangorestframework_simplejwt==4.7.1
 dj-stripe==2.4.4
