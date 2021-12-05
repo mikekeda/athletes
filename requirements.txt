@@ -17,6 +17,6 @@ django-redis==5.1.0
 djangorestframework==3.12.4
 djangorestframework_simplejwt==5.0.0
 dj-stripe==2.5.1
-django-cors-headers==3.10.0
+django-cors-headers==3.10.1
 
 anyjson==0.3.3
