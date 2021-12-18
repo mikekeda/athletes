@@ -229,9 +229,7 @@ class ProfileView(View, GetUserMixin):
                 form.save()
             return HttpResponseRedirect(request.path)
 
-        return JsonResponse(
-            _("You can't change this field"), safe=False, status=403
-        )
+        return JsonResponse(_("You can't change this field"), safe=False, status=403)
 
 
 @login_required
