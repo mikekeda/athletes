@@ -17,7 +17,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, URLValidator
 from django.db import models
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from core.constans import (
     CATEGORIES,

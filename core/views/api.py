@@ -334,7 +334,7 @@ def teams_api(request):
 @login_required
 def athletes_list_api(request):
     """Create or Update Athletes_list."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         if request.method == "POST":
             # Create Athletes_list.
             form = AthletesListForm(request.POST)
@@ -433,7 +433,7 @@ def athletes_export_api(request):
 @login_required
 def add_athlete_to_lists_api(request):
     """Add an athlete to the lists."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         athlete_id = request.POST.get("athlete")
         # Only int values are allowed.
         athlete_id = athlete_id if athlete_id.isdigit() else -1
@@ -470,7 +470,7 @@ def add_athlete_to_lists_api(request):
 @login_required
 def add_team_to_lists_api(request):
     """Add an team to the lists."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         team_id = request.POST.get("team")
         # Only int values are allowed.
         team_id = team_id if team_id.isdigit() else -1
@@ -507,7 +507,7 @@ def add_team_to_lists_api(request):
 @login_required
 def add_league_to_lists_api(request):
     """Add an league to the lists."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         league_id = request.POST.get("league")
         # Only int values are allowed.
         league_id = league_id if league_id.isdigit() else -1
@@ -544,7 +544,7 @@ def add_league_to_lists_api(request):
 @login_required
 def follow_api(request, class_name, pk):
     """Follow/Unfollow athlete, team, league."""
-    if request.is_ajax():
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
         subscribe = request.POST.get("subscribe") == "true"
         profile, _ = Profile.objects.get_or_create(user=request.user)
         followed = getattr(profile, f"followed_{class_name}s", None)

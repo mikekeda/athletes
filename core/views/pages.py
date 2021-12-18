@@ -22,7 +22,7 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext
+from django.utils.translation import gettext as _
 from django.views import View
 
 from core.constans import CATEGORIES, COUNTRIES, MAP_COUNTRIES, TIMEZONES
@@ -230,7 +230,7 @@ class ProfileView(View, GetUserMixin):
             return HttpResponseRedirect(request.path)
 
         return JsonResponse(
-            ugettext("You can't change this field"), safe=False, status=403
+            _("You can't change this field"), safe=False, status=403
         )
 
 
