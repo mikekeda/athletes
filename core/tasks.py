@@ -207,17 +207,12 @@ def parse_team(cleaned_data, skip_errors=False):
                     if not link:
                         link = td[i].select_one("span.vcard a")
 
-                    if (
-                        link
-                        and link.string
-                        in [
-                            "United States",
-                            "South Korea",
-                            "North Korea",
-                            "Ivory Coast",
-                        ]
-                        + list(COUNTRIES.values())
-                    ):
+                    if link and link.string in [
+                        "United States",
+                        "South Korea",
+                        "North Korea",
+                        "Ivory Coast",
+                    ] + list(COUNTRIES.values()):
                         continue  # it's not a athlete
 
                     full_link, status = validate_link_and_create_athlete(
