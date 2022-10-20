@@ -15,6 +15,6 @@ django-easy-select2==1.5.8
 django-import-export==3.0.1
 django-redis==5.2.0
 djangorestframework==3.14.0
-djangorestframework_simplejwt==5.2.1
-dj-stripe==2.7.0
+djangorestframework_simplejwt==5.2.2
+dj-stripe==2.7.1
 django-cors-headers==3.13.0
