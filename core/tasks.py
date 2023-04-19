@@ -432,7 +432,9 @@ def daily_teams_news_update():
     ids = sorted(
         Team.objects.exclude(additional_info__Website__isnull=True)
         .filter(~Q(twitter_info={}))
-        .values_list("id", flat=True)
+        .filter(~Q(company_info={}))
+        .order_by("?")
+        .values_list("id", flat=True)[:50]
     )
 
     for _id in ids:
