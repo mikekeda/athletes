@@ -13,7 +13,7 @@ class AthletesViewTest(TestCase):
         super().setUpClass()
 
         # Create regular user.
-        cls.password = User.objects.make_random_password()
+        cls.password = "testpass"
         test_user = User.objects.create_user(username="testuser", password=cls.password)
         test_user.save()
 

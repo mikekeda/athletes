@@ -10,7 +10,7 @@ class ToolAdminTest(TestCase):
         super().setUpClass()
 
         # Create admin user.
-        cls.password = User.objects.make_random_password()
+        cls.password = "testpass"
         cls.test_admin = User.objects.create_superuser(
             username="testadmin",
             email="myemail@test.com",
