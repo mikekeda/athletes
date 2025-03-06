@@ -9,7 +9,7 @@ pytz==2025.1
 google-cloud-logging==3.11.4
 python-dateutil==2.9.0.post0
 xmltodict==0.14.2
-django==5.1.6
+django==5.1.7
 django-widget-tweaks==1.5.0
 django-easy-select2==1.5.8
 django-import-export==4.3.7
