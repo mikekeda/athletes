@@ -49,6 +49,7 @@ DEBUG = bool(get_env_var("DEBUG", "True"))
 INTERNAL_IPS = ("127.0.0.1",)
 
 ALLOWED_HOSTS = get_env_var("ALLOWED_HOSTS", "*").split(",")
+CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
 
 ADMINS = [
     ("Mike", "mriynuk@gmail.com"),

@@ -6,5 +6,5 @@ timeout = 300
 max_requests = 100
 daemon = False
 umask = "91"
-user = "nginx"
+user = "www-data"
 loglevel = "info"
