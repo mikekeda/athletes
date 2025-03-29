@@ -5,7 +5,7 @@ beautifulsoup4==4.13.3
 celery==5.4.0
 requests_oauthlib==2.0.0
 Pillow==11.1.0
-pytz==2025.1
+pytz==2025.2
 google-cloud-logging==3.11.4
 python-dateutil==2.9.0.post0
 xmltodict==0.14.2
@@ -14,7 +14,7 @@ django-widget-tweaks==1.5.0
 django-easy-select2==1.5.8
 django-import-export==4.3.7
 django-redis==5.4.0
-djangorestframework==3.15.2
+djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 dj-stripe==2.9.0
 django-cors-headers==4.7.0
