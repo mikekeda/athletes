@@ -1,4 +1,4 @@
-requests==2.32.3
+requests==2.32.4
 psycopg2-binary==2.9.10
 gunicorn==23.0.0
 beautifulsoup4==4.13.4
@@ -9,11 +9,11 @@ pytz==2025.2
 google-cloud-logging==3.12.1
 python-dateutil==2.9.0.post0
 xmltodict==0.14.2
-django==5.2.2
+django==5.2.3
 django-widget-tweaks==1.5.0
 django-easy-select2==1.5.8
-django-import-export==4.3.7
-django-redis==5.4.0
+django-import-export==4.3.8
+django-redis==6.0.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 dj-stripe==2.9.1
