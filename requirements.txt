@@ -12,9 +12,9 @@ xmltodict==0.14.2
 django==5.2.4
 django-widget-tweaks==1.5.0
 django-easy-select2==1.5.8
-django-import-export==4.3.8
+django-import-export==4.3.9
 django-redis==6.0.0
 djangorestframework==3.16.0
-djangorestframework_simplejwt==5.5.0
+djangorestframework_simplejwt==5.5.1
 dj-stripe==2.9.1
 django-cors-headers==4.7.0
