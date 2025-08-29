@@ -31,11 +31,11 @@
                         backgroundColor: 'rgb(255, 99, 132)',
                         fill: false,
                         data: stats_prices,
-                        yAxisID: 'y-axis-1'
+                        yAxisID: 'y'
                     }]
                 };
 
-                Chart(ctx, {
+                new Chart(ctx, {
                     type: 'line',
                     data: lineChartData,
                     options: {
@@ -43,27 +43,24 @@
                         hoverMode: 'index',
                         stacked: false,
                         scales: {
-                            xAxes: [{
+                            x: {
                                 type: 'time',
                                 time: {
                                     parser: 'YYYY-MM-DD',
                                     tooltipFormat: 'll',
                                     unit: 'day'
                                 },
-                                scaleLabel: {
+                                title: {
                                     display: true,
-                                    labelString: '{% trans "Date" %}'
+                                    text: '{% trans "Date" %}'
                                 }
-                            }],
-                            yAxes: [{
+                            },
+                            y: {
                                 type: 'linear',
-                                display: true,
                                 position: 'left',
-                                ticks: {
-                                    fontColor: 'rgb(255, 99, 132)'
-                                },
-                                id: 'y-axis-1'
-                            }]
+                                ticks: { color: 'rgb(255, 99, 132)' },
+                                stacked: false
+                            }
                         }
                     }
                 });

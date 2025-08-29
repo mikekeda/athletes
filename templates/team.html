@@ -57,53 +57,53 @@
         <div class="row mt-3 mb-5">
             <ul class="nav nav-tabs col-sm-12 mt-3" id="charts" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="current-squad-tab" data-toggle="tab" href="#current-squad" role="tab" aria-controls="current squad" aria-selected="true">{% trans 'Current squad' %}</a>
+                    <a class="nav-link active" id="current-squad-tab" data-bs-toggle="tab" href="#current-squad" role="tab" aria-controls="current squad" aria-selected="true">{% trans 'Current squad' %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="age-tab" data-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad ages" %}</a>
+                    <a class="nav-link" id="age-tab" data-bs-toggle="tab" href="#age" role="tab" aria-controls="age" aria-selected="false">{% trans "Squad ages" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="domestic_market-tab" data-toggle="tab" href="#domestic_market" role="tab" aria-controls="domestic market" aria-selected="false">{% trans "Squad nationalities" %}</a>
+                    <a class="nav-link" id="domestic_market-tab" data-bs-toggle="tab" href="#domestic_market" role="tab" aria-controls="domestic market" aria-selected="false">{% trans "Squad nationalities" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="youtube-trends-tab" data-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
+                    <a class="nav-link" id="youtube-trends-tab" data-bs-toggle="tab" href="#youtube-trends" role="tab" aria-controls="youtube trends" aria-selected="true">{% trans "Youtube trends" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="youtube-stats-tab" data-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
+                    <a class="nav-link" id="youtube-stats-tab" data-bs-toggle="tab" href="#youtube-stats" role="tab" aria-controls="youtube stats" aria-selected="false">{% trans "Youtube stats" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="twitter-trends-tab" data-toggle="tab" href="#twitter-trends" role="tab" aria-controls="twitter trends" aria-selected="true">{% trans "Twitter trends" %}</a>
+                    <a class="nav-link" id="twitter-trends-tab" data-bs-toggle="tab" href="#twitter-trends" role="tab" aria-controls="twitter trends" aria-selected="true">{% trans "Twitter trends" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="twitter-stats-tab" data-toggle="tab" href="#twitter-stats" role="tab" aria-controls="twitter stats" aria-selected="false">{% trans "Twitter stats" %}</a>
+                    <a class="nav-link" id="twitter-stats-tab" data-bs-toggle="tab" href="#twitter-stats" role="tab" aria-controls="twitter stats" aria-selected="false">{% trans "Twitter stats" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="wiki-trends-tab" data-toggle="tab" href="#wiki-trends" role="tab" aria-controls="wiki trends" aria-selected="true">{% trans "Wikipedia trends" %}</a>
+                    <a class="nav-link" id="wiki-trends-tab" data-bs-toggle="tab" href="#wiki-trends" role="tab" aria-controls="wiki trends" aria-selected="true">{% trans "Wikipedia trends" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="wiki-stats-tab" data-toggle="tab" href="#wiki-stats" role="tab" aria-controls="wiki stats" aria-selected="false">{% trans "Wikipedia stats" %}</a>
+                    <a class="nav-link" id="wiki-stats-tab" data-bs-toggle="tab" href="#wiki-stats" role="tab" aria-controls="wiki stats" aria-selected="false">{% trans "Wikipedia stats" %}</a>
                 </li>
                 {% if team.get_stock_stats %}
                     <li class="nav-item">
-                        <a class="nav-link" id="stock-trends-tab" data-toggle="tab" href="#stock-trends" role="tab" aria-controls="stock trends" aria-selected="true">{% trans "Price trends" %}</a>
+                        <a class="nav-link" id="stock-trends-tab" data-bs-toggle="tab" href="#stock-trends" role="tab" aria-controls="stock trends" aria-selected="true">{% trans "Price trends" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="stock-stats-tab" data-toggle="tab" href="#stock-stats" role="tab" aria-controls="stock stats" aria-selected="false">{% trans "Price" %}</a>
+                        <a class="nav-link" id="stock-stats-tab" data-bs-toggle="tab" href="#stock-stats" role="tab" aria-controls="stock stats" aria-selected="false">{% trans "Price" %}</a>
                     </li>
                 {% endif %}
                 {% if team.get_awis_stats %}
                     <li class="nav-item">
-                        <a class="nav-link" id="similarweb-stats-tab" data-toggle="tab" href="#similarweb-stats" role="tab" aria-controls="similarweb stats" aria-selected="false">{% trans "Site visits" %}</a>
+                        <a class="nav-link" id="similarweb-stats-tab" data-bs-toggle="tab" href="#similarweb-stats" role="tab" aria-controls="similarweb stats" aria-selected="false">{% trans "Site visits" %}</a>
                     </li>
                 {% endif %}
                 {% if team.get_company_stats %}
                     <li class="nav-item">
-                        <a class="nav-link" id="duedil-stats-tab" data-toggle="tab" href="#duedil-stats" role="tab" aria-controls="duedil stats" aria-selected="false">{% trans "Financial summary" %}</a>
+                        <a class="nav-link" id="duedil-stats-tab" data-bs-toggle="tab" href="#duedil-stats" role="tab" aria-controls="duedil stats" aria-selected="false">{% trans "Financial summary" %}</a>
                     </li>
                 {% endif %}
                 {% if news %}
                     <li class="nav-item">
-                        <a class="nav-link" id="news-tab" data-toggle="tab" href="#news" role="tab" aria-controls="news" aria-selected="false">{% trans "News" %}</a>
+                        <a class="nav-link" id="news-tab" data-bs-toggle="tab" href="#news" role="tab" aria-controls="news" aria-selected="false">{% trans "News" %}</a>
                     </li>
                 {% endif %}
             </ul>

@@ -35,18 +35,18 @@
                     backgroundColor: 'rgb(255, 99, 132)',
                     fill: false,
                     data: stats_subscribers,
-                    yAxisID: 'y-axis-1',
+                    yAxisID: 'y',
                 }, {
                     label: titles[1],
                     borderColor: 'rgb(54, 162, 235)',
                     backgroundColor: 'rgb(54, 162, 235)',
                     fill: false,
                     data: stats_views,
-                    yAxisID: 'y-axis-2'
+                    yAxisID: 'y2'
                 }]
             };
 
-            Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: lineChartData,
                 options: {
@@ -54,38 +54,30 @@
                     hoverMode: 'index',
                     stacked: false,
                     scales: {
-                        xAxes: [{
+                        x: {
                             type: 'time',
                             time: {
                                 parser: 'YYYY-MM-DD',
                                 tooltipFormat: 'll',
                                 unit: 'day',
                             },
-                            scaleLabel: {
+                            title: {
                                 display: true,
-                                labelString: '{% trans "Date" %}'
+                                text: '{% trans "Date" %}'
                             }
-                        }],
-                        yAxes: [{
+                        },
+                        y: {
                             type: 'linear',
-                            display: true,
                             position: 'left',
-                            ticks: {
-                                fontColor: 'rgb(255, 99, 132)'
-                            },
-                            id: 'y-axis-1',
-                        }, {
+                            ticks: { color: 'rgb(255, 99, 132)' },
+                            stacked: false
+                        },
+                        y2: {
                             type: 'linear',
-                            display: true,
                             position: 'right',
-                            ticks: {
-                                fontColor: 'rgb(54, 162, 235)'
-                            },
-                            id: 'y-axis-2',
-                            gridLines: {
-                                drawOnChartArea: false,
-                            },
-                        }],
+                            ticks: { color: 'rgb(54, 162, 235)' },
+                            grid: { drawOnChartArea: false }
+                        }
                     }
                 }
             });

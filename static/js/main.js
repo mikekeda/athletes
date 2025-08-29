@@ -188,7 +188,7 @@ $(document).ready( function () {
 
     $('form select, .select2').select2();
 
-    $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
+    $('[data-bs-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
     // TODO: Not needed for now.
     // $('#athletes-table_filter input').autocomplete({
