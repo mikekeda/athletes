@@ -1,7 +1,7 @@
-requests==2.32.4
+requests==2.32.5
 psycopg2-binary==2.9.10
 gunicorn==23.0.0
-beautifulsoup4==4.13.4
+beautifulsoup4==4.13.5
 celery==5.5.3
 requests_oauthlib==2.0.0
 Pillow==11.3.0
