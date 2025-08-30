@@ -16,5 +16,5 @@ django-import-export==4.3.9
 django-redis==6.0.0
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
-dj-stripe==2.10.0
+dj-stripe==2.10.1
 django-cors-headers==4.7.0
