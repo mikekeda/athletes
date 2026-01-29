@@ -1,7 +1,6 @@
 import datetime
 import pytz
 
-
 TIMEZONES = sorted(
     [
         (tz, tz + " " + datetime.datetime.now(pytz.timezone(tz)).strftime("%z"))

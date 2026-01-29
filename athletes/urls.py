@@ -10,7 +10,6 @@ from django.utils.translation import gettext_lazy as _
 
 from api.urls import router
 
-
 urlpatterns = [
     path("", include("core.urls", namespace="core")),
     path("api/", include("api.urls", namespace="api")),
