@@ -6,7 +6,6 @@ celery==5.6.2
 requests_oauthlib==2.0.0
 Pillow==12.1.1
 pytz==2026.1.post1
-google-cloud-logging==3.14.0
 python-dateutil==2.9.0.post0
 xmltodict==1.0.4
 django==6.0.3

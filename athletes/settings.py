@@ -7,8 +7,6 @@ from datetime import timedelta
 import requests
 
 from django.utils.log import DEFAULT_LOGGING as LOGGING
-import google.cloud.logging_v2
-from google.cloud.logging_v2.handlers.transports.sync import SyncTransport
 
 SITE_ENV_PREFIX = "ATHLETES"
 
@@ -262,16 +260,6 @@ LOGGING["loggers"]["athletes"] = {
     "handlers": ["django.server", "mail_admins"],
     "level": "INFO",
 }
-if not DEBUG:
-    # StackDriver setup.
-    # We need to use SyncTransport otherwise logs will not work for celery.
-    client = google.cloud.logging_v2.Client()
-    LOGGING["handlers"]["stackdriver"] = {
-        "class": "google.cloud.logging.handlers.CloudLoggingHandler",
-        "client": client,
-        "transport": SyncTransport,
-    }
-    LOGGING["loggers"]["athletes"]["handlers"].append("stackdriver")
 
 
 GEOCODING_API_KEY = get_env_var("GEOCODING_API_KEY")
