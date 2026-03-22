@@ -252,7 +252,7 @@ NO_AVATAR_IMAGE = STATIC_URL + "img/no-avatar.png"
 
 STATICFILES_DIRS = (("", os.path.join(BASE_DIR, "static")),)
 
-STATIC_ROOT = "/home/voron/sites/cdn/athletes"
+STATIC_ROOT = "/home/debian/sites/cdn/athletes"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
