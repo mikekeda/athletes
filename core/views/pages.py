@@ -48,9 +48,7 @@ class GetUserMixin:
     def get_user(request, username: str):
         """Get user by username and check access."""
         if not request.user.is_authenticated or (
-            not request.user.is_superuser
-            and username
-            and username != request.user.username
+            not request.user.is_superuser and username and username != request.user.username
         ):
             raise PermissionDenied
 
@@ -180,15 +178,11 @@ class ProfileView(View, GetUserMixin):
         ).get(user=user)
 
         profile.leagues_lists = LeaguesList.objects.prefetch_related(
-            Prefetch(
-                "leagues", queryset=League.objects.only("pk", "name").order_by("name")
-            ),
+            Prefetch("leagues", queryset=League.objects.only("pk", "name").order_by("name")),
         ).filter(user=user)
 
         profile.teams_lists = TeamsList.objects.prefetch_related(
-            Prefetch(
-                "teams", queryset=Team.objects.only("pk", "name").order_by("name")
-            ),
+            Prefetch("teams", queryset=Team.objects.only("pk", "name").order_by("name")),
         ).filter(user=user)
 
         profile.athletes_lists = AthletesList.objects.prefetch_related(
@@ -311,19 +305,13 @@ def terms_page(request):
 def athlete_page(request, slug):
     """Athlete page."""
     slug = "/" + quote_plus(slug, safe="(,)")
-    athlete = get_object_or_404(
-        Athlete.objects.prefetch_related("athletes_lists"), wiki__endswith=slug
-    )
+    athlete = get_object_or_404(Athlete.objects.prefetch_related("athletes_lists"), wiki__endswith=slug)
     for k, v in athlete.get_trend_info.items():
         setattr(athlete, k, v)
 
-    athlete.subscribed = Profile.objects.filter(
-        user=request.user, followed_athletes=athlete
-    ).exists()
+    athlete.subscribed = Profile.objects.filter(user=request.user, followed_athletes=athlete).exists()
 
-    athlete.user_athletes_lists = AthletesList.objects.filter(user=request.user).only(
-        "pk", "name"
-    )
+    athlete.user_athletes_lists = AthletesList.objects.filter(user=request.user).only("pk", "name")
 
     # Check if the athlete is in any list.
     for athletes_list in athlete.user_athletes_lists:
@@ -349,20 +337,14 @@ def compare_athletes_page(request):
         return HttpResponseBadRequest("Need 2 athletes to compare")
 
     for i, _id in enumerate(ids):
-        athlete = get_object_or_404(
-            Athlete.objects.prefetch_related("athletes_lists"), pk=_id
-        )
+        athlete = get_object_or_404(Athlete.objects.prefetch_related("athletes_lists"), pk=_id)
 
         for k, v in athlete.get_trend_info.items():
             setattr(athlete, k, v)
 
-        athlete.subscribed = Profile.objects.filter(
-            user=request.user, followed_athletes=athlete
-        ).exists()
+        athlete.subscribed = Profile.objects.filter(user=request.user, followed_athletes=athlete).exists()
 
-        athlete.user_athletes_lists = AthletesList.objects.filter(
-            user=request.user
-        ).only("pk", "name")
+        athlete.user_athletes_lists = AthletesList.objects.filter(user=request.user).only("pk", "name")
 
         # Check if the athlete is in any list.
         for athl_list in athlete.user_athletes_lists:
@@ -380,13 +362,9 @@ def team_page(request, pk):
     for k, v in team.get_trend_info.items():
         setattr(team, k, v)
 
-    team.subscribed = Profile.objects.filter(
-        user=request.user, followed_teams=team
-    ).exists()
+    team.subscribed = Profile.objects.filter(user=request.user, followed_teams=team).exists()
 
-    team.user_teams_lists = TeamsList.objects.filter(user=request.user).only(
-        "pk", "name"
-    )
+    team.user_teams_lists = TeamsList.objects.filter(user=request.user).only("pk", "name")
 
     # Check if the athlete is in any list.
     for teams_list in team.user_teams_lists:
@@ -407,9 +385,7 @@ def team_page(request, pk):
         "datasets": [
             {
                 "data": [c[1] for c in counter],
-                "backgroundColor": [
-                    f"rgba(255, 0, 0, {(c[0] - 15) / 30})" for c in counter
-                ],
+                "backgroundColor": [f"rgba(255, 0, 0, {(c[0] - 15) / 30})" for c in counter],
             }
         ],
         "labels": [f"{c[0]} ({round(c[1] * 100 / total, 1)}%)" for c in counter],
@@ -429,8 +405,7 @@ def team_page(request, pk):
             {
                 "data": [c[1] for c in counter],
                 "backgroundColor": [
-                    f"rgb({random.randint(0, 255)}, {random.randint(0, 255)}, "
-                    f"{random.randint(0, 255)})"
+                    f"rgb({random.randint(0, 255)}, {random.randint(0, 255)}, " f"{random.randint(0, 255)})"
                     for _ in counter
                 ],
             }
@@ -460,13 +435,9 @@ def league_page(request, pk):
     for k, v in league.get_trend_info.items():
         setattr(league, k, v)
 
-    league.subscribed = Profile.objects.filter(
-        user=request.user, followed_leagues=league
-    ).exists()
+    league.subscribed = Profile.objects.filter(user=request.user, followed_leagues=league).exists()
 
-    league.user_league_lists = LeaguesList.objects.filter(user=request.user).only(
-        "pk", "name"
-    )
+    league.user_league_lists = LeaguesList.objects.filter(user=request.user).only("pk", "name")
 
     # Check if the athlete is in any list.
     for league_list in league.user_league_lists:

@@ -36,14 +36,9 @@ class DomesticMarketListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "not_empty":
-            return queryset.filter(**{f"{self._field}__isnull": False}).exclude(
-                **{f"{self._field}": ""}
-            )
+            return queryset.filter(**{f"{self._field}__isnull": False}).exclude(**{f"{self._field}": ""})
         if self.value() == "empty":
-            return queryset.filter(
-                Q(**{f"{self._field}__isnull": True})
-                | Q(**{f"{self._field}__exact": ""})
-            )
+            return queryset.filter(Q(**{f"{self._field}__isnull": True}) | Q(**{f"{self._field}__exact": ""}))
 
         return None
 

@@ -2,10 +2,7 @@ import datetime
 import pytz
 
 TIMEZONES = sorted(
-    [
-        (tz, tz + " " + datetime.datetime.now(pytz.timezone(tz)).strftime("%z"))
-        for tz in pytz.common_timezones
-    ]
+    [(tz, tz + " " + datetime.datetime.now(pytz.timezone(tz)).strftime("%z")) for tz in pytz.common_timezones]
 )
 
 CATEGORIES = {

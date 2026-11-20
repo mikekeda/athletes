@@ -37,9 +37,7 @@ def _parse_tennis(url: str):
         if data[3]:
             wiki = data[3][0]
 
-        market_row = card.select_one(
-            ".player-profile-hero-table table tr:nth-of-type(2)"
-        )
+        market_row = card.select_one(".player-profile-hero-table table tr:nth-of-type(2)")
 
         birthday = card.select_one(".table-birthday")
 
@@ -51,9 +49,7 @@ def _parse_tennis(url: str):
             defaults = {}
 
         try:
-            athlete, created = Athlete.objects.get_or_create(
-                wiki=wiki, defaults=defaults
-            )
+            athlete, created = Athlete.objects.get_or_create(wiki=wiki, defaults=defaults)
             if not created:
                 log.warning("Skip athlete %s with wiki %s (already exists)", name, wiki)
                 return None
@@ -73,10 +69,7 @@ def _parse_tennis(url: str):
             geo_data = athlete.geocode(location_market)
             if geo_data["results"]:
                 for component in geo_data["results"][0]["address_components"]:
-                    if (
-                        "country" in component["types"]
-                        and component["short_name"] in COUNTRIES
-                    ):
+                    if "country" in component["types"] and component["short_name"] in COUNTRIES:
                         athlete.location_market = component["short_name"]
 
         country_code = card.select_one(".player-flag-code").string
@@ -85,9 +78,7 @@ def _parse_tennis(url: str):
         if birthday:
             athlete.birthday = birthday
 
-        athlete.additional_info["ranking"] = card.select_one(
-            ".player-ranking-position .data-number"
-        ).string.strip()
+        athlete.additional_info["ranking"] = card.select_one(".player-ranking-position .data-number").string.strip()
 
         athlete.save()
     else:

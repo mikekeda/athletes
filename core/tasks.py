@@ -138,57 +138,43 @@ def parse_team(cleaned_data, skip_errors=False):
         links = table.select("td > ul > li > a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Ice Hockey":
         links = table.select("tr > td span.vcard a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Cycling":
         links = table.select("tr > td span a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Rugby":
         links = table.select("tr > td span.fn > a") or table.select("tr > td ul > li a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Australian Football":
         links = table.select("td > ul > li  a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Cricket":
         links = table.select("tr > td:nth-of-type(2) > a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     elif cleaned_data.get("category") == "Handball":
         links = table.select("td > ul > li  > a")
 
         for link in links:
-            full_link, status = validate_link_and_create_athlete(
-                link, site, cleaned_data
-            )
+            full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
             result[["skipped", "parsed"][status]].append(full_link)
     else:
         # Default parsing.
@@ -215,9 +201,7 @@ def parse_team(cleaned_data, skip_errors=False):
                     ] + list(COUNTRIES.values()):
                         continue  # it's not a athlete
 
-                    full_link, status = validate_link_and_create_athlete(
-                        link, site, cleaned_data
-                    )
+                    full_link, status = validate_link_and_create_athlete(link, site, cleaned_data)
                     result[["skipped", "parsed"][status]].append(full_link)
 
     result["skipped"] = [link for link in result["skipped"] if link]
@@ -228,9 +212,7 @@ def parse_team(cleaned_data, skip_errors=False):
 @app.task
 def weekly_athletes_youtube_update():
     """Update youtube info for Athlete weekly."""
-    aids = sorted(
-        Athlete.objects.filter(~Q(youtube_info={})).values_list("id", flat=True)
-    )
+    aids = sorted(Athlete.objects.filter(~Q(youtube_info={})).values_list("id", flat=True))
 
     for aid in aids:
         athlete = Athlete.objects.get(id=aid)
@@ -242,9 +224,7 @@ def weekly_athletes_youtube_update():
 def weekly_youtube_update():
     """Update youtube info for League and Team weekly."""
     for cls in (League, Team):
-        ids = sorted(
-            cls.objects.filter(~Q(youtube_info={})).values_list("id", flat=True)
-        )
+        ids = sorted(cls.objects.filter(~Q(youtube_info={})).values_list("id", flat=True))
 
         for _id in ids:
             obj = cls.objects.get(id=_id)
@@ -298,21 +278,15 @@ def weekly_trends_notifications(teams=False):
 
         if obj.youtube_info and obj.youtube_info.get("history"):
             diff = obj.get_youtube_trends[0][1][0]
-            if len(youtube_subscribers_trends) < lim or diff > min(
-                youtube_subscribers_trends.keys()
-            ):
+            if len(youtube_subscribers_trends) < lim or diff > min(youtube_subscribers_trends.keys()):
                 if len(youtube_subscribers_trends) >= lim:
-                    youtube_subscribers_trends.pop(
-                        min(youtube_subscribers_trends.keys())
-                    )
+                    youtube_subscribers_trends.pop(min(youtube_subscribers_trends.keys()))
 
                 obj.new_subscribers = diff  # added new subscribers
                 youtube_subscribers_trends[diff] = obj
 
             diff = obj.get_youtube_trends[0][1][1]
-            if len(youtube_views_trends) < lim or diff > min(
-                youtube_views_trends.keys()
-            ):
+            if len(youtube_views_trends) < lim or diff > min(youtube_views_trends.keys()):
                 if len(youtube_views_trends) >= lim:
                     youtube_views_trends.pop(min(youtube_views_trends.keys()))
 
@@ -320,21 +294,15 @@ def weekly_trends_notifications(teams=False):
                 youtube_views_trends[diff] = obj
 
     # Sort items by new followers.
-    twitter_trends = {
-        k: twitter_trends[k] for k in sorted(twitter_trends.keys(), reverse=True)
-    }
+    twitter_trends = {k: twitter_trends[k] for k in sorted(twitter_trends.keys(), reverse=True)}
 
     # Sort items by new subscribers.
     youtube_subscribers_trends = {
-        k: youtube_subscribers_trends[k]
-        for k in sorted(youtube_subscribers_trends.keys(), reverse=True)
+        k: youtube_subscribers_trends[k] for k in sorted(youtube_subscribers_trends.keys(), reverse=True)
     }
 
     # Sort items by new views.
-    youtube_views_trends = {
-        k: youtube_views_trends[k]
-        for k in sorted(youtube_views_trends.keys(), reverse=True)
-    }
+    youtube_views_trends = {k: youtube_views_trends[k] for k in sorted(youtube_views_trends.keys(), reverse=True)}
 
     # Send notification to staff users.
     profiles = Profile.objects.filter(user__is_staff=True)
@@ -475,9 +443,7 @@ def every_minute_twitter_update():
             log.info("Update info from Twitter for %s %s", cls_name, obj.name)
             screen_name = obj.twitter_info["screen_name"]
 
-            url = (
-                f"https://api.twitter.com/1.1/users/show.json?screen_name={screen_name}"
-            )
+            url = f"https://api.twitter.com/1.1/users/show.json?screen_name={screen_name}"
 
         else:
             log.info("Get info from Twitter for %s %s", cls_name, obj.name)
@@ -520,9 +486,9 @@ def daily_update_notifications():
     subject = "Your followed Athletes, Teams, Leagues were recently updated"
     today = datetime.datetime.today()
 
-    ids = Profile.objects.exclude(
-        followed_athletes=None, followed_teams=None, followed_leagues=None
-    ).values_list("id", flat=True)
+    ids = Profile.objects.exclude(followed_athletes=None, followed_teams=None, followed_leagues=None).values_list(
+        "id", flat=True
+    )
 
     for pk in ids:
         profile = Profile.objects.get(pk=pk)

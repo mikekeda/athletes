@@ -51,9 +51,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_var(
-    "SECRET_KEY", "qt3@x1(314ybu)d=)i1j$$q(&9wp$i9kwy0!_o9$z*ofr@^rd8"
-)
+SECRET_KEY = get_env_var("SECRET_KEY", "qt3@x1(314ybu)d=)i1j$$q(&9wp$i9kwy0!_o9$z*ofr@^rd8")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(get_env_var("DEBUG", "True"))

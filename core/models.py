@@ -167,11 +167,7 @@ class ModelMixin:
             res = requests.get(url)
             if res.status_code == 200:
                 youtube_info = res.json()
-                if (
-                    youtube_info
-                    and youtube_info["items"]
-                    and youtube_info["items"][0]["id"].get("channelId")
-                ):
+                if youtube_info and youtube_info["items"] and youtube_info["items"][0]["id"].get("channelId"):
                     channel_id = youtube_info["items"][0]["id"]["channelId"]
                 else:
                     log.info("No youtube info for %s %s", model, self.name)
@@ -200,9 +196,7 @@ class ModelMixin:
                     self.youtube_info["updated"] = str(now)
                     self.youtube_info["history"] = history
                 else:
-                    log.info(
-                        "Updating youtube info: no data for %s %s", model, self.name
-                    )
+                    log.info("Updating youtube info: no data for %s %s", model, self.name)
             else:
                 log.warning(
                     "Failed updating youtube info for %s %s (%s)",
@@ -280,9 +274,7 @@ class ModelMixin:
                 hashlib.sha256(canonical_request.encode("utf8")).hexdigest(),
             ]
         )
-        signature = hmac.new(
-            signing_key, string_to_sign.encode("utf-8"), hashlib.sha256
-        ).hexdigest()
+        signature = hmac.new(signing_key, string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
         authorization_header = (
             f"AWS4-HMAC-SHA256 Credential={settings.AWS_ACCESS_ID}"
             f"/{datestamp}/us-west-1/awis/aws4_request, SignedHeaders=host;"
@@ -303,9 +295,9 @@ class ModelMixin:
             if views_info and views_info.get("aws:UrlInfoResponse"):
                 data = {"total": 0.0}
                 try:
-                    root = views_info["aws:UrlInfoResponse"]["aws:Response"][
-                        "aws:UrlInfoResult"
-                    ]["aws:Alexa"]["aws:TrafficData"]
+                    root = views_info["aws:UrlInfoResponse"]["aws:Response"]["aws:UrlInfoResult"]["aws:Alexa"][
+                        "aws:TrafficData"
+                    ]
                 except KeyError as e:
                     log.info("%s %s: %s", model, self.name, repr(e))
                     return self.site_views_info
@@ -313,16 +305,9 @@ class ModelMixin:
                 items = root.get("aws:UsageStatistics") or {}
                 items = items.get("aws:UsageStatistic") or []
                 for item in items:
-                    if (
-                        isinstance(item, dict)
-                        and item["aws:TimeRange"].get("aws:Days") == "7"
-                    ):
+                    if isinstance(item, dict) and item["aws:TimeRange"].get("aws:Days") == "7":
                         data["total"] = round(
-                            float(
-                                item["aws:PageViews"]["aws:PerMillion"][
-                                    "aws:Value"
-                                ].replace(",", ".")
-                            ),
+                            float(item["aws:PageViews"]["aws:PerMillion"]["aws:Value"].replace(",", ".")),
                             1,
                         )
                         break
@@ -332,9 +317,7 @@ class ModelMixin:
                 for row in records:
                     if isinstance(row, dict) and row["@Code"] in COUNTRIES:
                         data[row["@Code"]] = round(
-                            data["total"]
-                            / 100
-                            * float(row["aws:Contribution"]["aws:PageViews"][:-1]),
+                            data["total"] / 100 * float(row["aws:Contribution"]["aws:PageViews"][:-1]),
                             1,
                         )
 
@@ -397,10 +380,8 @@ class ModelMixin:
                     [
                         d[:10],
                         [
-                            int(history[d]["subscriberCount"])
-                            - int(history[dates[i + 1]]["subscriberCount"]),
-                            int(history[d]["viewCount"])
-                            - int(history[dates[i + 1]]["viewCount"]),
+                            int(history[d]["subscriberCount"]) - int(history[dates[i + 1]]["subscriberCount"]),
+                            int(history[d]["viewCount"]) - int(history[dates[i + 1]]["viewCount"]),
                         ],
                     ]
                 )
@@ -448,8 +429,7 @@ class ModelMixin:
                     [
                         d[:10],
                         [
-                            int(history[d]["followers_count"])
-                            - int(history[dates[i + 1]]["followers_count"]),
+                            int(history[d]["followers_count"]) - int(history[dates[i + 1]]["followers_count"]),
                         ],
                     ]
                 )
@@ -510,8 +490,7 @@ class ModelMixin:
                     [
                         d[:10],
                         [
-                            int(self.wiki_views_info[d])
-                            - int(self.wiki_views_info[dates[i + 1]]),
+                            int(self.wiki_views_info[d]) - int(self.wiki_views_info[dates[i + 1]]),
                         ],
                     ]
                 )
@@ -624,9 +603,7 @@ class League(models.Model, ModelMixin):
 
         return self.additional_info
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.name:
             # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
@@ -665,9 +642,7 @@ class Team(models.Model, ModelMixin):
         blank=True,
         choices=(("male", _("Male")), ("female", _("Female"))),
     )
-    league = models.ForeignKey(
-        League, null=True, blank=True, related_name="teams", on_delete=models.SET_NULL
-    )
+    league = models.ForeignKey(League, null=True, blank=True, related_name="teams", on_delete=models.SET_NULL)
     category = models.CharField(max_length=255, blank=True, choices=CATEGORIES.items())
     longitude = models.FloatField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
@@ -694,9 +669,7 @@ class Team(models.Model, ModelMixin):
 
             soup = BeautifulSoup(html.content, "html.parser")
 
-        card = soup.find("table", {"class": "vcard"}) or soup.find(
-            "table", {"class": "infobox"}
-        )
+        card = soup.find("table", {"class": "vcard"}) or soup.find("table", {"class": "infobox"})
         info = {}
         site = urllib.parse.urlparse(self.wiki)
         site = f"{site.scheme}://{site.hostname}"
@@ -759,12 +732,8 @@ class Team(models.Model, ModelMixin):
                 geo_data = self.geocode(address)
 
                 if geo_data["results"]:
-                    self.longitude = geo_data["results"][0]["geometry"]["location"][
-                        "lng"
-                    ]
-                    self.latitude = geo_data["results"][0]["geometry"]["location"][
-                        "lat"
-                    ]
+                    self.longitude = geo_data["results"][0]["geometry"]["location"]["lng"]
+                    self.latitude = geo_data["results"][0]["geometry"]["location"]["lat"]
 
     def get_stock_info(self):
         """Get stock info."""
@@ -813,8 +782,7 @@ class Team(models.Model, ModelMixin):
                 [
                     d,
                     [
-                        float(self.stock_info[d])
-                        - float(self.stock_info[dates[i + 1]]),
+                        float(self.stock_info[d]) - float(self.stock_info[dates[i + 1]]),
                     ],
                 ]
             )
@@ -844,9 +812,7 @@ class Team(models.Model, ModelMixin):
             if res.status_code == 200:
                 company_info = res.json()
                 if company_info and company_info.get("companies"):
-                    self.company_info["companyId"] = company_info["companies"][0][
-                        "companyId"
-                    ]
+                    self.company_info["companyId"] = company_info["companies"][0]["companyId"]
                 else:
                     log.info("No companyId for %s %s", model, self.name)
             else:
@@ -898,12 +864,8 @@ class Team(models.Model, ModelMixin):
                         d,
                         {
                             "Turnover": float(company_info[d].get("turnover") or 0),
-                            "Post Tax Profit": float(
-                                company_info[d].get("postTaxProfit") or 0
-                            ),
-                            "Total Assets": float(
-                                company_info[d].get("totalAssets") or 0
-                            ),
+                            "Post Tax Profit": float(company_info[d].get("postTaxProfit") or 0),
+                            "Total Assets": float(company_info[d].get("totalAssets") or 0),
                             "Net Assets": float(company_info[d].get("netAssets") or 0),
                         },
                     ]
@@ -911,9 +873,7 @@ class Team(models.Model, ModelMixin):
 
         return stats
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.name:
             # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
@@ -964,13 +924,9 @@ class Athlete(models.Model, ModelMixin):
         choices=COUNTRIES.items(),
     )
     team = models.CharField(max_length=255, null=True, blank=True, db_index=True)
-    team_model = models.ForeignKey(
-        Team, null=True, blank=True, related_name="members", on_delete=models.SET_NULL
-    )
+    team_model = models.ForeignKey(Team, null=True, blank=True, related_name="members", on_delete=models.SET_NULL)
     category = models.CharField(max_length=255, blank=True, choices=CATEGORIES.items())
-    marketability = models.PositiveSmallIntegerField(
-        null=True, blank=True, validators=[MaxValueValidator(100)]
-    )
+    marketability = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MaxValueValidator(100)])
     optimal_campaign = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
@@ -1003,11 +959,7 @@ class Athlete(models.Model, ModelMixin):
     @property
     def age(self):
         today = datetime.date.today()
-        return (
-            today.year
-            - self.birthday.year
-            - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
-        )
+        return today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
 
     @property
     def market_export(self):
@@ -1128,19 +1080,14 @@ class Athlete(models.Model, ModelMixin):
 
                 if geo_data["results"]:
                     for component in geo_data["results"][0]["address_components"]:
-                        if (
-                            "country" in component["types"]
-                            and component["short_name"] in COUNTRIES
-                        ):
+                        if "country" in component["types"] and component["short_name"] in COUNTRIES:
                             self.domestic_market = component["short_name"]
                             log.info("Found %s", self.domestic_market)
                             return component["short_name"]
 
         return None
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.name:
             # If name isn't set - send request to Wiki to get additional info.
             self.get_data_from_wiki()
@@ -1172,9 +1119,7 @@ class AthletesList(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     athletes = models.ManyToManyField(Athlete, related_name="athletes_lists")
-    user = models.ForeignKey(
-        User, related_name="athletes_lists", on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(User, related_name="athletes_lists", on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -1198,9 +1143,7 @@ class LeaguesList(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     leagues = models.ManyToManyField(League, related_name="leagues_lists")
-    user = models.ForeignKey(
-        User, related_name="leagues_lists", on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(User, related_name="leagues_lists", on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -1211,18 +1154,12 @@ class LeaguesList(models.Model):
 class Profile(models.Model):
     """Profile model."""
 
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE)
     timezone = models.CharField(max_length=64, default="UTC")
     avatar = models.ImageField(upload_to="avatars/", default="/avatars/no-avatar.png")
-    followed_athletes = models.ManyToManyField(
-        Athlete, related_name="followers", blank=True
-    )
+    followed_athletes = models.ManyToManyField(Athlete, related_name="followers", blank=True)
     followed_teams = models.ManyToManyField(Team, related_name="followers", blank=True)
-    followed_leagues = models.ManyToManyField(
-        League, related_name="followers", blank=True
-    )
+    followed_leagues = models.ManyToManyField(League, related_name="followers", blank=True)
     notification_frequency = models.CharField(
         max_length=8,
         choices=(
@@ -1266,9 +1203,7 @@ class TeamArticle(models.Model):
             "publishedAt",
         )
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         url_verification = URLValidator()
 
         # Improve source.
@@ -1304,8 +1239,7 @@ class TeamArticle(models.Model):
             team_name = team.name.split(" ")[0]
 
         url = (
-            f"https://newsapi.org/v2/top-headlines?category=sports"
-            f"&q={team_name}&apiKey={settings.NEWSAPI_API_KEY}"
+            f"https://newsapi.org/v2/top-headlines?category=sports" f"&q={team_name}&apiKey={settings.NEWSAPI_API_KEY}"
         )
         res = requests.get(url)
         if res.status_code == 200:
@@ -1317,15 +1251,11 @@ class TeamArticle(models.Model):
 
                 article["source"] = article.get("source", {}).get("name")
                 article["team"] = team
-                article["urlToImage"] = (
-                    article["urlToImage"] or settings.NO_AVATAR_IMAGE
-                )
+                article["urlToImage"] = article["urlToImage"] or settings.NO_AVATAR_IMAGE
                 cls.objects.get_or_create(
                     title=article["title"],
                     publishedAt=article["publishedAt"],
                     defaults=article,
                 )
         else:
-            log.warning(
-                "Failed getting news for %s team (%s)", team.name, res.status_code
-            )
+            log.warning("Failed getting news for %s team (%s)", team.name, res.status_code)

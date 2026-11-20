@@ -43,9 +43,7 @@ urlpatterns = [
     path("api/teams_list", add_team_to_lists_api, name="teams_list"),
     path("api/leagues_list", add_league_to_lists_api, name="leagues_list"),
     path("api/<str:class_name>/<int:pk>/follow", follow_api, name="follow_api"),
-    path(
-        "api/<str:class_name>/autocomplete", autocomplete_api, name="autocomplete_api"
-    ),
+    path("api/<str:class_name>/autocomplete", autocomplete_api, name="autocomplete_api"),
     path("user/<str:username>", ProfileView.as_view(), name="user"),
     path("terms", terms_page, name="terms"),
     path("map", map_page, name="map"),

@@ -51,9 +51,7 @@ def _serialize_qs(qs):
                 pass
 
     data = json.loads(serializers.serialize("json", qs))
-    data = [
-        {**obj["fields"], **props.get(obj["pk"], {}), "pk": obj["pk"]} for obj in data
-    ]
+    data = [{**obj["fields"], **props.get(obj["pk"], {}), "pk": obj["pk"]} for obj in data]
 
     return data
 
@@ -126,9 +124,7 @@ def _process_datatables_params(querydict: dict) -> tuple:
 
 def _athletes_api(request):
     """Return filtered/sorted/paginated list of athletes for datatables."""
-    draw, start, length, order, search, filters = _process_datatables_params(
-        request.GET
-    )
+    draw, start, length, order, search, filters = _process_datatables_params(request.GET)
 
     # Count all rows.
     total = Athlete.objects.count()
@@ -145,9 +141,7 @@ def _athletes_api(request):
     list_id = None
     try:
         list_id = int(request.GET.get("list_id"))
-        athletes_ids = AthletesList.objects.filter(
-            user=request.user, pk=list_id
-        ).values_list("athletes__id", flat=True)
+        athletes_ids = AthletesList.objects.filter(user=request.user, pk=list_id).values_list("athletes__id", flat=True)
         qs = qs.filter(pk__in=athletes_ids)
     except (ValueError, TypeError):
         pass
@@ -168,9 +162,7 @@ def _athletes_api(request):
                 if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
                     for i, _ in enumerate(val):
                         today = datetime.date.today()
-                        val[i] = datetime.date(
-                            today.year - int(val[i]), today.month, today.day
-                        )
+                        val[i] = datetime.date(today.year - int(val[i]), today.month, today.day)
 
                     qs = qs.filter(birthday__gte=val[1], birthday__lte=val[0])
                 continue
@@ -182,11 +174,7 @@ def _athletes_api(request):
                 if len(val) == 2 and val[0].isdigit() and val[1].isdigit():
                     qs = qs.filter(**{f"{field}__gte": val[0], f"{field}__lte": val[1]})
             elif field in ("domestic_market", "location_market"):
-                country_val = [
-                    code
-                    for code, name in COUNTRIES.items()
-                    if val.lower() in name.lower()
-                ]
+                country_val = [code for code, name in COUNTRIES.items() if val.lower() in name.lower()]
                 qs = qs.filter(**{f"{field}__in": country_val})
             elif model_field.choices:
                 qs = qs.filter(**{f"{field}__in": val.split(",")})
@@ -198,9 +186,7 @@ def _athletes_api(request):
     if search:
         # Smart search by name, domestic_market, gender,
         # location_market, team, category fields.
-        country_val = [
-            code for code, name in COUNTRIES.items() if search.lower() in name.lower()
-        ]
+        country_val = [code for code, name in COUNTRIES.items() if search.lower() in name.lower()]
 
         qs = qs.filter(
             Q(name__unaccent__icontains=search)
@@ -237,24 +223,18 @@ def athletes_api(request):
 
 def _teams_api(request):
     """Return filtered/sorted/paginated list of teams for datatables."""
-    draw, start, length, order, search, filters = _process_datatables_params(
-        request.GET
-    )
+    draw, start, length, order, search, filters = _process_datatables_params(request.GET)
 
     # Count all rows.
     total = Team.objects.count()
 
     # Form queryset.
-    qs = Team.objects.defer(
-        "additional_info", "youtube_info", "wiki_views_info", "site_views_info"
-    )
+    qs = Team.objects.defer("additional_info", "youtube_info", "wiki_views_info", "site_views_info")
 
     list_id = None
     try:
         list_id = int(request.GET.get("list_id"))
-        teams_ids = TeamsList.objects.filter(user=request.user, pk=list_id).values_list(
-            "teams__id", flat=True
-        )
+        teams_ids = TeamsList.objects.filter(user=request.user, pk=list_id).values_list("teams__id", flat=True)
         qs = qs.filter(pk__in=teams_ids)
     except (ValueError, TypeError):
         pass
@@ -275,11 +255,7 @@ def _teams_api(request):
                         twitter_info__followers_count__lte=val[1],
                     )
             elif field == "location_market":
-                country_val = [
-                    code
-                    for code, name in COUNTRIES.items()
-                    if val.lower() in name.lower()
-                ]
+                country_val = [code for code, name in COUNTRIES.items() if val.lower() in name.lower()]
                 qs = qs.filter(**{f"{field}__in": country_val})
             elif field == "league":
                 qs = qs.filter(**{f"{field}__name__unaccent__icontains": val})
@@ -293,9 +269,7 @@ def _teams_api(request):
     if search:
         # Smart search by name, gender,
         # location_market, league, category fields.
-        country_val = [
-            code for code, name in COUNTRIES.items() if search.lower() in name.lower()
-        ]
+        country_val = [code for code, name in COUNTRIES.items() if search.lower() in name.lower()]
 
         qs = qs.filter(
             Q(name__unaccent__icontains=search)
@@ -363,16 +337,12 @@ def athletes_list_api(request):
             athletes_ids = [int(pk) for pk in athletes_ids if pk.isdigit()]
 
             if athletes_ids and list_id and list_id.isdigit():
-                athletes_list = AthletesList.objects.filter(
-                    pk=list_id, user=request.user
-                ).first()
+                athletes_list = AthletesList.objects.filter(pk=list_id, user=request.user).first()
 
                 if athletes_list:
                     old = athletes_list.athletes.values_list("id", flat=True)
 
-                    athletes_list.athletes.add(
-                        *[pk for pk in athletes_ids if pk not in old]
-                    )
+                    athletes_list.athletes.add(*[pk for pk in athletes_ids if pk not in old])
 
                     return JsonResponse(
                         {
@@ -442,9 +412,7 @@ def add_athlete_to_lists_api(request):
         # Only int values are allowed.
         new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
-        athlete = get_object_or_404(
-            Athlete.objects.prefetch_related("athletes_lists"), pk=athlete_id
-        )
+        athlete = get_object_or_404(Athlete.objects.prefetch_related("athletes_lists"), pk=athlete_id)
         old_lists_ids = {
             athletes_list.pk
             for athletes_list in athlete.athletes_lists.all()
@@ -479,9 +447,7 @@ def add_team_to_lists_api(request):
         # Only int values are allowed.
         new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
-        team = get_object_or_404(
-            Team.objects.prefetch_related("teams_lists"), pk=team_id
-        )
+        team = get_object_or_404(Team.objects.prefetch_related("teams_lists"), pk=team_id)
         old_lists_ids = {
             teams_list.pk
             for teams_list in team.teams_lists.all()
@@ -516,9 +482,7 @@ def add_league_to_lists_api(request):
         # Only int values are allowed.
         new_lists_ids = {int(v) for v in new_lists_ids if v.isdigit()}
 
-        league = get_object_or_404(
-            League.objects.prefetch_related("leagues_lists"), pk=league_id
-        )
+        league = get_object_or_404(League.objects.prefetch_related("leagues_lists"), pk=league_id)
         old_lists_ids = {
             leagues_list.pk
             for leagues_list in league.leagues_lists.all()
@@ -576,9 +540,7 @@ def autocomplete_api(request, class_name):
         fields = [] if fields == [""] else fields
 
         # Search for similar name in database.
-        if (not fields and class_name == "athlete") or (
-            "name" in fields and "team" in fields
-        ):
+        if (not fields and class_name == "athlete") or ("name" in fields and "team" in fields):
             # Search in name and team fields (2 fields).
             result.update(
                 cls.objects.annotate(
@@ -586,9 +548,7 @@ def autocomplete_api(request, class_name):
                     similarity_team=TrigramSimilarity("team", search),
                     similarity=Greatest(F("similarity_name"), F("similarity_team")),
                     value=Case(
-                        When(
-                            Q(similarity_team__gt=F("similarity_name")), then=F("team")
-                        ),
+                        When(Q(similarity_team__gt=F("similarity_name")), then=F("team")),
                         default=F("name"),
                         output_field=CharField(),
                     ),
